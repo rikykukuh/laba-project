@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItemTypeTable extends Migration
+class CreatePaymentTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateItemTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('item_type', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->integer('order_id');
+            $table->integer('payment_method_id');
+            $table->integer('payment_merchant_id');
+            $table->float('value');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +31,6 @@ class CreateItemTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_type');
+        Schema::dropIfExists('payment');
     }
 }

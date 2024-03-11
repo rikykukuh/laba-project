@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentMerchantTable extends Migration
+class CreateOrderItemTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreatePaymentMerchantTable extends Migration
      */
     public function up()
     {
-        Schema::create('payment_merchant', function (Blueprint $table) {
+        Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('payment_method_id');
+            $table->integer('order_id');
+            $table->integer('item_type_id');
+            $table->string('note')->nullable();
+            $table->float('total');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +31,6 @@ class CreatePaymentMerchantTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_merchant');
+        Schema::dropIfExists('order_item');
     }
 }
