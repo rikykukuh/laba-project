@@ -2,13 +2,13 @@
 
 @section('icon_page', 'plus')
 
-@section('title', 'Add Order')
+@section('title', 'Add Client')
 
 @section('menu_pagina')
 
 	<li role="presentation">
-		<a href="{{ route('orders.index') }}" class="link_menu_page">
-			<i class="fa fa-shopping-basket"></i> Orders
+		<a href="{{ route('clients.index') }}" class="link_menu_page">
+			<i class="fa fa-users"></i> Clients
 		</a>
 	</li>
 
@@ -20,14 +20,14 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Add Order</h3>
+                    <h3 class="box-title">Form Add Client</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Client">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
                 <div class="box-body">
-					 <form action="{{ route('orders.store') }}" method="post">
+					 <form action="{{ route('clients.store') }}" method="post">
                         {{ csrf_field() }}
                         <input type="hidden" name="active" value="1">
                         <div class="row">
@@ -43,105 +43,46 @@
                                 </div>
                             </div>
                             <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }}">
-                                    <label for="client_id">Client</label>
-                                    <select name="client_id" id="client_id" class="form-control" data-placeholder="Choose Client" required>
-                                        <option disabled selected> -- Choose Client -- </option>
-                                        @foreach($clients as $client)
-                                            <option value="{{ $client->id }}"> {{ $client->name }} </option>
+                                <div class="form-group {{ $errors->has('address') ? 'has-error' : '' }}">
+                                    <label for="address">Address</label>
+                                    <textarea address="address" id="address" required class="form-control">{{ old('address') }}</textarea>
+                                    @if($errors->has('address'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('address') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group {{ $errors->has('city_id') ? 'has-error' : '' }}">
+                                    <label for="city_id">City</label>
+                                    <select name="city_id" id="city_id" class="form-control" data-placeholder="Choose City" required>
+                                        <option disabled selected> -- Choose City -- </option>
+                                        @foreach($cities as $city)
+                                            <option value="{{ $city->id }}"> {{ $city->name }} </option>
                                         @endforeach
                                     </select>
-                                    @if($errors->has('client_id'))
+                                    @if($errors->has('city_id'))
                                         <span class="help-block">
-                                             <strong>{{ $errors->first('client_id') }}</strong>
+                                             <strong>{{ $errors->first('city_id') }}</strong>
                                          </span>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('total') ? 'has-error' : '' }}">
-                                    <label for="total">Total</label>
-                                    <input type="number" name="total" id="total" class="form-control" placeholder="Total" required value="{{ old('total') }}" >
-                                    @if($errors->has('total'))
+                                <div class="form-group {{ $errors->has('phone_number') ? 'has-error' : '' }}">
+                                    <label for="phone_number">Phone Number</label>
+                                    <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="Phone Number" required value="{{ old('phone_number') }}" autofocus>
+                                    @if($errors->has('phone_number'))
                                         <span class="help-block">
-                                            <strong>{{ $errors->first('total') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('uang_muka') ? 'has-error' : '' }}">
-                                    <label for="uang_muka">Uang Muka</label>
-                                    <input type="number" name="uang_muka" id="uang_muka" class="form-control" placeholder="Uang Muka" required value="{{ old('uang_muka') }}">
-                                    @if($errors->has('uang_muka'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('uang_muka') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                 <div class="form-group {{ $errors->has('status') ? 'has-error' : '' }}">
-                                     <label for="status">Status</label>
-                                     <select name="status" id="status" class="form-control" data-placeholder="Choose Status" required>
-                                         @foreach($statuses as $status)
-                                             <option value="{{ $loop->index }}"> {{ $status }} </option>
-                                         @endforeach
-                                     </select>
-                                     @if($errors->has('status'))
-                                         <span class="help-block">
-                                             <strong>{{ $errors->first('status') }}</strong>
-                                         </span>
-                                     @endif
-                                 </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('payment') ? 'has-error' : '' }}">
-                                    <label for="payment">Payment</label>
-                                    <input type="number" name="payment" id="payment" class="form-control" placeholder="Payment" required value="{{ old('payment') }}" >
-                                    @if($errors->has('payment'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('payment') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('number_ticket') ? 'has-error' : '' }}">
-                                    <label for="number_ticket">No Tiket</label>
-                                    <input type="text" name="number_ticket" id="number_ticket" class="form-control" placeholder="No Tiket" required value="{{ old('number_ticket') }}" >
-                                    @if($errors->has('number_ticket'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('number_ticket') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('due_date') ? 'has-error' : '' }}">
-                                    <label for="due_date">Jatuh Tempo</label>
-                                    <input type="date" name="due_date" id="due_date" class="form-control" placeholder="Jatuh Tempo" required value="{{ old('due_date') }}" >
-                                    @if($errors->has('due_date'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('due_date') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('sisa_pembayaran') ? 'has-error' : '' }}">
-                                    <label for="sisa_pembayaran">Sisa Pembayaran</label>
-                                    <input type="number" name="sisa_pembayaran" id="sisa_pembayaran" class="form-control" placeholder="Sisa Pembayaran" required value="{{ old('sisa_pembayaran') }}" >
-                                    @if($errors->has('sisa_pembayaran'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('sisa_pembayaran') }}</strong>
+                                            <strong>{{ $errors->first('phone_number') }}</strong>
                                         </span>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-lg-12">
                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Add</button>
-                                <a href="{{ route('orders.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Cancel</a>
+                                <a href="{{ route('clients.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Cancel</a>
                             </div>
                         </div>
                     </form>

@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\paymentMerchant;
-use App\Models\paymentMethod;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -20,15 +19,18 @@ class Payment extends Model
         'value',
     ];
 
-    public function order(){
+    public function order(): BelongsTo
+    {
         return $this->belongsTo(Order::Class);
     }
 
-    public function paymentMethod(){
-        return $this->belongsTo(paymentMethod::Class, 'payment_method_id');
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::Class, 'payment_method_id');
     }
 
-    public function paymentMerchant(){
-        return $this->belongsTo(paymentMerchant::Class, 'payment_merchant_id');
+    public function paymentMerchant(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMerchant::Class, 'payment_merchant_id');
     }
 }

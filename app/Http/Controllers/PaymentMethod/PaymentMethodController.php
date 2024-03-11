@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers\PaymentMethod;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 
-class PaymentController extends Controller
+class PaymentMethodController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::paginate(10);
-        return view('payments.index', compact('payments'));
+        $payment_methods = PaymentMethod::paginate(10);
+        return view('payment-methods.index', compact('payment_methods'));
     }
 
     /**
@@ -26,8 +26,7 @@ class PaymentController extends Controller
      */
     public function create()
     {
-        $payments = Payment::all();
-        return view('payments.create', compact('payments'));
+        return view('payment-methods.create');
     }
 
     /**
@@ -38,10 +37,10 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $payment = Payment::create([
+        $payment_method = PaymentMethod::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('payments.index')->with('success', 'Great! Payment ' . $payment->name . ' created successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Great! Payment Method ' . $payment_method->name . ' created successfully!');
     }
 
     /**
@@ -52,8 +51,8 @@ class PaymentController extends Controller
      */
     public function show($id)
     {
-        $payment = Payment::findOrFail($id);
-        return view('payments.show', compact('payment'));
+        $payment_method = PaymentMethod::findOrFail($id);
+        return view('payment-methods.show', compact('payment_method'));
     }
 
     /**
@@ -64,8 +63,8 @@ class PaymentController extends Controller
      */
     public function edit($id)
     {
-        $payment = Payment::findOrFail($id);
-        return view('payments.edit', compact('payment'));
+        $payment_method = PaymentMethod::findOrFail($id);
+        return view('payment-methods.edit', compact('payment_method'));
     }
 
     /**
@@ -77,11 +76,11 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $payment = Payment::findOrFail($id);
-        $payment->update([
+        $payment_method = PaymentMethod::findOrFail($id);
+        $payment_method->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('payments.index')->with('success', 'Excellence! Payment ' . $payment->name . ' updated successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Excellence! Payment Method ' . $payment_method->name . ' updated successfully!');
     }
 
     /**
@@ -92,8 +91,8 @@ class PaymentController extends Controller
      */
     public function destroy($id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = PaymentMethod::findOrFail($id);
         $payment->delete();
-        return redirect()->route('payments.index')->with('success', 'Well done! Payment ' . $payment->name . ' deleted successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Well done! Payment ' . $payment->name . ' deleted successfully!');
     }
 }

@@ -8,14 +8,14 @@
       <span class="sr-only">Toggle navigation</span>
     </a>
     <div class="navbar-custom-menu">
-      <ul class="nav navbar-nav">          
+      <ul class="nav navbar-nav">
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             @if(file_exists(Auth::user()->avatar))
               <img src="{{ asset(Auth::user()->avatar) }}" class="user-image">
             @else
               <img src="{{ asset('public/img/config/nopic.png') }}" class="user-image">
-            @endif            
+            @endif
             <span class="hidden-xs">
             @if(Auth::user('name'))
               {{ Auth::user()->name }}

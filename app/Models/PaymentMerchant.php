@@ -16,8 +16,9 @@ class PaymentMerchant extends Model
         'name'
     ];
 
-    public function paymentMethod(){
-        return $this->belongsTo(paymentMethod::Class, 'payment_method_id');
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::Class);
     }
 
 

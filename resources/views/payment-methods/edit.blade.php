@@ -7,7 +7,7 @@
 @section('menu_pagina')
 
     <li role="presentation">
-        <a href="{{ route('payments.create') }}" class="link_menu_page">
+        <a href="{{ route('payment-methods.create') }}" class="link_menu_page">
             <i class="fa fa-plus"></i> Add
         </a>
     </li>
@@ -26,14 +26,14 @@
             </div>
         </div>
         <div class="box-body">
-            <form action="{{ route('payments.update', $payment->id) }}" method="post">
+            <form action="{{ route('payment-methods.update', $payment_method->id) }}" method="post">
                 {{ csrf_field() }}
                 @method('PUT')
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                             <label for="name">Name</label>
-                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name', $payment->name) }}" autofocus>
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name', $payment_method->name) }}" autofocus>
                             @if($errors->has('name'))
                                 <span class="help-block">
                                             <strong>{{ $errors->first('name') }}</strong>
@@ -42,9 +42,9 @@
                         </div>
                     </div>
                     <div class="col-lg-12">
-                        <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-default pull-left" style="margin-right: 15px;">Back to Detail Payment</a>
+                        <a href="{{ route('payment-methods.show', $payment_method->id) }}" class="btn btn-default pull-left" style="margin-right: 15px;">Back to Detail Payment</a>
                         <button type="submit" class="btn btn-warning pull-right"><i class="fa fa-fw fa-save"></i> Update</button>
-                        <a href="{{ route('payments.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Payments</a>
+                        <a href="{{ route('payment-methods.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Payments</a>
                     </div>
                 </div>
             </form>

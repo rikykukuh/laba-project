@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrderItemPhotoTable extends Migration
+class CreateOrderItemPhotosTable extends Migration
 {
     /**
      * Run the migrations.

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\City;
+namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
-use App\Models\City;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
-class CityController extends Controller
+class PaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class CityController extends Controller
      */
     public function index()
     {
-        $cities = City::paginate(10);
-        return view('cities.index', compact('cities'));
+        $payments = Payment::paginate(10);
+        return view('payments.index', compact('payments'));
     }
 
     /**
@@ -26,8 +26,8 @@ class CityController extends Controller
      */
     public function create()
     {
-        $cities = City::all();
-        return view('cities.create', compact('cities'));
+        $payments = Payment::all();
+        return view('payments.create', compact('payments'));
     }
 
     /**
@@ -38,10 +38,10 @@ class CityController extends Controller
      */
     public function store(Request $request)
     {
-        $city = City::create([
+        $payment = Payment::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Great! City ' . $city->name . ' created successfully!');
+        return redirect()->route('payments.index')->with('success', 'Great! Payment ' . $payment->name . ' created successfully!');
     }
 
     /**
@@ -52,8 +52,8 @@ class CityController extends Controller
      */
     public function show($id)
     {
-        $city = City::findOrFail($id);
-        return view('cities.show', compact('city'));
+        $payment = Payment::findOrFail($id);
+        return view('payments.show', compact('payment'));
     }
 
     /**
@@ -64,8 +64,8 @@ class CityController extends Controller
      */
     public function edit($id)
     {
-        $city = City::findOrFail($id);
-        return view('cities.edit', compact('city'));
+        $payment = Payment::findOrFail($id);
+        return view('payments.edit', compact('payment'));
     }
 
     /**
@@ -77,11 +77,11 @@ class CityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $city = City::findOrFail($id);
-        $city->update([
+        $payment = Payment::findOrFail($id);
+        $payment->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Excellence! City ' . $city->name . ' updated successfully!');
+        return redirect()->route('payments.index')->with('success', 'Excellence! Payment ' . $payment->name . ' updated successfully!');
     }
 
     /**
@@ -92,8 +92,8 @@ class CityController extends Controller
      */
     public function destroy($id)
     {
-        $city = City::findOrFail($id);
-        $city->delete();
-        return redirect()->route('cities.index')->with('success', 'Well done! City ' . $city->name . ' deleted successfully!');
+        $payment = Payment::findOrFail($id);
+        $payment->delete();
+        return redirect()->route('payments.index')->with('success', 'Well done! Payment ' . $payment->name . ' deleted successfully!');
     }
 }

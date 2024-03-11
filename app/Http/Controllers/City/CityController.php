@@ -15,8 +15,8 @@ class CityController extends Controller
      */
     public function index()
     {
-        $citys = City::all();
-        return view('citys.index', compact('citys'));
+        $cities = City::paginate(10);
+        return view('cities.index', compact('cities'));
     }
 
     /**
@@ -27,7 +27,7 @@ class CityController extends Controller
     public function create()
     {
         $cities = City::all();
-        return view('citys.create', compact('cities'));
+        return view('cities.create', compact('cities'));
     }
 
     /**
@@ -40,11 +40,8 @@ class CityController extends Controller
     {
         $city = City::create([
             'name' => $request->name,
-            'address' => $request->address,
-            'city_id' => $request->city_id,
-            'phone_number' => $request->phone_number,
         ]);
-        return redirect()->route('citys.index')->with('success', 'Great! City ' . $city->name . ' created successfully!');
+        return redirect()->route('cities.index')->with('success', 'Great! City ' . $city->name . ' created successfully!');
     }
 
     /**
@@ -55,8 +52,8 @@ class CityController extends Controller
      */
     public function show($id)
     {
-        $city = city::findOrFail($id);
-        return view('citys.show', compact('city'));
+        $city = City::findOrFail($id);
+        return view('cities.show', compact('city'));
     }
 
     /**
@@ -68,8 +65,7 @@ class CityController extends Controller
     public function edit($id)
     {
         $city = City::findOrFail($id);
-        $cities = City::all();
-        return view('citys.edit', compact('city', 'cities'));
+        return view('cities.edit', compact('city'));
     }
 
     /**
@@ -84,11 +80,8 @@ class CityController extends Controller
         $city = City::findOrFail($id);
         $city->update([
             'name' => $request->name,
-            'address' => $request->address,
-            'city_id' => $request->city_id,
-            'phone_number' => $request->phone_number,
         ]);
-        return redirect()->route('citys.index')->with('success', 'Excellence! City ' . $city->name . ' updated successfully!');
+        return redirect()->route('cities.index')->with('success', 'Excellence! City ' . $city->name . ' updated successfully!');
     }
 
     /**
@@ -101,6 +94,6 @@ class CityController extends Controller
     {
         $city = City::findOrFail($id);
         $city->delete();
-        return redirect()->route('citys.index')->with('success', 'Well done! City ' . $city->name . ' deleted successfully!');
+        return redirect()->route('cities.index')->with('success', 'Well done! City ' . $city->name . ' deleted successfully!');
     }
 }

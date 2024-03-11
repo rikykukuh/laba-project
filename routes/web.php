@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -16,18 +17,18 @@ Route::put('/config/update/permission_group/{id}', 'App\Http\Controllers\ConfigC
 Route::post('/config/store/permission', 'App\Http\Controllers\ConfigController@storePermission')->name('config.store.permission');
 Route::put('/config/update/permission/{id}', 'App\Http\Controllers\ConfigController@updatePermission')->name('config.update.permission');
 
-Route::group(['namespace' => 'App\Http\Controllers\Profile'], function (){ 
+Route::group(['namespace' => 'App\Http\Controllers\Profile'], function (){
 	Route::get('/profile', 'ProfileController@index')->name('profile');
 	Route::put('/profile/update/profile/{id}', 'ProfileController@updateProfile')->name('profile.update.profile');
 	Route::put('/profile/update/password/{id}', 'ProfileController@updatePassword')->name('profile.update.password');
 	Route::put('/profile/update/avatar/{id}', 'ProfileController@updateAvatar')->name('profile.update.avatar');
 });
 
-Route::group(['namespace' => 'App\Http\Controllers\Error'], function (){ 
+Route::group(['namespace' => 'App\Http\Controllers\Error'], function (){
 	Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');
 });
 
-Route::group(['namespace' => 'App\Http\Controllers\User'], function (){ 
+Route::group(['namespace' => 'App\Http\Controllers\User'], function (){
 	//Users
 	Route::get('/user', 'UserController@index')->name('user');
 	Route::get('/user/create', 'UserController@create')->name('user.create');
@@ -48,13 +49,24 @@ Route::group(['namespace' => 'App\Http\Controllers\User'], function (){
 	Route::get('/role/destroy/{id}', 'RoleController@destroy')->name('role.destroy');
 });
 
-route::group(['namespace' => 'App\Http\Controllers\Order'], function(){
-	//order
-	Route::get('/order', 'OrderController@index')->name('order.index');
-	Route::get('/order/create', 'OrderController@create')->name('order.create');
-	Route::post('/order/store', 'OrderController@store')->name('order.store');
-	Route::get('/order/edit/{id}', 'OrderController@edit')->name('order.edit');
-	Route::put('/order/update/{id}', 'OrderController@d')->name('order.update');
-	Route::get('/order/show/{id}', 'OrderController@show')->name('order.show');
-	Route::get('/order/destroy/{id}', 'OrderController@destroy')->name('order.destroy');
-});
+Route::middleware([Authenticate::class])->group(function () {
+    Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
+    Route::resource('clients', \App\Http\Controllers\Client\ClientController::class);
+    Route::resource('cities', \App\Http\Controllers\City\CityController::class);
+    Route::resource('item-types', \App\Http\Controllers\ItemType\ItemTypeController::class);
+    Route::resource('payments', \App\Http\Controllers\Payment\PaymentController::class);
+    Route::resource('payment-methods', \App\Http\Controllers\PaymentMethod\PaymentMethodController::class);
+    Route::resource('payment-merchants', \App\Http\Controllers\PaymentMerchant\PaymentMerchantController::class);
+})->middleware('auth');
+
+
+// Route::group(['namespace' => 'App\Http\Controllers\Order'], function(){
+// 	//orders
+// 	Route::get('/orders', 'OrderController@index')->name('orders.index');
+// 	Route::get('/orders/create', 'OrderController@create')->name('orders.create');
+// 	Route::post('/orders/store', 'OrderController@store')->name('orders.store');
+// 	Route::get('/orders/edit/{id}', 'OrderController@edit')->name('orders.edit');
+// 	Route::put('/orders/update/{id}', 'OrderController@d')->name('orders.update');
+// 	Route::get('/orders/show/{id}', 'OrderController@show')->name('orders.show');
+// 	Route::get('/orders/destroy/{id}', 'OrderController@destroy')->name('orders.destroy');
+// });

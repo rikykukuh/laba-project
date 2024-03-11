@@ -2,13 +2,13 @@
 
 @section('icon_page', 'plus')
 
-@section('title', 'Add Payments')
+@section('title', 'Add Payment Methods')
 
 @section('menu_pagina')
 
 	<li role="presentation">
-		<a href="{{ route('payments.index') }}" class="link_menu_page">
-			<i class="fa fa-exchange"></i> Payments
+		<a href="{{ route('payment-methods.index') }}" class="link_menu_page">
+			<i class="fa fa-exchange"></i> Payment Methods
 		</a>
 	</li>
 
@@ -27,14 +27,14 @@
                     </div>
                 </div>
                 <div class="box-body">
-					 <form action="{{ route('payments.store') }}" method="post">
+					 <form action="{{ route('payment-methods.store') }}" method="post">
                         {{ csrf_field() }}
                         <input type="hidden" name="active" value="1">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                                    <label for="name">Payment Name</label>
-                                    <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus>
+                                    <label for="name">Payment Method Name</label>
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Payment Method Name" required value="{{ old('name') }}" autofocus>
                                     @if($errors->has('name'))
                                         <span class="help-block">
                                             <strong>{{ $errors->first('name') }}</strong>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="col-lg-12">
                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Add</button>
-                                <a href="{{ route('payments.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Cancel</a>
+                                <a href="{{ route('payment-methods.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Cancel</a>
                             </div>
                         </div>
                     </form>

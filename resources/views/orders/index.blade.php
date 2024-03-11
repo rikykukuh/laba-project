@@ -1,6 +1,6 @@
 @extends('layouts.AdminLTE.index')
 
-@section('icon_page', 'shopping-cart')
+@section('icon_page', 'shopping-basket')
 
 @section('title', 'Orders')
 
@@ -25,36 +25,65 @@
 						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>E-mail</th>
+									<th>Client Name</th>
+									<th>Note</th>
+									<th class="text-center">Total</th>
 									<th class="text-center">Status</th>
-									<th class="text-center">Created</th>
+									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach($orders as $order)
 									@if($order->id)
-										<td>{{$order->name}}</td>
-										<td>{{$order->user_id()->name}}</td>
-										<td>{{$order->status}}</td>
-										<td>{{$order->created}}</td>
-										<td class="text-center">
-											 <a class="btn btn-default  btn-xs" href="{{ route('orders.show', $order->id) }}" title="See {{ $order->name }}"><i class="fa fa-eye">   </i></a>
-											 <a class="btn btn-primary  btn-xs" href="{{ route('orders.show', $order->id) }}" title="Change Password {{ $order->name }}"><i class="fa fa-key"></i></a>
-											 <a class="btn btn-warning  btn-xs" href="{{ route('orders.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a>
-											 <a class="btn btn-danger  btn-xs" href="#" title="Delete {{ $order->name}}" data-toggle="modal" data-target="#modal-delete-{{ $order->id }}"><i class="fa fa-trash"></i></a>
-										</td>
+										<tr>
+                                            <td>{{$order->client->name}}</td>
+                                            <td>{{$order->orderItems->first()->note}}</td>
+                                            <td class="text-center">{{$order->orderItems->first()->total}}</td>
+                                            <td class="text-center">
+                                                @if($order->status == 0)
+                                                    @php
+                                                        echo '<b>New</b>';
+                                                    @endphp
+                                                @endif
+                                                @if($order->status == 1)
+                                                    @php
+                                                        echo '<b>Ready</b>';
+                                                    @endphp
+                                                @endif
+                                                @if($order->status == 2)
+                                                    @php
+                                                        echo '<b>Paid</b>';
+                                                    @endphp
+                                                @endif
+                                                @if($order->status == 3)
+                                                    @php
+                                                        echo '<b>Picked Up</b>';
+                                                    @endphp
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{ Carbon\Carbon::parse($order->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
+                                            <td class="text-center">
+                                                <a class="btn btn-default  btn-xs" href="{{ route('orders.show', $order->id) }}" title="See {{ $order->name }}"><i class="fa fa-eye">   </i></a>
+                                                <a class="btn btn-warning  btn-xs" href="{{ route('orders.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a>
+                                                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $order->name}}" data-toggle="modal" data-target="#modal-delete-{{ $order->id }}"><i class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
 									@endif
 								@endforeach
 
 							</tbody>
 							<tfoot>
 								<tr>
-									<th>Name</th>
-									<th>E-mail</th>
+                                    <th>Client Name</th>
+                                    <th>NOte</th>
+									<th class="text-center">Total</th>
 									<th class="text-center">Status</th>
-									<th class="text-center">Created</th>
+									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>
 								</tr>
 							</tfoot>
@@ -63,6 +92,11 @@
 				</div>
 			</div>
 		</div>
+        @if ($orders->hasPages())
+            <div class="box-footer with-border">
+                {{ $orders->links() }}
+            </div>
+        @endif
 	</div>
 
 @endsection

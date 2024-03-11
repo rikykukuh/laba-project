@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\City;
+namespace App\Http\Controllers\ItemType;
 
 use App\Http\Controllers\Controller;
-use App\Models\City;
+use App\Models\ItemType;
 use Illuminate\Http\Request;
 
 class ItemTypeController extends Controller
@@ -15,8 +15,8 @@ class ItemTypeController extends Controller
      */
     public function index()
     {
-        $cities = City::paginate(10);
-        return view('cities.index', compact('cities'));
+        $item_types = ItemType::paginate(10);
+        return view('item-types.index', compact('item_types'));
     }
 
     /**
@@ -26,8 +26,7 @@ class ItemTypeController extends Controller
      */
     public function create()
     {
-        $cities = City::all();
-        return view('cities.create', compact('cities'));
+        return view('item-types.create');
     }
 
     /**
@@ -38,10 +37,10 @@ class ItemTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $city = City::create([
+        $item_type = ItemType::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Great! City ' . $city->name . ' created successfully!');
+        return redirect()->route('item-types.index')->with('success', 'Great! Item Type ' . $item_type->name . ' created successfully!');
     }
 
     /**
@@ -52,8 +51,8 @@ class ItemTypeController extends Controller
      */
     public function show($id)
     {
-        $city = City::findOrFail($id);
-        return view('cities.show', compact('city'));
+        $item_type = ItemType::findOrFail($id);
+        return view('item-types.show', compact('item_type'));
     }
 
     /**
@@ -64,8 +63,8 @@ class ItemTypeController extends Controller
      */
     public function edit($id)
     {
-        $city = City::findOrFail($id);
-        return view('cities.edit', compact('city'));
+        $item_type = ItemType::findOrFail($id);
+        return view('item-types.edit', compact('item_type'));
     }
 
     /**
@@ -77,11 +76,11 @@ class ItemTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $city = City::findOrFail($id);
-        $city->update([
+        $item_type = ItemType::findOrFail($id);
+        $item_type->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Excellence! City ' . $city->name . ' updated successfully!');
+        return redirect()->route('item-types.index')->with('success', 'Excellence! Item Type ' . $item_type->name . ' updated successfully!');
     }
 
     /**
@@ -92,8 +91,8 @@ class ItemTypeController extends Controller
      */
     public function destroy($id)
     {
-        $city = City::findOrFail($id);
-        $city->delete();
-        return redirect()->route('cities.index')->with('success', 'Well done! City ' . $city->name . ' deleted successfully!');
+        $item_type = ItemType::findOrFail($id);
+        $item_type->delete();
+        return redirect()->route('item-types.index')->with('success', 'Well done! Item Type ' . $item_type->name . ' deleted successfully!');
     }
 }
