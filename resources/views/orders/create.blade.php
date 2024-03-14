@@ -10,13 +10,6 @@
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
     <link rel="stylesheet" href="{{ asset('/plugins/blueimp/css/jquery.fileupload.css') }}" />
     <link rel="stylesheet" href="{{ asset('/plugins/blueimp/css/jquery.fileupload-ui.css') }}" />
-    <!-- CSS adjustments for browsers with JavaScript disabled -->
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('/plugins/blueimp/css/jquery.fileupload-noscript.css') }}" />
-    </noscript>
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('/plugins/blueimp/css/jquery.fileupload-ui-noscript.css') }}" />
-    </noscript>
 @endsection
 @section('menu_pagina')
 
@@ -190,7 +183,7 @@
                                        value="https://blueimp.github.io/jQuery-File-Upload/" />
                             </noscript>
                             <div>
-                                <div class="col-lg-7" style="margin-bottom: 30px;">
+                                <div class="col-lg-12">
                                     <span class="btn btn-success add-item" style="margin-right: 15px;">
                                         <i class="glyphicon glyphicon-plus"></i>
                                         <span>Add item</span>
@@ -225,6 +218,9 @@
                                 {{--     <!-- The extended global progress state --> --}}
                                 {{--     <div class="progress-extended"> </div> --}}
                                 {{-- </div> --}}
+                                <div class="col-lg-12" style="margin-bottom: 15px;">
+                                    <hr>
+                                </div>
                             </div>
 
                             <div class="field-wrapper"></div>
@@ -295,176 +291,132 @@
                             {{-- </div> --}}
 
                              <div class="col-lg-12">
-                                 <button type="submit" class="btn btn-primary pull-right start" style="margin-right: 15px;">
-                                     <i class="glyphicon glyphicon-upload"></i>
-                                     <span>Start upload</span>
-                                 </button>
-                                 <button type="reset" class="btn btn-warning pull-right cancel" style="margin-right: 15px;">
-                                     <i class="glyphicon glyphicon-ban-circle"></i>
-                                     <span>Cancel upload</span>
-                                 </button>
-                                 <a href="{{ route('orders.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Orders</a>
+                                 <button type="submit" class="btn btn-primary pull-right" style="margin-right: 15px;">
+                                     <i class="fa fa-fw fa-save"></i>
+                                     <span>Save</span>
+                                 </button><a href="{{ route('orders.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Orders</a>
                              </div>
                         </div>
                     </form>
-                    </div>
-                    <!-- The blueimp Gallery widget -->
-                    <div id="blueimp-gallery"
-                         class="blueimp-gallery blueimp-gallery-controls"
-                         aria-label="image gallery"
-                         aria-modal="true"
-                         role="dialog"
-                         data-filter=":even">
-                        <div class="slides" aria-live="polite"></div>
-                        <h3 class="title"></h3>
-                        <a class="prev"
-                           aria-controls="blueimp-gallery"
-                           aria-label="previous slide"
-                           aria-keyshortcuts="ArrowLeft"></a>
-                        <a class="next"
-                           aria-controls="blueimp-gallery"
-                           aria-label="next slide"
-                           aria-keyshortcuts="ArrowRight"></a>
-                        <a class="close"
-                           aria-controls="blueimp-gallery"
-                           aria-label="close"
-                           aria-keyshortcuts="Escape"></a>
-                        <a class="play-pause"
-                           aria-controls="blueimp-gallery"
-                           aria-label="play slideshow"
-                           aria-keyshortcuts="Space"
-                           aria-pressed="false"
-                           role="button"></a>
-                        <ol class="indicator"></ol>
-                    </div>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 
 @section('layout_js')
-    <!-- The template to display files available for upload -->
-    <script id="template-upload" type="text/x-tmpl">
-        {% for (var i=0, file; file=o.files[i]; i++) { %}
-        <tr class="template-upload fade{%=o.options.loadImageFileTypes.test(file.type)?' image':''%}">
-            <td>
-                <span class="preview"></span>
-            </td>
-            <td>
-                <p class="name">{%=file.name%}</p>
-                <strong class="error text-danger"></strong>
-            </td>
-            <td>
-                <p class="size">Processing...</p>
-                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
-            </td>
-            <td>
-                {% if (!o.options.autoUpload && o.options.edit && o.options.loadImageFileTypes.test(file.type)) { %}
-                <button class="btn btn-success edit" data-index="{%=i%}" disabled>
-                    <i class="glyphicon glyphicon-edit"></i>
-                    <span>Edit</span>
-                </button>
-                {% } %}
-                {% if (!i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start" disabled style="display:none;">
-                    <i class="glyphicon glyphicon-upload"></i>
-                    <span>Start</span>
-                </button>
-                {% } %}
-                {% if (!i) { %}
-                <button class="btn btn-warning cancel" style="display:none;">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
-                </button>
-                <button onclick="removeMetadata(event, this)" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" type="button" class="btn btn-danger">
-                    <span class="btn-label"><i class="fa fa-eraser"></i></span>
-                    Remove
-                </button>
-                {% } %}
-            </td>
-        </tr>
-        {% } %}
-    </script>
-    <!-- The template to display files available for download -->
-    <script id="template-download" type="text/x-tmpl">
-        {% for (var i=0, file; file=o.files[i]; i++) { %}
-        <tr class="template-download fade{%=file.thumbnailUrl?' image':''%}">
-            <td>
-                <span class="preview">
-                    {% if (file.thumbnailUrl) { %}
-                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
-                    {% } %}
-                </span>
-            </td>
-            <td>
-                <p class="name">
-                    {% if (file.url) { %}
-                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
-                    {% } else { %}
-                    <span>{%=file.name%}</span>
-                    {% } %}
-                </p>
-                {% if (file.error) { %}
-                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
-                {% } %}
-            </td>
-            <td>
-                <span class="size">{%=o.formatFileSize(file.size)%}</span>
-            </td>
-            <td>
-                {% if (file.deleteUrl) { %}
-                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
-                    <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete</span>
-                </button>
-                <input type="checkbox" name="delete" value="1" class="toggle">
-                {% } else { %}
-                <button class="btn btn-warning cancel">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
-                </button>
-                {% } %}
-            </td>
-        </tr>
-        {% } %}
-    </script>
-
-    <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-    <script src="{{ asset('/plugins/blueimp/js/vendor/jquery.ui.widget.js') }}"></script>
-    <!-- The Templates plugin is included to render the upload/download listings -->
-    <script src="https://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-    <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-    <script src="https://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
-    <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-    <script src="https://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
-    <!-- blueimp Gallery script -->
-    <script src="https://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
-    <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.iframe-transport.js') }}"></script>
-    <!-- The basic File Upload plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload.js') }}"></script>
-    <!-- The File Upload processing plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-process.js') }}"></script>
-    <!-- The File Upload image preview & resize plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-image.js') }}"></script>
-    <!-- The File Upload audio preview plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-audio.js') }}"></script>
-    <!-- The File Upload video preview plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-video.js') }}"></script>
-    <!-- The File Upload validation plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-validate.js') }}"></script>
-    <!-- The File Upload user interface plugin -->
-    <script src="{{ asset('/plugins/blueimp/js/jquery.fileupload-ui.js') }}"></script>
-    <!-- The main application script -->
-{{--    <script src="{{ asset('/plugins/blueimp/js/demo.js') }}"></script>--}}
     <script>
+        const imageFiles = [];
+
+        let tableImageHtml = `
+            <table role="presentation" class="table table-striped table-bordered table-hover">
+                 <thead>
+                     <tr>
+                         <th width="300">Image</th>
+                         <th width="300">Filename</th>
+                         <th class="text-center">Filesize</th>
+                         <!-- <th>Action</th> -->
+                     </tr>
+                 </thead>
+                 <tbody class="content-image"></tbody>
+                 <tfoot>
+                     <tr>
+                         <th width="300">Image</th>
+                         <th width="300">Filename</th>
+                         <th class="text-center">Filesize</th>
+                         <!-- <th>Action</th> -->
+                     </tr>
+                 </tfoot>
+             </table>
+        `;
+
         function uuid() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        }
+
+        function handleImageUpload(element, counter) {
+            const files = $(element)[0].files;
+            if(files.length === 0) return;
+
+            const dataFile = []
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop().toLowerCase();
+                if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
+                    dataFile.push(file);
+                    imageFiles[counter]['item-' + counter].push(file);
+                }
+            }
+
+            console.log(imageFiles);
+
+            showImageAsTable(element, counter);
+        }
+
+        function showImageAsTable(element, counter) {
+            console.log('Total gambar: ', imageFiles[counter]['item-' + counter]);
+            const tableImage = $(element).parent().parent().parent().find('.table-image');
+            tableImage.html(tableImageHtml);
+            const contentImage = $(tableImage).find('.content-image');
+
+            console.log('nih', imageFiles[counter]['item-' + counter])
+
+            for (let i = 0; i < imageFiles[counter]['item-' + counter].length; i++) {
+                const file = imageFiles[counter]['item-' + counter][i];
+                console.log(i);
+                console.log('NAH!!!', file);
+                const ext = file.name.split('.').pop().toLowerCase();
+                if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        contentImage.append(`
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="item_images[${counter}][]" value="${e.target.result}" class="form-control item-images"/>
+                                    <input type="hidden" name="file_name[${counter}][]" value="${file.name}" class="form-control item-images"/>
+                                    <img src="${e.target.result}" alt="${file.name}" title="${file.name}"  width="80" height="60"/>
+                                </td>
+                                <td>
+                                    <p style="margin-top:15px;">
+                                        ${file.name}
+                                    </p>
+                                </td>
+                                <td class="text-center">
+                                    <p style="margin-top:15px;">
+                                        ${file.size}
+                                    </p>
+                                </td>
+                                <!-- <td>
+                                    <button onclick="removeImage(event, this, ${counter}, ${i})" type="button" class="btn btn-danger btn-sm" title="Remove image">
+                                        <span class="btn-label"><i class="fa fa-eraser"></i></span>
+                                    </button>
+                                </td> -->
+                            </tr>
+                        `);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        function removeImage(e, el, index, element) {
+            if (confirm("Are you sure you want to DELETE this image?") === true) {
+                // const tableImage = $(el).parents().find('.field-wrapper');
+                // console.log(tableImage)
+                // // tableImage.html(tableImageHtml);
+                // const contentImage = $(tableImage).find('.content-image');
+                // console.log(contentImage)
+                // tableImage.empty();
+
+                $(el).parent().parent().remove();
+                console.log('remove', imageFiles[index]['item-' + index])
+                imageFiles[index]['item-' + index].splice(element, 1);
+                // showImageAsTable($('.files'), index);
+            }
         }
 
         $(function() {
@@ -480,86 +432,54 @@
             let maxField = 10; //Input fields increment limitation
             let addButton = $('.add-item'); //Add button selector
             let wrapper = $('.field-wrapper'); //Input field wrapper
-            let fieldHTML = `
-                <div>
-                    <div class="col-lg-6" style="margin-bottom: 15px;">
-                        <div class="form-group>
-                                <label for="item_type_id">&nbsp;</label>
-                                <select name="item_type_id" id="item_type_id" class="form-control" required>
-                                    <?php foreach($item_types as $item_type): ?>
-                                        <option value="<?= $item_type->id; ?>"> <?= $item_type->name; ?> </option>
-                                    <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
+            let fieldHTML = (counter, imageFileCount) => {
+                return `
+                    <div>
+                        <div class="col-lg-6" style="margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="item-type-id-${counter}">Item Type</label>
+                                <select name="item_type[${imageFileCount}]" id="item-type-id-${counter}" class="form-control" required>
+                                <?php foreach($item_types as $item_type): ?>
+                    <option value="<?= $item_type->id; ?>"> <?= $item_type->name; ?> </option>
+                                <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
 
-                            <div class="col-lg-6" style="margin-bottom: 15px;">
-                                <div class="form-group>
-                                    <label for="total">&nbsp;</label>
-                                    <input type="number" name="total" id="total" class="form-control" placeholder="Total Item" required value="">
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 fileupload-buttonbar" style="margin-bottom: 15px;">
-                                <span class="btn btn-info fileinput-button button-${uuid()}" style="margin-right: 15px;">
-                                      <i class="glyphicon glyphicon-file"></i>
-                                      <span>Add files...</span>
-                                      <input type="file" name="files" multiple />
-                                  </span>
-
-                                  <a href="javascript:void(0);" class="btn btn-danger remove-button">Remove Item</a>
-                            </div>
-
-                            <div class="col-lg-12" style="margin-bottom: 15px;">
-                                <span class="fileupload-process"></span>
-
-                              <!-- The global progress state -->
-                                <div class="col-lg-5 fileupload-progress fade">
-                                    <!-- The global progress bar -->
-                                    <div class="progress progress-striped active"
-                                         role="progressbar"
-                                         aria-valuemin="0"
-                                         aria-valuemax="100">
-                                        <div class="progress-bar progress-bar-success"
-                                             style="width: 0%;"></div>
-                                    </div>
-                                    <!-- The extended global progress state -->
-                                    <div class="progress-extended"> </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12" style="margin-bottom: 15px;">
-                                <!-- The table listing the files available for upload/download -->
-                                 <table role="presentation" class="table table-striped">
-                                     <thead>
-                                         <tr>
-                                             <th>Image</th>
-                                             <th>Filename</th>
-                                             <th>Filesize</th>
-                                             <th>Action</th>
-                                         </tr>
-                                     </thead>
-                                     <tbody class="files"></tbody>
-                                     <tfoot>
-                                     <tr>
-                                         <th>Image</th>
-                                         <th>Filename</th>
-                                         <th>Filesize</th>
-                                         <th>Action</th>
-                                     </tr>
-                                     </tfoot>
-                                 </table>
+            <div class="col-lg-6" style="margin-bottom: 15px;">
+                <div class="form-group">
+                    <label for="total-${counter}">Total Item</label>
+                                <input type="number" name="total[${imageFileCount}]" id="total-${counter}" class="form-control" placeholder="Total Item" required>
                             </div>
                         </div>
-                        `;
-            let x = 1; //Initial field counter is 1
+
+                        <div class="col-lg-12" style="margin-bottom: 15px;">
+                            <span class="btn btn-info fileinput-button button-${counter}" style="margin-right: 15px;">
+                                <i class="glyphicon glyphicon-file"></i>
+                                <span>Add files...</span>
+                                <input type="file" name="files" class="files" multiple onchange="handleImageUpload(this, ${imageFileCount})" />
+                            </span>
+                            <a href="javascript:void(0);" class="btn btn-danger remove-button" data-element="${imageFileCount}">
+                                <span class="btn-label"><i class="glyphicon glyphicon-erase"></i></span> Remove Item
+                            </a>
+                        </div>
+                        <div class="col-lg-12 table-image"></div>
+                        <div class="col-lg-12" style="margin-bottom: 15px;">
+                            <hr>
+                        </div>
+                    </div>
+                `
+            };
+            let counter = 1; //Initial field counter is 1
 
             // Once add button is clicked
             $(addButton).click(function(){
                 //Check maximum number of input fields
-                if(x < maxField){
-                    x++; //Increase field counter
-                    $(wrapper).append(fieldHTML); //Add field html
-                    console.log($('#fileupload').fileupload());
+                if(counter < maxField){
+                    imageFiles.push({[`item-${$('.files').length}`] : []});
+                    console.log(imageFiles);
+                    counter++; //Increase field counter
+                    $(wrapper).append(fieldHTML(counter, $('.files').length)); //Add field html
                 }else{
                     alert('A maximum of '+maxField+' fields are allowed to be added. ');
                 }
@@ -568,33 +488,14 @@
             // Once remove button is clicked
             $(wrapper).on('click', '.remove-button', function(e){
                 e.preventDefault();
-                $(this).parent().parent('div').remove(); //Remove field html
-                x--; //Decrease field counter
+                if (confirm("Are you sure you want to DELETE this item?") === true) {
+                    const element = parseInt($(this).data("element"), 10);
+                    imageFiles.splice(element, 1);
+                    $(this).parent().parent('div').remove(); //Remove field html
+                    counter--; //Decrease field counter
+                }
             });
-
-            $('#fileupload').fileupload();
-
-            {{--$('#fileupload').fileupload({--}}
-            {{--    url: "{{ route('orders.store') }}",--}}
-            {{--    downloadTemplateId: null,--}}
-            {{--    acceptFileTypes: /.\.(gif|jpg|png|jpeg)$/i,--}}
-            {{--    dataType: 'json',--}}
-            {{--    imageOrientation: 1,--}}
-            {{--    disableImageResize: true,--}}
-            {{--    disableImageMetaDataSave: true,--}}
-            {{--    imageMaxWidth: 1920,--}}
-            {{--    imageMaxHeight: 1080,--}}
-            {{--    sequentialUploads: true,--}}
-            {{--    maxFileSize: 1073741824,--}}
-            {{--    autoUpload: false,--}}
-            {{--});--}}
         });
-
-        function removeMetadata(e, el) {
-            if (confirm("Are you sure you want to DELETE this metadata?") === true) {
-                $(el).addClass('cancel');
-            }
-        }
 
     </script>
 

@@ -26,8 +26,8 @@
 							<thead>
 								<tr>
 									<th>Client Name</th>
-									<th>Note</th>
-									<th class="text-center">Total</th>
+									{{-- <th>Note</th> --}}
+									{{-- <th class="text-center">Total</th> --}}
 									<th class="text-center">Status</th>
 									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>
@@ -38,8 +38,8 @@
 									@if($order->id)
 										<tr>
                                             <td>{{$order->client->name}}</td>
-                                            <td>{{$order->orderItems->first()->note}}</td>
-                                            <td class="text-center">{{$order->orderItems->first()->total}}</td>
+                                            {{-- <td>{{$order->orderItems->first()->note}}</td> --}}
+                                            {{-- <td class="text-center">{{$order->orderItems->first()->total}}</td> --}}
                                             <td class="text-center">
                                                 @if($order->status == 0)
                                                     @php
@@ -80,8 +80,8 @@
 							<tfoot>
 								<tr>
                                     <th>Client Name</th>
-                                    <th>NOte</th>
-									<th class="text-center">Total</th>
+                                    {{-- <th>Note</th> --}}
+									{{-- <th class="text-center">Total</th> --}}
 									<th class="text-center">Status</th>
 									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>

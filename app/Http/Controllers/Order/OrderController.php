@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\ItemType;
 use App\Models\OrderItem;
+use App\Models\OrderItemPhoto;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -22,7 +24,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::with('orderItems')->paginate(10);
+        $orders = Order::with('orderItems.orderItemPhotos')->paginate(10);
         return view('orders.index', compact('orders'));
     }
 
@@ -39,7 +41,13 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        $item_type = $request->item_type;
+        $total = $request->total;
+        $item_images = $request->item_images;
+        $file_name = $request->file_name;
+        // dump(count($item_type));
         // dd($request->post());
+
         $random_string = Str::random(rand(2, 16));
 
         $order = Order::create([
@@ -57,19 +65,41 @@ class OrderController extends Controller
             'client_id' => $request->client_id,
         ]);
 
-        $order_item = OrderItem::create([
-            'order_id' => $order->id,
-            'item_type_id' => $request->item_type_id,
-            'note' => $request->note,
-            'total' => $request->total,
-        ]);
+        for ($i = 0; $i < count($total); $i++) {
+            $order_item = OrderItem::create([
+                'order_id' => $order->id,
+                'item_type_id' => $item_type[$i],
+                'total' => $total[$i],
+                'note' => $request->note,
+            ]);
+
+            for ($j = 0; $j < count($item_images[$i]); $j++) {
+                $randomFilename = Str::uuid()->toString();
+                $base64Image = $item_images[$i][$j];
+                $extension = pathinfo($file_name[$i][$j], PATHINFO_EXTENSION);
+
+                $filePathPreview = "public/previews/$randomFilename.$extension";
+                $filePathThumbnail = "public/thumbnails/$randomFilename.$extension";
+
+                Storage::disk('local')->put($filePathThumbnail, $base64Image);
+
+                Storage::disk('local')->put($filePathPreview, $base64Image);
+
+                OrderItemPhoto::create([
+                    'order_item_id' => $order_item->id,
+                    'thumbnail_url' => $filePathThumbnail,
+                    'preview_url' => $filePathPreview,
+                ]);
+            }
+        }
 
         return redirect()->route('orders.index')->with('success', 'Great! Order ' . $order->name . ' created successfully!');
     }
 
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
+        // dd($order);
         $statuses = $this->statuses;
 
         return view('orders.show', compact('order', 'statuses'));
@@ -77,7 +107,7 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $clients = Client::all();
         $statuses = $this->statuses;
 
@@ -86,7 +116,7 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $order->update([
             'name' => $request->name,
             'total' => $request->total,
@@ -104,7 +134,7 @@ class OrderController extends Controller
 
     public function destroy($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $order->delete();
         return redirect()->route('orders.index')->with('success', 'Well done! Order ' . $order->name . ' deleted successfully!');
     }

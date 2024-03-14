@@ -36,6 +36,8 @@
                 <hr>
                 <strong><i class="fa fa-calendar-o margin-r-5"></i> Status</strong>
                 <p>{{ $order->due_date }}</p>
+                <hr>
+                <img src="{{ $order }}" alt="">
             </div>
 
             <div class="box-footer with-border">

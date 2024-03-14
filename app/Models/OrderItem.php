@@ -22,7 +22,11 @@ class OrderItem extends Model
         return $this->belongsTo(Order::Class);
     }
 
-    public function itemType(){
-        return $this->belongsTo(ItemType::Class, 'item_type_id');
+    public function itemTypes(){
+        return $this->hasMany(ItemType::Class, 'item_type_id', 'id');
+    }
+
+    public function orderItemPhotos(){
+        return $this->hasMany(OrderItemPhoto::Class, 'order_item_id', 'id');
     }
 }
