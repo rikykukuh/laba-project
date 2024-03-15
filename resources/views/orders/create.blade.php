@@ -457,7 +457,7 @@
                             <span class="btn btn-info fileinput-button button-${counter}" style="margin-right: 15px;">
                                 <i class="glyphicon glyphicon-file"></i>
                                 <span>Add files...</span>
-                                <input type="file" name="files" class="files" multiple onchange="handleImageUpload(this, ${imageFileCount})" />
+                                <input type="file" name="files" class="files" multiple  accept="image/png, image/jpg, image/jpeg" onchange="handleImageUpload(this, ${imageFileCount})" />
                             </span>
                             <a href="javascript:void(0);" class="btn btn-danger remove-button" data-element="${imageFileCount}">
                                 <span class="btn-label"><i class="glyphicon glyphicon-erase"></i></span> Remove Item
