@@ -8,27 +8,29 @@ Route::impersonate();
 
 Auth::routes();
 
-Route::get('/', 'App\Http\Controllers\HomeController@index');
-Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
-Route::get('/config', 'App\Http\Controllers\ConfigController@index')->name('config');
-Route::put('/config/update/{id}', 'App\Http\Controllers\ConfigController@update')->name('config.update');
-Route::post('/config/store/permission_group', 'App\Http\Controllers\ConfigController@storePermissionGroup')->name('config.store.permission_group');
-Route::put('/config/update/permission_group/{id}', 'App\Http\Controllers\ConfigController@updatePermissionGroup')->name('config.update.permission_group');
-Route::post('/config/store/permission', 'App\Http\Controllers\ConfigController@storePermission')->name('config.store.permission');
-Route::put('/config/update/permission/{id}', 'App\Http\Controllers\ConfigController@updatePermission')->name('config.update.permission');
+Route::middleware('auth')->group(function () {
+    Route::get('/', 'App\Http\Controllers\HomeController@index');
+    Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
+    Route::get('/config', 'App\Http\Controllers\ConfigController@index')->name('config');
+    Route::put('/config/update/{id}', 'App\Http\Controllers\ConfigController@update')->name('config.update');
+    Route::post('/config/store/permission_group', 'App\Http\Controllers\ConfigController@storePermissionGroup')->name('config.store.permission_group');
+    Route::put('/config/update/permission_group/{id}', 'App\Http\Controllers\ConfigController@updatePermissionGroup')->name('config.update.permission_group');
+    Route::post('/config/store/permission', 'App\Http\Controllers\ConfigController@storePermission')->name('config.store.permission');
+    Route::put('/config/update/permission/{id}', 'App\Http\Controllers\ConfigController@updatePermission')->name('config.update.permission');
+});
 
-Route::group(['namespace' => 'App\Http\Controllers\Profile'], function (){
+Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){
 	Route::get('/profile', 'ProfileController@index')->name('profile');
 	Route::put('/profile/update/profile/{id}', 'ProfileController@updateProfile')->name('profile.update.profile');
 	Route::put('/profile/update/password/{id}', 'ProfileController@updatePassword')->name('profile.update.password');
 	Route::put('/profile/update/avatar/{id}', 'ProfileController@updateAvatar')->name('profile.update.avatar');
 });
 
-Route::group(['namespace' => 'App\Http\Controllers\Error'], function (){
+Route::group(['namespace' => 'App\Http\Controllers\Error', 'middleware' => 'auth'], function (){
 	Route::get('/unauthorized', 'ErrorController@unauthorized')->name('unauthorized');
 });
 
-Route::group(['namespace' => 'App\Http\Controllers\User'], function (){
+Route::group(['namespace' => 'App\Http\Controllers\User', 'middleware' => 'auth'], function (){
 	//Users
 	Route::get('/user', 'UserController@index')->name('user');
 	Route::get('/user/create', 'UserController@create')->name('user.create');
