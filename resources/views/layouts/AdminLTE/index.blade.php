@@ -15,10 +15,10 @@
 
         <div class="wrapper">
 
-            @include('layouts.AdminLTE._includes._menu_superior')
-
-
-            @include('layouts.AdminLTE._includes._menu_lateral')
+            @if(Auth::user())
+                @include('layouts.AdminLTE._includes._menu_superior')
+                @include('layouts.AdminLTE._includes._menu_lateral')
+            @endif
 
             <div class="content-wrapper">
                 <nav class="navbar navbar-static-top" id="menu_sup_corpo" style="background-color:#d2d6de; margin-bottom:0; padding-bottom:0;navbar-header.a:color:#fff;">

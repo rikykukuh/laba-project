@@ -49,7 +49,7 @@ Route::group(['namespace' => 'App\Http\Controllers\User'], function (){
 	Route::get('/role/destroy/{id}', 'RoleController@destroy')->name('role.destroy');
 });
 
-Route::middleware([Authenticate::class])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::resource('clients', \App\Http\Controllers\Client\ClientController::class);
     Route::resource('cities', \App\Http\Controllers\City\CityController::class);
@@ -57,7 +57,7 @@ Route::middleware([Authenticate::class])->group(function () {
     Route::resource('payments', \App\Http\Controllers\Payment\PaymentController::class);
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethod\PaymentMethodController::class);
     Route::resource('payment-merchants', \App\Http\Controllers\PaymentMerchant\PaymentMerchantController::class);
-})->middleware('auth');
+});
 
 
 // Route::group(['namespace' => 'App\Http\Controllers\Order'], function(){
