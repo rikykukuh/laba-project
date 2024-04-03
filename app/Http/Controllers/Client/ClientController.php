@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Client;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -45,6 +46,10 @@ class ClientController extends Controller
             'city_id' => $request->city_id,
             'phone_number' => $request->phone_number,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json($client);
+        }
         return redirect()->route('clients.index')->with('success', 'Great! Client ' . $client->name . ' created successfully!');
     }
 
@@ -103,5 +108,19 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
         $client->delete();
         return redirect()->route('clients.index')->with('success', 'Well done! Client ' . $client->name . ' deleted successfully!');
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function searchCustomers(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $searchTerm = $request->input('q');
+        $customers = Client::where('id', 'like', "%$searchTerm%")
+            ->orWhere('name', 'like', "%$searchTerm%")
+            ->get(['id', 'name', 'address', 'phone_number']);
+
+        return response()->json($customers);
     }
 }

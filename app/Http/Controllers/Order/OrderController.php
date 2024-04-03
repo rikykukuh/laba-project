@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\ItemType;
 use App\Models\OrderItem;
 use App\Models\OrderItemPhoto;
+use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Models\Order;
@@ -35,8 +36,9 @@ class OrderController extends Controller
 
         $item_types = ItemType::all();
         $payment_methods = PaymentMethod::all();
+        $payment_merchants = PaymentMerchant::all();
 
-        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods'));
+        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods', 'payment_merchants'));
     }
 
     public function store(Request $request)
@@ -102,7 +104,10 @@ class OrderController extends Controller
         // dd($order);
         $statuses = $this->statuses;
 
-        return view('orders.show', compact('order', 'statuses'));
+        $payment_methods = PaymentMethod::all();
+        $payment_merchants = PaymentMerchant::all();
+
+        return view('orders.show', compact('order', 'statuses', 'payment_methods', 'payment_merchants'));
     }
 
     public function edit($id)

@@ -59,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('payments', \App\Http\Controllers\Payment\PaymentController::class);
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethod\PaymentMethodController::class);
     Route::resource('payment-merchants', \App\Http\Controllers\PaymentMerchant\PaymentMerchantController::class);
+
+    Route::get('/search-customers', 'App\Http\Controllers\Client\ClientController@searchCustomers')->name('client.search');
 });
 
 

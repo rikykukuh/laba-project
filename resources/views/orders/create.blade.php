@@ -24,278 +24,248 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="box box-primary">
+        <div class="col-md-12" id="alert-container"></div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="customer">Customer: <small class="text-danger">*</small></label>
+                <select class="form-control" id="customer" name="customer" required></select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Add Customer</button>
+            <!-- Modal -->
+            <div id="modal-add-customer" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <!-- Modal content-->
+                    <form id="add-customer-form" action="{{ route('clients.store') }}" method="post" onsubmit="saveCustomer(event)">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Add Customer</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="name">Name: <small class="text-danger">*</small></label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone: <small class="text-danger">*</small></label>
+                                    <input type="text" class="form-control" id="phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Address:</label>
+                                    <textarea class="form-control" id="address" name="address"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Close Form</button>
+                                <button type="submit" class="btn btn-primary">Submit Form</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="site_id">Site: <small class="text-danger">*</small></label>
+                <select class="form-control" id="site_id" name="site_id" required>
+                    <option value="bekasi">Bekasi</option>
+                    <option value="depok">Depok</option>
+                    <option value="bogor">Bogor</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Detail Client -->
+        <div class="col-md-6">
+            <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Add Order</h3>
+                    <h3 class="box-title">Detail User</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
-                            <i class="fa fa-minus"></i></button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
                     </div>
                 </div>
+                <div class="box-body" id="detail-user">
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Client -->
+        <div class="col-md-6">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Status</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body" id="status-customer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" id="items">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Items:</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="box-body">
-					 <form id="fileupload" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data">
-                        {{ csrf_field() }}
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }}">
-                                    <label for="client_id">Client</label>
-                                    <select name="client_id" id="client_id" class="form-control" data-placeholder="Choose Client" required>
-                                        <option disabled selected> -- Choose Client -- </option>
-                                        @foreach($clients as $client)
-                                            <option value="{{ $client->id }}"> {{ $client->name }} </option>
+                    <div class="table-responsive no-padding">
+                        <table class="table table-hover" id="table-items">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Note</th>
+                                <th>Photo</th>
+                                <th>Expense</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Modal Edit Item -->
+                    <div class="modal fade" id="modal-edit-item" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <form id="edit-item-form" action="" method="get" onsubmit="editItem(event)" enctype="multipart/form-data">
+                                <input type="hidden" name="item_element" id="item_element" value="">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Edit Item</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="type_edit">Select Payment Method: <small class="text-danger">*</small></label>
+                                            <select id="type_edit" class="form-control" name="type_edit">
+                                                @foreach($payment_methods as $payment_method)
+                                                    <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="keterangan_edit">Keterangan: <small class="text-danger">*</small></label>
+                                            <textarea class="form-control" id="keterangan_edit" name="keterangan_edit"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="biaya_edit">Biaya: <small class="text-danger">*</small></label>
+                                            <input type="number" class="form-control" id="biaya_edit" name="biaya_edit">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="gambar_edit">Gambar: <small class="text-danger">*</small></label>
+                                            <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleImageUpload(this)" required>
+                                        </div>
+                                        <hr>
+                                        <table role="presentation" class="table table-striped table-bordered table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th width="300">#</th>
+                                                <th width="300">Image</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="content-image"></tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-warning">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Modal Show Image Item -->
+                    <div class="modal fade" id="modal-show-image-item" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">All Image Item</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table role="presentation" class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th width="300">#</th>
+                                            <th width="300">Image</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="content-image"></tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" style="margin-bottom: 15px;">
+            <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Add item</span>
+                    </span>
+            <!-- Modal Add Item -->
+            <div class="modal fade" id="modal-add-item" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <form id="add-item-form" action="" method="get" onsubmit="saveItem(event)" enctype="multipart/form-data">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Add Item</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="type">Select Payment Method: <small class="text-danger">*</small></label>
+                                    <select id="type" class="form-control" name="type" required>
+                                        @foreach($payment_methods as $payment_method)
+                                            <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
                                         @endforeach
                                     </select>
-                                    @if($errors->has('client_id'))
-                                        <span class="help-block">
-                                             <strong>{{ $errors->first('client_id') }}</strong>
-                                         </span>
-                                    @endif
+                                </div>
+                                <div class="form-group">
+                                    <label for="keterangan">Keterangan: <small class="text-danger">*</small></label>
+                                    <textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="biaya">Biaya: <small class="text-danger">*</small></label>
+                                    <input type="number" class="form-control" id="biaya" name="biaya" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gambar">Gambar: <small class="text-danger">*</small></label>
+                                    <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
                                 </div>
                             </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('picked_by') ? 'has-error' : '' }}">
-                                    <label for="picked_by">Picked By</label>
-                                    <input type="text" name="picked_by" id="picked_by" class="form-control" placeholder="Picked By" required value="{{ old('picked_by') }}" autofocus>
-                                    @if($errors->has('picked_by'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('picked_by') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Submit</button>
                             </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('picked_at') ? 'has-error' : '' }}">
-                                    <label for="picked_at">Picked At</label>
-                                    <input type="date" name="picked_at" id="picked_at" class="form-control" placeholder="Picked By" required value="{{ old('picked_at') }}">
-                                    @if($errors->has('picked_at'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('picked_at') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('status') ? 'has-error' : '' }}">
-                                    <label for="status">Status</label>
-                                    <select name="status" id="status" class="form-control" data-placeholder="Choose Status" required>
-                                        @foreach($statuses as $status)
-                                            <option value="{{ $loop->index }}"> {{ $status }} </option>
-                                        @endforeach
-                                    </select>
-                                    @if($errors->has('status'))
-                                        <span class="help-block">
-                                             <strong>{{ $errors->first('status') }}</strong>
-                                         </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group {{ $errors->has('note') ? 'has-error' : '' }}">
-                                    <label for="note">Note</label>
-                                    <textarea name="note" placeholder="Note" id="note" class="form-control" required>{{ old('note') }}</textarea>
-                                    @if($errors->has('note'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('note') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group"> --}}
-                            {{--         <label for="order_item_photo">Photo</label> --}}
-                            {{--         <input type="file" id="order_item_photo" class="form-control order_item_photo" name="files" multiple> --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('total') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="total">Total</label> --}}
-                            {{--         <input type="number" name="total" id="total" class="form-control" placeholder="Total" required value="{{ old('total') }}" > --}}
-                            {{--         @if($errors->has('total')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('total') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('uang_muka') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="uang_muka">Uang Muka</label> --}}
-                            {{--         <input type="number" name="uang_muka" id="uang_muka" class="form-control" placeholder="Uang Muka" required value="{{ old('uang_muka') }}"> --}}
-                            {{--         @if($errors->has('uang_muka')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('uang_muka') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('payment') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="payment">Payment</label> --}}
-                            {{--         <input type="number" name="payment" id="payment" class="form-control" placeholder="Payment" required value="{{ old('payment') }}" > --}}
-                            {{--         @if($errors->has('payment')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('payment') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('number_ticket') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="number_ticket">No Tiket</label> --}}
-                            {{--         <input type="text" name="number_ticket" id="number_ticket" class="form-control" placeholder="No Tiket" required value="{{ old('number_ticket') }}" > --}}
-                            {{--         @if($errors->has('number_ticket')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('number_ticket') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('due_date') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="due_date">Jatuh Tempo</label> --}}
-                            {{--         <input type="date" name="due_date" id="due_date" class="form-control" placeholder="Jatuh Tempo" required value="{{ old('due_date') }}" > --}}
-                            {{--         @if($errors->has('due_date')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('due_date') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="form-group {{ $errors->has('sisa_pembayaran') ? 'has-error' : '' }}"> --}}
-                            {{--         <label for="sisa_pembayaran">Sisa Pembayaran</label> --}}
-                            {{--         <input type="number" name="sisa_pembayaran" id="sisa_pembayaran" class="form-control" placeholder="Sisa Pembayaran" required value="{{ old('sisa_pembayaran') }}" > --}}
-                            {{--         @if($errors->has('sisa_pembayaran')) --}}
-                            {{--             <span class="help-block"> --}}
-                            {{--                 <strong>{{ $errors->first('sisa_pembayaran') }}</strong> --}}
-                            {{--             </span> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-
-                            <!-- Redirect browsers with JavaScript disabled to the origin page -->
-                            <noscript>
-                                <input type="hidden"
-                                       name="redirect"
-                                       value="https://blueimp.github.io/jQuery-File-Upload/" />
-                            </noscript>
-                            <div>
-                                <div class="col-lg-12">
-                                    <span class="btn btn-success add-item" style="margin-right: 15px;">
-                                        <i class="glyphicon glyphicon-plus"></i>
-                                        <span>Add item</span>
-                                    </span>
-
-                                    <!-- The fileinput-button span is used to style the file input field as button -->
-                                     {{-- <span class="btn btn-info fileinput-button" style="margin-right: 15px;"> --}}
-                                     {{--     <i class="glyphicon glyphicon-file"></i> --}}
-                                     {{--     <span>Add files...</span> --}}
-                                     {{--     <input type="file" id="order_item_photo" name="files" multiple /> --}}
-                                     {{-- </span> --}}
-
-                                    {{-- <button type="button" class="btn btn-danger delete"> --}}
-                                    {{--     <i class="glyphicon glyphicon-trash"></i> --}}
-                                    {{--     <span>Delete selected</span> --}}
-                                    {{-- </button> --}}
-                                    {{-- <input type="checkbox" class="toggle" /> --}}
-
-                                    <!-- The global file processing state -->
-                                    {{-- <span class="fileupload-process"></span> --}}
-                                </div>
-                                {{-- <!-- The global progress state --> --}}
-                                {{-- <div class="col-lg-5 fileupload-progress fade"> --}}
-                                {{--     <!-- The global progress bar --> --}}
-                                {{--     <div class="progress progress-striped active" --}}
-                                {{--          role="progressbar" --}}
-                                {{--          aria-valuemin="0" --}}
-                                {{--          aria-valuemax="100"> --}}
-                                {{--         <div class="progress-bar progress-bar-success" --}}
-                                {{--              style="width: 0%;"></div> --}}
-                                {{--     </div> --}}
-                                {{--     <!-- The extended global progress state --> --}}
-                                {{--     <div class="progress-extended"> </div> --}}
-                                {{-- </div> --}}
-                                <div class="col-lg-12" style="margin-bottom: 15px;">
-                                    <hr>
-                                </div>
-                            </div>
-
-                            <div class="field-wrapper"></div>
-
-                            {{-- <div class="col-md-12"> --}}
-                            {{--     <!-- The table listing the files available for upload/download --> --}}
-                            {{--     <table role="presentation" class="table table-striped"> --}}
-                            {{--         <thead> --}}
-                            {{--             <tr> --}}
-                            {{--                 <th>Image</th> --}}
-                            {{--                 <th>Filename</th> --}}
-                            {{--                 <th>Filesize</th> --}}
-                            {{--                 <th>Action</th> --}}
-                            {{--             </tr> --}}
-                            {{--         </thead> --}}
-                            {{--         <tbody class="files"></tbody> --}}
-                            {{--         <tfoot> --}}
-                            {{--         <tr> --}}
-                            {{--             <th>Image</th> --}}
-                            {{--             <th>Filename</th> --}}
-                            {{--             <th>Filesize</th> --}}
-                            {{--             <th>Action</th> --}}
-                            {{--         </tr> --}}
-                            {{--         </tfoot> --}}
-                            {{--     </table> --}}
-                            {{-- </div> --}}
-
-                            {{-- <div class="col-lg-12"> --}}
-                            {{--     <div class="panel panel-default"> --}}
-                            {{--         <div class="panel-heading"> --}}
-                            {{--             <h3 class="panel-title">Demo Notes</h3> --}}
-                            {{--         </div> --}}
-                            {{--         <div class="panel-body"> --}}
-                            {{--             <ul> --}}
-                            {{--                 <li> --}}
-                            {{--                     The maximum file size for uploads in this demo is --}}
-                            {{--                     <strong>999 KB</strong> (default file size is unlimited). --}}
-                            {{--                 </li> --}}
-                            {{--                 <li> --}}
-                            {{--                     Only image files (<strong>JPG, GIF, PNG</strong>) are allowed in --}}
-                            {{--                     this demo (by default there is no file type restriction). --}}
-                            {{--                 </li> --}}
-                            {{--                 <li> --}}
-                            {{--                     Uploaded files will be deleted automatically after --}}
-                            {{--                     <strong>5 minutes or less</strong> (demo files are stored in --}}
-                            {{--                     memory). --}}
-                            {{--                 </li> --}}
-                            {{--                 <li> --}}
-                            {{--                     You can <strong>drag & drop</strong> files from your desktop --}}
-                            {{--                     on this webpage (see --}}
-                            {{--                     <a href="https://github.com/blueimp/jQuery-File-Upload/wiki/Browser-support">Browser support</a>). --}}
-                            {{--                 </li> --}}
-                            {{--                 <li> --}}
-                            {{--                     Please refer to the --}}
-                            {{--                     <a href="https://github.com/blueimp/jQuery-File-Upload">project website</a> --}}
-                            {{--                     and --}}
-                            {{--                     <a href="https://github.com/blueimp/jQuery-File-Upload/wiki">documentation</a> --}}
-                            {{--                     for more information. --}}
-                            {{--                 </li> --}}
-                            {{--                 <li> --}}
-                            {{--                     Built with the --}}
-                            {{--                     <a href="https://getbootstrap.com/">Bootstrap</a> CSS framework --}}
-                            {{--                     and Icons from <a href="https://glyphicons.com/">Glyphicons</a>. --}}
-                            {{--                 </li> --}}
-                            {{--             </ul> --}}
-                            {{--         </div> --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
-
-                             <div class="col-lg-12">
-                                 <button type="submit" class="btn btn-primary pull-right" style="margin-right: 15px;">
-                                     <i class="fa fa-fw fa-save"></i>
-                                     <span>Save</span>
-                                 </button><a href="{{ route('orders.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Orders</a>
-                             </div>
                         </div>
                     </form>
                 </div>
@@ -303,33 +273,108 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-12 total-items">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Total Value Items</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <form id="fileupload" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="customer_id" id="customer_id" value="">
+                        {{ csrf_field() }}
+                        <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
+                        <p class="margin-b-2"><b>Down payment: </b><input type="number" id="dp" name="dp" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
+                        <p class="margin-b-2"><b>Pembayaran: </b><input type="number" name="pembayaran" value="250000" readonly class="form-control" style="display: inline"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 total-items">
+            {{--  <button type="submit" class="btn bg-olive pull-left" data-toggle="modal" data-target="#modal-take" style="margin-right: 15px;"> --}}
+            {{--      <i class="fa fa-fw fa-save"></i> --}}
+            {{--      <span>Ambil</span> --}}
+            {{--  </button> --}}
+            {{-- <!-- Modal --> --}}
+            {{-- <div id="modal-take" class="modal fade" role="dialog"> --}}
+            {{--     <div class="modal-dialog modal-lg"> --}}
+            {{--         <!-- Modal content--> --}}
+            {{--         <form id="add-customer-form" action="{{ route('clients.store') }}" method="post" onsubmit="saveCustomer(event)"> --}}
+            {{--             <div class="modal-content"> --}}
+            {{--                 <div class="modal-header"> --}}
+            {{--                     <button type="button" class="close" data-dismiss="modal">&times;</button> --}}
+            {{--                     <h4 class="modal-title">Ambil</h4> --}}
+            {{--                 </div> --}}
+            {{--                 <div class="modal-body"> --}}
+            {{--                     <div class="form-group"> --}}
+            {{--                         <label for="type">Payment method: <small class="text-danger">*</small></label> --}}
+            {{--                         <select class="form-control" id="type" name="type" required> --}}
+            {{--                             @foreach($payment_methods as $payment_method) --}}
+            {{--                                 <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option> --}}
+            {{--                             @endforeach --}}
+            {{--                         </select> --}}
+            {{--                     </div> --}}
+            {{--                     <div class="form-group"> --}}
+            {{--                         <label for="type_merchant">Payment merchant: <small class="text-danger">*</small></label> --}}
+            {{--                         <select class="form-control" id="type_merchant" name="type_merchant" required> --}}
+            {{--                             @foreach($payment_merchants as $payment_merchant) --}}
+            {{--                                 <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option> --}}
+            {{--                             @endforeach --}}
+            {{--                         </select> --}}
+            {{--                     </div> --}}
+            {{--                     <div class="form-group"> --}}
+            {{--                         <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label> --}}
+            {{--                         <input type="text" class="form-control" id="kekurangan" name="kekurangan" required> --}}
+            {{--                     </div> --}}
+            {{--                     <div class="form-group"> --}}
+            {{--                         <label for="diambil">Dimbail oleh: <small class="text-danger">*</small></label> --}}
+            {{--                         <input type="text" class="form-control" id="diambil" name="diambil" required> --}}
+            {{--                     </div> --}}
+            {{--                 </div> --}}
+            {{--                 <div class="modal-footer"> --}}
+            {{--                      --}}{{-- <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button> --}}
+            {{--                      --}}{{-- <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Close Form</button> --}}
+            {{--                      --}}{{-- <button type="submit" class="btn btn-primary">Submit Form</button> --}}
+            {{--                     <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 15px;">Close Form</button> --}}
+            {{--                     <button type="button" class="btn btn-primary" data-dismiss="modal" style="margin-right: 15px;">Simpan</button> --}}
+            {{--                 </div> --}}
+            {{--             </div> --}}
+            {{--         </form> --}}
+            {{--     </div> --}}
+            {{-- </div> --}}
+            <button type="submit" class="btn bg-purple pull-left" style="margin-right: 15px;">
+                <i class="fa fa-fw fa-save"></i>
+                <span>Simpan <!-- (Di halaman create order) --></span>
+            </button>
+            <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-close"></i> Cancel</a>
+        </div>
+    </div>
+
 @endsection
 
 @section('layout_js')
     <script>
-        const imageFiles = [];
+        $('#items').hide();
+        $('.total-items').hide();
+        const payment_methods = @json($payment_methods);
+        const items = [];
+        let dataFile = [];
 
-        let tableImageHtml = `
-            <table role="presentation" class="table table-striped table-bordered table-hover">
-                 <thead>
-                     <tr>
-                         <th width="300">Image</th>
-                         <th width="300">Filename</th>
-                         <th class="text-center">Filesize</th>
-                         <!-- <th>Action</th> -->
-                     </tr>
-                 </thead>
-                 <tbody class="content-image"></tbody>
-                 <tfoot>
-                     <tr>
-                         <th width="300">Image</th>
-                         <th width="300">Filename</th>
-                         <th class="text-center">Filesize</th>
-                         <!-- <th>Action</th> -->
-                     </tr>
-                 </tfoot>
-             </table>
-        `;
+        function getPaymentMethodById(nameKey, myArray){
+            for (let i=0; i < myArray.length; i++) {
+                if (myArray[i].id === parseFloat(nameKey, 10)) {
+                    return myArray[i];
+                }
+            }
+        }
 
         function uuid() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -338,163 +383,344 @@
             });
         }
 
-        function handleImageUpload(element, counter) {
+        function handleImageUpload(element) {
             const files = $(element)[0].files;
             if(files.length === 0) return;
 
-            const dataFile = []
+            console.log(files);
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const ext = file.name.split('.').pop().toLowerCase();
                 if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
-                    dataFile.push(file);
-                    imageFiles[counter]['item-' + counter].push(file);
-                }
-            }
-
-            console.log(imageFiles);
-
-            showImageAsTable(element, counter);
-        }
-
-        function showImageAsTable(element, counter) {
-            console.log('Total gambar: ', imageFiles[counter]['item-' + counter]);
-            const tableImage = $(element).parent().parent().parent().find('.table-image');
-            tableImage.html(tableImageHtml);
-            const contentImage = $(tableImage).find('.content-image');
-
-            console.log('nih', imageFiles[counter]['item-' + counter])
-
-            for (let i = 0; i < imageFiles[counter]['item-' + counter].length; i++) {
-                const file = imageFiles[counter]['item-' + counter][i];
-                console.log(i);
-                console.log('NAH!!!', file);
-                const ext = file.name.split('.').pop().toLowerCase();
-                if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
-                        contentImage.append(`
-                            <tr>
-                                <td>
-                                    <input type="hidden" name="item_images[${counter}][]" value="${e.target.result}" class="form-control item-images"/>
-                                    <input type="hidden" name="file_name[${counter}][]" value="${file.name}" class="form-control item-images"/>
-                                    <img src="${e.target.result}" alt="${file.name}" title="${file.name}"  width="80" height="60"/>
-                                </td>
-                                <td>
-                                    <p style="margin-top:15px;">
-                                        ${file.name}
-                                    </p>
-                                </td>
-                                <td class="text-center">
-                                    <p style="margin-top:15px;">
-                                        ${file.size}
-                                    </p>
-                                </td>
-                                <!-- <td>
-                                    <button onclick="removeImage(event, this, ${counter}, ${i})" type="button" class="btn btn-danger btn-sm" title="Remove image">
-                                        <span class="btn-label"><i class="fa fa-eraser"></i></span>
-                                    </button>
-                                </td> -->
-                            </tr>
-                        `);
-                    }
+                    reader.onload = function (e) {
+                        // Mengakses data URL base64 dari file
+                        const base64Data = e.target.result;
+                        // Memasukkan data URL base64 ke dalam array
+                        dataFile.push(base64Data);
+                    };
+                    // Membaca file sebagai data URL
                     reader.readAsDataURL(file);
                 }
             }
         }
 
-        function removeImage(e, el, index, element) {
-            if (confirm("Are you sure you want to DELETE this image?") === true) {
-                // const tableImage = $(el).parents().find('.field-wrapper');
-                // console.log(tableImage)
-                // // tableImage.html(tableImageHtml);
-                // const contentImage = $(tableImage).find('.content-image');
-                // console.log(contentImage)
-                // tableImage.empty();
+        function showEditItemForm(index) {
+            showImageAsTable(index);
+            $('#item_element').val(index);
 
-                $(el).parent().parent().remove();
-                console.log('remove', imageFiles[index]['item-' + index])
-                imageFiles[index]['item-' + index].splice(element, 1);
-                // showImageAsTable($('.files'), index);
+            const dataItem = items[index];
+
+            $(`#type_edit option[value='${dataItem.type}']`).prop('selected', true);
+            // const type = $('#type_edit').val();
+            const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
+            const biaya = $('#biaya_edit').val(dataItem.biaya);
+        }
+
+        function showImageAsTable(index) {
+            const contentImage = $('.content-image');
+            contentImage.empty();
+
+            items[index].gambar.forEach(function(image, index) {
+                const row = `
+                    <tr>
+                        <th>
+                            ${index + 1}
+                        </th>
+                        <td class="text-center">
+                            <img src="${image}" alt="Item Image ${index + 1}" title="Item Image ${index + 1}" class="img-thumbnail" style="height:100px">
+                        </td>
+                    </tr>
+                `;
+                contentImage.append(row);
+            });
+        }
+
+        function removeItem(e, el, index) {
+            if (confirm("Are you sure you want to DELETE this item?") === true) {
+
+                items.splice(index, 1);
+                renderItems();
+
+                if (items && !items.length) {
+                    $('#items').hide();
+                    $('.total-items').hide();
+                }
+
+                const message = 'Remove item successfully!';
+                $('.top-right').notify({
+                    message: { text: `Success! ${message}` }
+                }).show();
+
             }
         }
 
-        $(function() {
-            $('.select2').select2({
-                "language": {
-                    "noResults": function(){
-                        return "Nenhum registro encontrado.";
-                    }
+        function saveCustomer(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $('#add-customer-form').attr('action'),
+                method: 'POST',
+                data: $('#add-customer-form').serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Handle response
+                    console.log(response);
+                    const user_id = response.id;
+                    const type = 'success';
+                    const message = 'Customer data saved successfully!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Success!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup alert setelah 3 detik
+                    setTimeout(() => {
+                        $('.alert').alert('close');
+                    }, 3000);
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-customer').modal('hide');
+
+                    // Reset form
+                    $('#add-customer-form').trigger("reset");
+
+                    $('#customer').val(user_id).trigger("change");
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors
+                    console.error(error);
+                    const type = 'danger';
+                    const message = 'Customer data does not saved successfully!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Oops!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-customer').modal('hide');
                 }
             });
+        }
 
-            /**/
-            let maxField = 10; //Input fields increment limitation
-            let addButton = $('.add-item'); //Add button selector
-            let wrapper = $('.field-wrapper'); //Input field wrapper
-            let fieldHTML = (counter, imageFileCount) => {
-                return `
-                    <div>
-                        <div class="col-lg-6" style="margin-bottom: 15px;">
-                            <div class="form-group">
-                                <label for="item-type-id-${counter}">Item Type</label>
-                                <select name="item_type[${imageFileCount}]" id="item-type-id-${counter}" class="form-control" required>
-                                <?php foreach($item_types as $item_type): ?>
-                    <option value="<?= $item_type->id; ?>"> <?= $item_type->name; ?> </option>
-                                <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
+        function renderItems() {
+            const tbody = $('#table-items tbody'); // Ganti '#itemTable' dengan ID dari elemen tabel Anda
+            tbody.empty(); // Kosongkan isi tabel sebelum menambahkan item baru
 
-            <div class="col-lg-6" style="margin-bottom: 15px;">
-                <div class="form-group">
-                    <label for="total-${counter}">Total Item</label>
-                                <input type="number" name="total[${imageFileCount}]" id="total-${counter}" class="form-control" placeholder="Total Item" required>
-                            </div>
-                        </div>
 
-                        <div class="col-lg-12" style="margin-bottom: 15px;">
-                            <span class="btn btn-info fileinput-button button-${counter}" style="margin-right: 15px;">
-                                <i class="glyphicon glyphicon-file"></i>
-                                <span>Add files...</span>
-                                <input type="file" name="files" class="files" multiple  accept="image/png, image/jpg, image/jpeg" onchange="handleImageUpload(this, ${imageFileCount})" />
+            // Loop melalui setiap item dan tambahkan baris HTML untuk masing-masing item
+            items.forEach(function(item, index) {
+                let payment_method = getPaymentMethodById(item.type, payment_methods);
+                const imageSource = ''; // Tentukan sumber gambar, misalnya dari properti gambar item
+                const row = `
+                    <tr>
+                        <th>${index + 1}</th>
+                        <td>${payment_method.name}</td>
+                        <td>${item.keterangan}</td>
+                        <td>
+                            <!--
+                            <img src="${imageSource}" alt="Item Image" class="img-thumbnail" style="height:50px">
+                            -->
+                            <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable(${index})">
+                                <i class="fa fa-image margin-r-5"></i>
+                                <span>Show images</span>
                             </span>
-                            <a href="javascript:void(0);" class="btn btn-danger remove-button" data-element="${imageFileCount}">
-                                <span class="btn-label"><i class="glyphicon glyphicon-erase"></i></span> Remove Item
-                            </a>
-                        </div>
-                        <div class="col-lg-12 table-image"></div>
-                        <div class="col-lg-12" style="margin-bottom: 15px;">
-                            <hr>
-                        </div>
-                    </div>
-                `
-            };
-            let counter = 1; //Initial field counter is 1
+                        </td>
+                        <td>
+                            <b>${item.biaya}</b>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-xs margin-r-5" data-toggle="modal" data-target="#modal-edit-item" onclick="showEditItemForm(${index})">Edit</button>
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeItem(event, this, ${index})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row); // Tambahkan baris ke tabel
+            });
+        }
 
-            // Once add button is clicked
-            $(addButton).click(function(){
-                //Check maximum number of input fields
-                if(counter < maxField){
-                    imageFiles.push({[`item-${$('.files').length}`] : []});
-                    console.log(imageFiles);
-                    counter++; //Increase field counter
-                    $(wrapper).append(fieldHTML(counter, $('.files').length)); //Add field html
-                }else{
-                    alert('A maximum of '+maxField+' fields are allowed to be added. ');
+        function saveItem(event) {
+            $('#items').show();
+            $('.total-items').show();
+            event.preventDefault(); // Menghentikan aksi default dari submit form
+
+            // Ambil nilai dari form
+            const type = $('#type').val();
+            const keterangan = $('#keterangan').val();
+            const biaya = $('#biaya').val();
+            const gambar = dataFile;
+
+            // Buat objek item
+            const newItem = { type, keterangan, biaya, gambar };
+
+            console.log(newItem);
+
+            // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
+
+            // Contoh operasi CRUD sederhana (tambahkan item ke array)
+            items.push(newItem); // items adalah variabel yang berisi array item
+
+            renderItems();
+
+            // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
+            const message = 'Add item successfully!';
+            $('.top-right').notify({
+                message: { text: `Success! ${message}` }
+            }).show();
+
+            // Tutup modal setelah selesai menyimpan data
+            $('#modal-add-item').modal('hide');
+
+            // Reset form
+            $('#add-item-form').trigger("reset");
+            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
+
+            sumTotalItem();
+
+            dataFile = [];
+        }
+
+        function editItem(event) {
+            $('#items').show();
+            $('.total-items').show();
+            event.preventDefault(); // Menghentikan aksi default dari submit form
+
+            // Ambil nilai dari form
+            const type = $('#type').val();
+            const keterangan = $('#keterangan').val();
+            const biaya = $('#biaya').val();
+            const gambar = dataFile;
+
+            // Buat objek item
+            const newItem = { type, keterangan, biaya, gambar };
+
+            console.log(newItem);
+
+            // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
+
+            // Contoh operasi CRUD sederhana (tambahkan item ke array)
+            items.push(newItem); // items adalah variabel yang berisi array item
+
+            renderItems();
+
+            // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
+            const message = 'Add item successfully!';
+            $('.top-right').notify({
+                message: { text: `Success! ${message}` }
+            }).show();
+
+            // Tutup modal setelah selesai menyimpan data
+            $('#modal-add-item').modal('hide');
+
+            // Reset form
+            $('#add-item-form').trigger("reset");
+            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
+
+            dataFile = [];
+        }
+
+        function sumTotalItem() {
+            let total = 0
+            for(let i = 0; i < items.length; i++) {
+                total += parseInt(items[i].biaya, 10);
+            }
+             $('#total').text(total);
+        }
+
+
+        $(function() {
+            $('#modal-add-customer').on('shown.bs.modal', function () {
+                $('#add-customer-form #name').focus();
+            });
+            $('#modal-show-image-item').on('hidden.bs.modal', function () {
+                $('.content-image').empty();
+            });
+            $('#modal-edit-item').on('hidden.bs.modal', function () {
+                $('#item_element').val('');
+                // $(`#type_edit option[value='1']`).attr("selected");
+                $('#keterangan_edit').val('');
+                $('#biaya_edit').val('');
+            });
+            $('#customer').select2({
+                placeholder: '-- Customer --',
+                ajax: {
+                    url: '{{ route("client.search") }}', // Ganti dengan URL endpoint Anda
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        const options = [];
+                        $.each(data, function(index, item) {
+                            options.push({
+                                id: item.id,
+                                text: item.name,
+                                data: {
+                                    address: item.address,
+                                    phone: item.phone_number
+                                }
+                            });
+                        });
+                        return {
+                            results: options
+                        };
+                    },
+                    cache: true
                 }
             });
 
-            // Once remove button is clicked
-            $(wrapper).on('click', '.remove-button', function(e){
-                e.preventDefault();
-                if (confirm("Are you sure you want to DELETE this item?") === true) {
-                    const element = parseInt($(this).data("element"), 10);
-                    imageFiles.splice(element, 1);
-                    $(this).parent().parent('div').remove(); //Remove field html
-                    counter--; //Decrease field counter
-                }
+            $('#customer').on('select2:select', function(e) {
+                const data = e.params.data;
+                const dataAttribute = data.data;
+
+                const customerId = data.id;
+                const customerName = data.text;
+                const address = dataAttribute.address;
+                const phone = dataAttribute.phone;
+
+                // detail-user
+                $('#detail-user').html(`
+                    <p class="text-muted well well-sm no-shadow margin-b-10">
+                        <strong>Customer Name:</strong> ${customerName === null ? '-' : customerName}
+                         <br>
+                        <strong>Address:</strong> ${address === null ? '-' : address}
+                        <br>
+                        <strong>Phone:</strong> ${phone === null ? '-' : phone}
+                    </p>
+                `);
+                // status-customer
+                $('#status-customer').html(`
+                    <p class="text-center margin-b-10"><b>NEW</b></p>
+                    <p class="text-center margin-b-2"><b>Oleh: </b> <!-- ${customerName === null ? '-' : customerName} --></p>
+                    <p class="text-center margin-b-2"><b>Pada: </b><!-- ${phone === null ? '-' : phone} --></p>
+                `);
+
+                $('#customer_id').val(customerId);
             });
+
+            $('#dp').on('input', function (e) {
+                const total_expense = parseInt($('#total').text(), 10);
+                const dp = parseInt($(this).val(), 10);
+
+                const total = total_expense - dp;
+
+                $('#kekurangan').text(total);
+            });
+
+            // $('.select2').select2();
+            // $('.select2').select2({
+            //     "language": {
+            //         "noResults": function(){
+            //             return "Nenhum registro encontrado.";
+            //         }
+            //     }
+            // });
+
         });
 
     </script>
