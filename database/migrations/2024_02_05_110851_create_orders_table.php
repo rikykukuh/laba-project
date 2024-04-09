@@ -10,10 +10,11 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('client_id');
-            $table->integer('total');
-            $table->decimal('payment', 10, 2);
+            $table->string('name')->nullable();
+            $table->integer('site_id');
+            $table->integer('client_id');
+            $table->decimal('total', 10, 2)->nullable();
+            $table->integer('payment_id')->nullable();
             $table->string('status')->nullable();
             $table->string('number_ticket')->nullable();
             $table->decimal('uang_muka', 10, 2)->nullable();

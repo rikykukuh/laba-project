@@ -27,6 +27,7 @@
 								<tr>
 									<th>Name</th>
 									<th>Address</th>
+									<th>City</th>
 									<th class="text-center">Phone Number</th>
 									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>
@@ -38,6 +39,7 @@
 										<tr>
                                             <td>{{$client->name}}</td>
                                             <td>{{$client->address}}</td>
+                                            <td>{{$client->city->name}}</td>
                                             <td class="text-center">{{$client->phone_number}}</td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($client->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
@@ -58,6 +60,7 @@
 								<tr>
 									<th>Name</th>
 									<th>Address</th>
+                                    <th>City</th>
 									<th class="text-center">Phone Number</th>
 									<th class="text-center">Created At</th>
 									<th class="text-center">Actions</th>

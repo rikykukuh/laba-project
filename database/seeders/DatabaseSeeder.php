@@ -24,19 +24,25 @@ class DatabaseSeeder extends Seeder
 
     	DB::table('configs')->truncate();
     	DB::table('role_user')->truncate();
-        DB::table('permission_role')->truncate();        
+        DB::table('permission_role')->truncate();
         DB::table('permissions')->truncate();
         DB::table('permission_groups')->truncate();
-        DB::table('roles')->truncate();        
+        DB::table('roles')->truncate();
         DB::table('users')->truncate();
 
         $this->command->info('Deleted tables!');
         $this->command->info('Creating Tables...');
-        
+
         $this->call([
             ConfigTableSeeder::class,
             PermissionRoleTablesSeeder::class,
             RoleUserTablesSeeder::class,
+            PaymentMerchantTablesSeeder::class,
+            PaymentMethodTablesSeeder::class,
+            ItemTypeTablesSeeder::class,
+            CityTablesSeeder::class,
+            SiteTablesSeeder::class,
+            ClientTablesSeeder::class,
         ]);
 
         $this->command->info('Finished!');

@@ -15,9 +15,10 @@ class Order extends Model
     protected $fillable = [
         'id',
         'name',
+        'site_id',
         'client_id',
         'total',
-        'payment',
+        'payment_id',
         'status',
         'number_ticket',
         'uang_muka',

@@ -18,7 +18,7 @@ class CreateOrderItemsTable extends Migration
             $table->integer('order_id');
             $table->integer('item_type_id');
             $table->string('note')->nullable();
-            $table->float('total');
+            $table->decimal('total', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

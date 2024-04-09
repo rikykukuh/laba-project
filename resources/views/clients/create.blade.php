@@ -45,7 +45,7 @@
                             <div class="col-lg-12">
                                 <div class="form-group {{ $errors->has('address') ? 'has-error' : '' }}">
                                     <label for="address">Address</label>
-                                    <textarea address="address" id="address" required class="form-control">{{ old('address') }}</textarea>
+                                    <textarea name="address" id="address" required class="form-control">{{ old('address') }}</textarea>
                                     @if($errors->has('address'))
                                         <span class="help-block">
                                             <strong>{{ $errors->first('address') }}</strong>

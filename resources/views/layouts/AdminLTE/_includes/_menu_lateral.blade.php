@@ -21,6 +21,10 @@
                 <a href="{{ route('clients.index') }}" title="Clients"><i class="fa fa-users"></i> <span> Client</span></a>
             </li>
 
+            <li class="{{Request::segment(1) === 'sites' ? 'active' : null}}">
+                <a href="{{ route('sites.index') }}" title="Site"><i class="fa fa-list-ol"></i> <span> Sites</span></a>
+            </li>
+
             <li class="{{Request::segment(1) === 'item-types' ? 'active' : null}}">
                 <a href="{{ route('item-types.index') }}" title="Item Type"><i class="fa fa-list-alt"></i> <span> Item Type</span></a>
             </li>

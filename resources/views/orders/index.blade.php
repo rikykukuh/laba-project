@@ -41,26 +41,27 @@
                                             {{-- <td>{{$order->orderItems->first()->note}}</td> --}}
                                             {{-- <td class="text-center">{{$order->orderItems->first()->total}}</td> --}}
                                             <td class="text-center">
-                                                @if($order->status == 0)
-                                                    @php
-                                                        echo '<b>New</b>';
-                                                    @endphp
-                                                @endif
-                                                @if($order->status == 1)
-                                                    @php
-                                                        echo '<b>Ready</b>';
-                                                    @endphp
-                                                @endif
-                                                @if($order->status == 2)
-                                                    @php
-                                                        echo '<b>Paid</b>';
-                                                    @endphp
-                                                @endif
-                                                @if($order->status == 3)
-                                                    @php
-                                                        echo '<b>Picked Up</b>';
-                                                    @endphp
-                                                @endif
+{{--                                                @if($order->status == 0)--}}
+{{--                                                    @php--}}
+{{--                                                        echo '<b>New</b>';--}}
+{{--                                                    @endphp--}}
+{{--                                                @endif--}}
+{{--                                                @if($order->status == 1)--}}
+{{--                                                    @php--}}
+{{--                                                        echo '<b>Ready</b>';--}}
+{{--                                                    @endphp--}}
+{{--                                                @endif--}}
+{{--                                                @if($order->status == 2)--}}
+{{--                                                    @php--}}
+{{--                                                        echo '<b>Paid</b>';--}}
+{{--                                                    @endphp--}}
+{{--                                                @endif--}}
+{{--                                                @if($order->status == 3)--}}
+{{--                                                    @php--}}
+{{--                                                        echo '<b>Picked Up</b>';--}}
+{{--                                                    @endphp--}}
+{{--                                                @endif--}}
+                                                {{ $order->status }}
                                             </td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($order->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">

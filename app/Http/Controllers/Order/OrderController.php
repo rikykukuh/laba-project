@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Client;
 use App\Models\ItemType;
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderItemPhoto;
+use App\Models\Payment;
 use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
+use App\Models\Site;
 use Illuminate\Http\Request;
-use App\Models\Order;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -20,7 +22,7 @@ class OrderController extends Controller
     private $statuses;
     public function __construct()
     {
-        $this->statuses = ['New', 'Ready', 'Paid', 'Picked Up'];
+        $this->statuses = ['New', 'Process', 'Picked Up'];
     }
 
     public function index()
@@ -37,55 +39,75 @@ class OrderController extends Controller
         $item_types = ItemType::all();
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
+        $sites = Site::all();
 
-        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods', 'payment_merchants'));
+        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods', 'payment_merchants', 'sites'));
     }
 
     public function store(Request $request)
     {
-        $item_type = $request->item_type;
-        $total = $request->total;
+        // if ($request->ajax()) {
+        //     return response()->json($request->post());
+        // }
+
+        $items = $request->items;
         $item_images = $request->item_images;
-        $file_name = $request->file_name;
         // dump(count($item_type));
         // dd($request->post());
 
-        $random_string = Str::random(rand(2, 16));
+        $dp = $request->dp;
+        $kekurangan = $request->kekurangan;
+        $total = $request->total;
+        $client_id = $request->customer_id;
+        $site_id = $request->site_id;
 
         $order = Order::create([
-            'name' => $random_string,
-            'total' => rand(2, 16),
-            'uang_muka' => $random_string,
-            'status' => $request->status,
-            'payment' => rand(1000, 100000),
-            'number_ticket' => $random_string,
-            'uang_muka' => rand(1000, 100000),
-            'due_date' => now(),
-            'sisa_pembayaran' => rand(1000, 100000),
-            'picked_by' => $request->picked_by,
-            'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
-            'client_id' => $request->client_id,
+            'total' => $total,
+            'uang_muka' => $dp,
+            'status' => 'DIPROSES',
+            'number_ticket' => Str::uuid(),
+            'sisa_pembayaran' => $kekurangan,
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+
+            // 'name' => $random_string,
+            // 'payment' => rand(1000, 100000),
+            // 'due_date' => now(),
+            // 'picked_by' => $request->picked_by,
+            // 'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
         ]);
 
-        for ($i = 0; $i < count($total); $i++) {
+        for ($i = 0; $i < count($items); $i++) {
+            $gambar = $items[$i]['gambar'];
+
             $order_item = OrderItem::create([
                 'order_id' => $order->id,
-                'item_type_id' => $item_type[$i],
-                'total' => $total[$i],
-                'note' => $request->note,
+                'item_type_id' => $items[$i]['type'],
+                'total' => $items[$i]['biaya'],
+                'note' => $items[$i]['keterangan'],
             ]);
 
-            for ($j = 0; $j < count($item_images[$i]); $j++) {
+            for ($j = 0; $j < count($gambar); $j++) {
                 $randomFilename = Str::uuid()->toString();
-                $base64Image = $item_images[$i][$j];
-                $extension = pathinfo($file_name[$i][$j], PATHINFO_EXTENSION);
+                $base64Image = $gambar[$j];
+                $split = explode(',', substr($base64Image, 5), 2);
+                $mime = $split[0];
+                $mime_split_without_base64 = explode(';', $mime, 2);
+                $mime_split = explode('/', $mime_split_without_base64[0], 2);
+                $extension = $mime_split[1];
 
-                $filePathPreview = "public/previews/$randomFilename.$extension";
-                $filePathThumbnail = "public/thumbnails/$randomFilename.$extension";
+                $filePathPreview = "previews/$randomFilename.$extension";
+                $filePathThumbnail = "thumbnails/$randomFilename.$extension";
 
-                Storage::disk('local')->put($filePathThumbnail, $base64Image);
+                $image = explode('base64,',$base64Image);
+                $image = end($image);
+                $image = str_replace(' ', '+', $image);
 
-                Storage::disk('local')->put($filePathPreview, $base64Image);
+                Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
+                Storage::disk('public')->put($filePathPreview,base64_decode($image));
+
+                // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
+                // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
 
                 OrderItemPhoto::create([
                     'order_item_id' => $order_item->id,
@@ -95,6 +117,10 @@ class OrderController extends Controller
             }
         }
 
+        if ($request->ajax()) {
+            return response()->json($order);
+        }
+
         return redirect()->route('orders.index')->with('success', 'Great! Order ' . $order->name . ' created successfully!');
     }
 
@@ -102,12 +128,17 @@ class OrderController extends Controller
     {
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         // dd($order);
+        $clients = Client::all();
         $statuses = $this->statuses;
+        // dd($statuses);
 
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
+        $item_types = ItemType::all('id', 'name');
 
-        return view('orders.show', compact('order', 'statuses', 'payment_methods', 'payment_merchants'));
+        $sites = Site::all();
+
+        return view('orders.show', compact('order', 'clients', 'statuses', 'payment_methods', 'payment_merchants', 'item_types', 'sites'));
     }
 
     public function edit($id)
@@ -121,19 +152,96 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
-        $order->update([
-            'name' => $request->name,
-            'total' => $request->total,
-            'uang_muka' => $request->uang_muka,
-            'status' => $request->status,
-            'payment' => $request->payment,
-            'number_ticket' => $request->number_ticket,
-            'uang_muka' => $request->uang_muka,
-            'due_date' => $request->due_date,
-            'sisa_pembayaran' => $request->sisa_pembayaran,
-            'client_id' => $request->client_id,
+        // if ($request->ajax()) {
+        //     return response()->json($request->post());
+        // }
+
+        $items = $request->items;
+        $total = $request->total;
+        $status = $request->status;
+        $sisa_pembayaran = $request->sisa_pembayaran;
+        $client_id = $request->customer_id;
+        $picked_by = $request->picked_by;
+        $picked_at = $request->picked_at;
+        $site_id = $request->site_id;
+
+        $data = collect([
+            // 'uang_muka' => $request->uang_muka,
+            // 'due_date' => $request->due_date,
+            'total' => $total,
+            'status' => $status,
+            'sisa_pembayaran' => $sisa_pembayaran,
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'picked_by' => $picked_by,
+            'picked_at' => date('Y-m-d H:i:s', strtotime($picked_at)),
         ]);
+
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
+
+        if (!is_null($picked_by)) {
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'value' => (int) $total,
+                'payment_method_id' => (int) $request->payment_method,
+                'payment_merchant_id' => (int) $request->payment_merchant,
+            ]);
+
+            $data->put('payment_id', $payment->id);
+        } else {
+            $data->forget(['status', 'sisa_pembayaran', 'picked_by', 'picked_at']);
+        }
+
+        $order->update($data->all());
+
+        for ($i = 0; $i < count($items); $i++) {
+            $order_item = OrderItem::findOrFail($items[$i]['id']);
+
+            $order_item->update([
+                // 'order_id' => (int) $id,
+                'item_type_id' => (int) $items[$i]['type'],
+                'total' => $items[$i]['biaya'],
+                'note' => $items[$i]['keterangan'],
+            ]);
+
+            for ($k = 0; $k < count($items[$i]['gambar']); $k++) {
+                $gambar = $items[$i]['gambar'];
+                if (filter_var($gambar[$k], FILTER_VALIDATE_URL) !== false) {
+                    continue;
+                }
+                $base64Image = $gambar[$k];
+                $randomFilename = Str::uuid()->toString();
+                $split = explode(',', substr($base64Image, 5), 2);
+                $mime = $split[0];
+                $mime_split_without_base64 = explode(';', $mime, 2);
+                $mime_split = explode('/', $mime_split_without_base64[0], 2);
+                $extension = $mime_split[1];
+
+                $filePathPreview = "previews/$randomFilename.$extension";
+                $filePathThumbnail = "thumbnails/$randomFilename.$extension";
+
+                $image = explode('base64,',$base64Image);
+                $image = end($image);
+                $image = str_replace(' ', '+', $image);
+
+                Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
+                Storage::disk('public')->put($filePathPreview,base64_decode($image));
+
+                // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
+                // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
+
+                OrderItemPhoto::create([
+                    'order_item_id' => $order_item->id,
+                    'thumbnail_url' => $filePathThumbnail,
+                    'preview_url' => $filePathPreview,
+                ]);
+            }
+        }
+
+        if ($request->ajax()) {
+            return response()->json($order);
+        }
+
         return redirect()->route('orders.index')->with('success', 'Excellence! Order ' . $order->name . ' updated successfully!');
     }
 

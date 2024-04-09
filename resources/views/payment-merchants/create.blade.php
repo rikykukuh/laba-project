@@ -44,7 +44,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <div class="form-group {{ $errors->has('payment_method_id') ? 'has-error' : '' }}">
-                                    <label for="payment_method_id">Client</label>
+                                    <label for="payment_method_id">Payment Method</label>
                                     <select name="payment_method_id" id="payment_method_id" class="form-control" data-placeholder="Choose Payment Method" required>
                                         <option disabled selected> -- Choose Payment Method -- </option>
                                         @foreach($payment_methods as $payment_method)
