@@ -50,7 +50,7 @@ class ClientController extends Controller
         if ($request->ajax()) {
             return response()->json($client);
         }
-        return redirect()->route('clients.index')->with('success', 'Great! Client ' . $client->name . ' created successfully!');
+        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil dibuat!');
     }
 
     /**
@@ -94,7 +94,7 @@ class ClientController extends Controller
             'city_id' => $request->city_id,
             'phone_number' => $request->phone_number,
         ]);
-        return redirect()->route('clients.index')->with('success', 'Excellence! Client ' . $client->name . ' updated successfully!');
+        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil diedit!');
     }
 
     /**
@@ -107,7 +107,7 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($id);
         $client->delete();
-        return redirect()->route('clients.index')->with('success', 'Well done! Client ' . $client->name . ' deleted successfully!');
+        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil dihapus!');
     }
 
     /**

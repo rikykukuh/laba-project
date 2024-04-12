@@ -40,7 +40,7 @@ class SiteController extends Controller
         $site = Site::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('sites.index')->with('success', 'Great! Site ' . $site->name . ' created successfully!');
+        return redirect()->route('sites.index')->with('success', 'Sukses! Cabang ' . $site->name . ' berhasil ditambahkan!');
     }
 
     /**
@@ -80,7 +80,7 @@ class SiteController extends Controller
         $site->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('sites.index')->with('success', 'Excellence! Site ' . $site->name . ' updated successfully!');
+        return redirect()->route('sites.index')->with('success', 'Sukses! Cabang ' . $site->name . ' berhasil diedit!');
     }
 
     /**
@@ -93,6 +93,6 @@ class SiteController extends Controller
     {
         $site = Site::findOrFail($id);
         $site->delete();
-        return redirect()->route('sites.index')->with('success', 'Well done! Site ' . $site->name . ' deleted successfully!');
+        return redirect()->route('sites.index')->with('success', 'Sukses! Cabang ' . $site->name . ' berhasil dihapus!');
     }
 }

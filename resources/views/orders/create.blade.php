@@ -2,13 +2,13 @@
 
 @section('icon_page', 'plus')
 
-@section('title', 'Add Order')
+@section('title', 'Tambah Pesanan')
 
 @section('menu_pagina')
 
 	<li role="presentation">
 		<a href="{{ route('orders.index') }}" class="link_menu_page">
-			<i class="fa fa-shopping-basket"></i> Orders
+			<i class="fa fa-shopping-basket"></i> Pesanan
 		</a>
 	</li>
 
@@ -22,15 +22,15 @@
     <div class="row">
         <div class="col-md-6">
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <div class="form-group">
-                        <label for="customer">Customer: <small class="text-danger">*</small></label>
+                        <label for="customer">Pelanggan: <small class="text-danger">*</small></label>
                         <select class="form-control" id="customer" name="customer" required></select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <!-- Trigger the modal with a button -->
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Add Customer</button>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
                     <!-- Modal -->
                     <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
                         <div class="modal-dialog modal-md">
@@ -39,26 +39,26 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Add Customer</h4>
+                                        <h4 class="modal-title">Tambah Pelanggan</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="name">Name: <small class="text-danger">*</small></label>
+                                            <label for="name">Nama: <small class="text-danger">*</small></label>
                                             <input type="text" class="form-control" id="name" name="name" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="phone">Phone: <small class="text-danger">*</small></label>
+                                            <label for="phone">No Telepon: <small class="text-danger">*</small></label>
                                             <input type="text" class="form-control" id="phone" name="phone" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="address">Address:</label>
+                                            <label for="address">Alamat:</label>
                                             <textarea class="form-control" id="address" name="address"></textarea>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Close Form</button>
-                                        <button type="submit" class="btn btn-primary">Submit Form</button>
+                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Batalkan</button>
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </div>
                             </form>
@@ -70,8 +70,8 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="site_id">Site: <small class="text-danger">*</small></label>
-                <select class="form-control" id="site_id" name="site_id" required>
+                <label for="site_id">Cabang: <small class="text-danger">*</small></label>
+                <select class="form-control select2" id="site_id" name="site_id" required>
                     @foreach($sites as $site)
                         <option value="{{ $site->id }}">{{ $site->name }}</option>
                     @endforeach
@@ -85,7 +85,7 @@
         <div class="col-md-6">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Detail User</h3>
+                    <h3 class="box-title">Detail Pelanggan</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
@@ -116,7 +116,7 @@
         <div class="col-md-12" id="items">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Items:</h3>
+                    <h3 class="box-title">Barang:</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
@@ -127,16 +127,26 @@
                     <div class="table-responsive no-padding">
                         <table class="table table-hover" id="table-items">
                             <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Type</th>
-                                <th>Note</th>
-                                <th>Photo</th>
-                                <th>Expense</th>
-                                <th>Action</th>
-                            </tr>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Jenis</th>
+                                    <th>Keterangan</th>
+                                    <th>Foto</th>
+                                    <th>Biaya</th>
+                                    <th>Aksi</th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Jenis</th>
+                                    <th>Keterangan</th>
+                                    <th>Foto</th>
+                                    <th>Biaya</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
 
@@ -153,7 +163,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="type_edit">Item Type: <small class="text-danger">*</small></label>
+                                            <label for="type_edit">Jenis Barang: <small class="text-danger">*</small></label>
                                             <select id="type_edit" class="form-control" name="type_edit">
                                                 @foreach($item_types as $item_type)
                                                     <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
@@ -169,7 +179,7 @@
                                             <input type="text" class="form-control" id="biaya_edit" name="biaya_edit">
                                         </div>
                                         <div class="form-group">
-                                            <label for="gambar_edit">Gambar: <small class="text-danger">*</small></label>
+                                            <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
                                         </div>
                                         <hr>
@@ -177,15 +187,15 @@
                                             <thead>
                                             <tr>
                                                 <th width="300">#</th>
-                                                <th width="300">Image</th>
+                                                <th width="300">Foto</th>
                                             </tr>
                                             </thead>
                                             <tbody class="content-image"></tbody>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-warning">Update</button>
+                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                        <button type="submit" class="btn btn-warning">Simpan</button>
                                     </div>
                                 </div>
                             </form>
@@ -199,21 +209,21 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">All Image Item</h4>
+                                    <h4 class="modal-title">Item Foto</h4>
                                 </div>
                                 <div class="modal-body">
                                     <table role="presentation" class="table table-striped table-bordered table-hover">
                                         <thead>
                                         <tr>
                                             <th width="300">#</th>
-                                            <th width="300">Image</th>
+                                            <th width="300">Foto</th>
                                         </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
                                     </table>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -227,7 +237,7 @@
         <div class="col-md-12" style="margin-bottom: 15px;">
             <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
                         <i class="glyphicon glyphicon-plus"></i>
-                        <span>Add item</span>
+                        <span>Tambah</span>
                     </span>
             <!-- Modal Add Item -->
             <div class="modal fade" id="modal-add-item" role="dialog" data-keyboard="false" data-backdrop="static">
@@ -237,11 +247,11 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Add Item</h4>
+                                <h4 class="modal-title">Tambah Barang</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="type">Item Type: <small class="text-danger">*</small></label>
+                                    <label for="type">Jenis Barang: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
                                         @foreach($item_types as $item_type)
                                             <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
@@ -257,7 +267,7 @@
                                     <input type="text" class="form-control" id="biaya" name="biaya" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="gambar">Gambar: <small class="text-danger">*</small></label>
+                                    <label for="gambar">Foto: <small class="text-danger">*</small></label>
                                     <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
                                 </div>
                                 <hr>
@@ -265,15 +275,15 @@
                                     <thead>
                                     <tr>
                                         <th width="300">#</th>
-                                        <th width="300">Image</th>
+                                        <th width="300">Foto</th>
                                     </tr>
                                     </thead>
                                     <tbody id="list-image"></tbody>
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                <button type="submit" class="btn btn-success">Simpan</button>
                             </div>
                         </div>
                     </form>
@@ -286,7 +296,7 @@
         <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Total Value Items</h3>
+                    <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
@@ -297,7 +307,7 @@
                         <input type="hidden" name="customer_id" id="customer_id" value="">
                         {{ csrf_field() }}
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Down payment: </b><input type="text" id="dp" name="dp" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp" value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
                         <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control" style="display: inline">
                         {{-- <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" value="0" readonly class="form-control" style="display: inline"></p> --}}
@@ -325,7 +335,7 @@
             {{--                 </div> --}}
             {{--                 <div class="modal-body"> --}}
             {{--                     <div class="form-group"> --}}
-            {{--                         <label for="type">Payment method: <small class="text-danger">*</small></label> --}}
+            {{--                         <label for="type">Metode Pembayaran: <small class="text-danger">*</small></label> --}}
             {{--                         <select class="form-control" id="type" name="type" required> --}}
             {{--                             @foreach($item_types as $item_type) --}}
             {{--                                 <option value="{{ $item_type->id }}">{{ $item_type->name }}</option> --}}
@@ -333,7 +343,7 @@
             {{--                         </select> --}}
             {{--                     </div> --}}
             {{--                     <div class="form-group"> --}}
-            {{--                         <label for="type_merchant">Payment merchant: <small class="text-danger">*</small></label> --}}
+            {{--                         <label for="type_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label> --}}
             {{--                         <select class="form-control" id="type_merchant" name="type_merchant" required> --}}
             {{--                             @foreach($payment_merchants as $payment_merchant) --}}
             {{--                                 <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option> --}}
@@ -360,11 +370,11 @@
             {{--         </form> --}}
             {{--     </div> --}}
             {{-- </div> --}}
-            <button type="button" class="btn bg-purple pull-left" style="margin-right: 15px;" onclick="createOrder()">
+            <button type="button" class="btn bg-purple pull-left" id="btn-order" style="margin-right: 15px;" onclick="createOrder()">
                 <i class="fa fa-fw fa-save"></i>
                 <span>Simpan</span>
             </button>
-            <a href="{{ route('orders.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i> Cancel</a>
+            <a href="{{ route('orders.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i> Batalkan</a>
         </div>
     </div>
 
@@ -452,7 +462,7 @@
                             ${index + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Item Image ${index + 1}" title="Item Image ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `;
@@ -474,7 +484,7 @@
                             ${i + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${dataFile[i]}" alt="Item Image ${i + 1}" title="Item Image ${i + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `);
@@ -505,7 +515,7 @@
                             ${index + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Item Image ${index + 1}" title="Item Image ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `;
@@ -515,7 +525,7 @@
         }
 
         function removeItem(e, el, index) {
-            if (confirm("Are you sure you want to DELETE this item?") === true) {
+            if (confirm("Apakah Anda yakin ingin MENGHAPUS item ini?") === true) {
 
                 items.splice(index, 1);
                 renderItems();
@@ -525,9 +535,9 @@
                     $('.total-items').hide();
                 }
 
-                const message = 'Remove item successfully!';
+                const message = 'Item berhasil dihapus';
                 $('.top-right').notify({
-                    message: { text: `Success! ${message}` }
+                    message: { text: `Sukses! ${message}` }
                 }).show();
 
             }
@@ -547,11 +557,11 @@
                     console.log(response);
                     const user_id = response.id;
                     const type = 'success';
-                    const message = 'Customer data saved successfully!'
+                    const message = 'Pelanggan berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                          <strong>Success!</strong> ${message}
+                          <strong>Sukses!</strong> ${message}
                         </div>
                     `;
                     $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
@@ -570,7 +580,7 @@
                     // Handle errors
                     console.error(error);
                     const type = 'danger';
-                    const message = 'Customer data does not saved successfully!'
+                    const message = 'Pelanggan tidak bisa disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -612,11 +622,11 @@
                         <td>${item.keterangan}</td>
                         <td>
                             <!--
-                            <img src="${imageSource}" alt="Item Image" class="img-thumbnail" style="height:50px">
+                            <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
                             -->
                             <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable(${index})">
                                 <i class="fa fa-image margin-r-5"></i>
-                                <span>Show images</span>
+                                <span>Tampilkan Foto</span>
                             </span>
                         </td>
                         <td>
@@ -624,7 +634,7 @@
                         </td>
                         <td>
                             <button type="button" class="btn btn-warning btn-xs margin-r-5" data-toggle="modal" data-target="#modal-edit-item" onclick="showEditItemForm(${index})">Edit</button>
-                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeItem(event, this, ${index})">Remove</button>
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeItem(event, this, ${index})">Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -656,9 +666,9 @@
             renderItems();
 
             // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-            const message = 'Add item successfully!';
+            const message = 'Barang berhasil ditambahkan!';
             $('.top-right').notify({
-                message: { text: `Success! ${message}` }
+                message: { text: `Sukses! ${message}` }
             }).show();
 
             // Tutup modal setelah selesai menyimpan data
@@ -698,9 +708,9 @@
             renderItems();
 
             // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-            const message = 'Edit item successfully!';
+            const message = 'Barang berhasil diedit!';
             $('.top-right').notify({
-                message: { text: `Success! ${message}` }
+                message: { text: `Sukses! ${message}` }
             }).show();
 
             // Tutup modal setelah selesai menyimpan data
@@ -758,11 +768,11 @@
                     // Handle response
                     console.log(response);
                     const type = 'success';
-                    const message = 'Order data saved successfully!'
+                    const message = 'Order berhasil dibuat'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                          <strong>Success!</strong> ${message}
+                          <strong>Sukses!</strong> ${message}
                         </div>
                     `;
                     $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
@@ -777,7 +787,7 @@
                     // Handle errors
                     console.error(error);
                     const type = 'danger';
-                    const message = 'Order data does not saved successfully!'
+                    const message = 'Order tidak berhasil disimpan!'
                     const statusCode = `${xhr.statusText} (${xhr.status})`;
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
@@ -850,16 +860,16 @@
                 // detail-user
                 $('#detail-user').html(`
                     <p class="text-muted well well-sm no-shadow margin-b-10">
-                        <strong>Customer Name:</strong> ${customerName === null ? '-' : customerName}
+                        <strong>Nama:</strong> ${customerName === null ? '-' : customerName}
                          <br>
-                        <strong>Address:</strong> ${address === null ? '-' : address}
+                        <strong>Alamat:</strong> ${address === null ? '-' : address}
                         <br>
-                        <strong>Phone:</strong> ${phone === null ? '-' : phone}
+                        <strong>Telepon:</strong> ${phone === null ? '-' : phone}
                     </p>
                 `);
                 // status-customer
                 $('#status-customer').html(`
-                    <p class="text-center margin-b-10"><b>NEW</b></p>
+                    <p class="text-center margin-b-10"><b>BARU</b></p>
                     <p class="text-center margin-b-2"><b>Oleh: </b> -<!-- ${customerName === null ? '-' : customerName} --></p>
                     <p class="text-center margin-b-2"><b>Pada: </b> -<!-- ${phone === null ? '-' : phone} --></p>
                 `);
@@ -901,7 +911,7 @@
                 $(this).val(formattedNumber);
             });
 
-            // $('.select2').select2();
+            $('#site_id').select2();
             // $('.select2').select2({
             //     "language": {
             //         "noResults": function(){

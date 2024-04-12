@@ -40,7 +40,7 @@ class CityController extends Controller
         $city = City::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Great! City ' . $city->name . ' created successfully!');
+        return redirect()->route('cities.index')->with('success', 'Sukses! Kota ' . $city->name . ' berhasil disimpan!');
     }
 
     /**
@@ -80,7 +80,7 @@ class CityController extends Controller
         $city->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('cities.index')->with('success', 'Excellence! City ' . $city->name . ' updated successfully!');
+        return redirect()->route('cities.index')->with('success', 'Berhasil! Kota ' . $city->name . ' berhasil diedit!');
     }
 
     /**
@@ -93,6 +93,6 @@ class CityController extends Controller
     {
         $city = City::findOrFail($id);
         $city->delete();
-        return redirect()->route('cities.index')->with('success', 'Well done! City ' . $city->name . ' deleted successfully!');
+        return redirect()->route('cities.index')->with('success', 'Sukses! Kota ' . $city->name . ' berhasil dihapus!');
     }
 }

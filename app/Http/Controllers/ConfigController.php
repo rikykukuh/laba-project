@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Config;
 use App\Http\Requests\ConfigRequest;
-use App\Models\PermissionGroup; 
-use App\Models\Permission; 
-use App\Models\Role; 
+use App\Models\PermissionGroup;
+use App\Models\Permission;
+use App\Models\Role;
 use Gate;
 use App;
 
 class ConfigController extends Controller
-{    
+{
     public function index()
     {
 
@@ -20,36 +20,36 @@ class ConfigController extends Controller
 
         $this->authorize('root-dev', $config);
 
-		$roles = Role::all(); 
+		$roles = Role::all();
 
 		$permission_groups = PermissionGroup::paginate(15);
 
 		$permissions = Permission::paginate(15);
-           	
+
     	return view('config.index',compact('config', 'permission_groups', 'permissions', 'roles'));
     }
 
     public function update(ConfigRequest $request, $id)
-    {   
+    {
         $this->authorize('root-dev', Config::class);
 
-    	Config::find($id)->update($request->all());		
+    	Config::find($id)->update($request->all());
 
     	if($request->file('caminho_img_login')){
     		$file = $request->file('caminho_img_login');
-    		$ext  = $file->guessClientExtension();			
+    		$ext  = $file->guessClientExtension();
             $path = $file->move("img/config", "logo.{$ext}");
     		Config::where('id', 1)->update(['caminho_img_login' => "img/config/logo.{$ext}"]);
     	}
 
     	if($request->file('favicon')){
     		$file = $request->file('favicon');
-    		$ext  = $file->guessClientExtension();			
+    		$ext  = $file->guessClientExtension();
             $path = $file->move("img/config", "favicon.{$ext}");
     		Config::where('id', 1)->update(['favicon' => "img/config/favicon.{$ext}"]);
     	}
 
-        $this->flashMessage('check', 'Application settings updated successfully!', 'success');
+        $this->flashMessage('check', 'Application settings berhasil diedit!', 'success');
 
     	return redirect()->route('config');
     }
@@ -66,12 +66,12 @@ class ConfigController extends Controller
     }
 
     public function updatePermissionGroup(Request $request, $id)
-    {   
+    {
         $this->authorize('root-dev', Config::class);
 
-    	PermissionGroup::find($id)->update($request->all());    	
+    	PermissionGroup::find($id)->update($request->all());
 
-        $this->flashMessage('check', 'Permission Group updated successfully!', 'success');
+        $this->flashMessage('check', 'Permission Group berhasil diedit!', 'success');
 
     	return redirect()->route('config');
     }
@@ -88,12 +88,12 @@ class ConfigController extends Controller
     }
 
     public function updatePermission(Request $request, $id)
-    {   
+    {
         $this->authorize('root-dev', Config::class);
 
-    	Permission::find($id)->update($request->all());    	
+    	Permission::find($id)->update($request->all());
 
-        $this->flashMessage('check', 'Permission updated successfully!', 'success');
+        $this->flashMessage('check', 'Permission berhasil diedit!', 'success');
 
     	return redirect()->route('config');
     }

@@ -40,7 +40,7 @@ class ItemTypeController extends Controller
         $item_type = ItemType::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('item-types.index')->with('success', 'Great! Item Type ' . $item_type->name . ' created successfully!');
+        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil dibuat!');
     }
 
     /**
@@ -80,7 +80,7 @@ class ItemTypeController extends Controller
         $item_type->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('item-types.index')->with('success', 'Excellence! Item Type ' . $item_type->name . ' updated successfully!');
+        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil diedit!');
     }
 
     /**
@@ -93,6 +93,6 @@ class ItemTypeController extends Controller
     {
         $item_type = ItemType::findOrFail($id);
         $item_type->delete();
-        return redirect()->route('item-types.index')->with('success', 'Well done! Item Type ' . $item_type->name . ' deleted successfully!');
+        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil dihapus!');
     }
 }

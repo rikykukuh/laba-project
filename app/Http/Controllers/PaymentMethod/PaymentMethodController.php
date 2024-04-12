@@ -40,7 +40,7 @@ class PaymentMethodController extends Controller
         $payment_method = PaymentMethod::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('payment-methods.index')->with('success', 'Great! Payment Method ' . $payment_method->name . ' created successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Sukses! Metode Pembayaran ' . $payment_method->name . ' berhasil dibuat!');
     }
 
     /**
@@ -80,7 +80,7 @@ class PaymentMethodController extends Controller
         $payment_method->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('payment-methods.index')->with('success', 'Excellence! Payment Method ' . $payment_method->name . ' updated successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Sukses! Metode Pembayaran ' . $payment_method->name . ' berhasil diedit!');
     }
 
     /**
@@ -93,6 +93,6 @@ class PaymentMethodController extends Controller
     {
         $payment = PaymentMethod::findOrFail($id);
         $payment->delete();
-        return redirect()->route('payment-methods.index')->with('success', 'Well done! Payment ' . $payment->name . ' deleted successfully!');
+        return redirect()->route('payment-methods.index')->with('success', 'Sukses! Metode Pembayaran ' . $payment->name . ' berhasil dihapus!');
     }
 }

@@ -121,7 +121,7 @@ class OrderController extends Controller
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Great! Order ' . $order->name . ' created successfully!');
+        return redirect()->route('orders.index')->with('success', 'Sukses! Order ' . $order->name . ' berhasil dibuat!');
     }
 
     public function show($id)
@@ -242,13 +242,13 @@ class OrderController extends Controller
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Excellence! Order ' . $order->name . ' updated successfully!');
+        return redirect()->route('orders.index')->with('success', 'Sukses Order ' . $order->name . ' berhasil diedit!');
     }
 
     public function destroy($id)
     {
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Well done! Order ' . $order->name . ' deleted successfully!');
+        return redirect()->route('orders.index')->with('success', 'Sukses! Order ' . $order->name . ' berhasil dihapus!');
     }
 }

@@ -39,7 +39,7 @@
                                             <td class="text-center">
                                                 <a class="btn btn-default  btn-xs" href="{{ route('payments.show', $payment->id) }}" title="See {{ $payment->name }}"><i class="fa fa-eye">   </i></a>
                                                 <a class="btn btn-warning  btn-xs" href="{{ route('payments.edit', $payment->id) }}" title="Edit {{ $payment->name }}"><i class="fa fa-pencil"></i></a>
-                                                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('ayments.destroy', $payment->id) }}" method="post" style="display: inline-block">
+                                                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('ayments.destroy', $payment->id) }}" method="post" style="display: inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $payment->name}}" data-toggle="modal" data-target="#modal-delete-{{ $payment->id }}"><i class="fa fa-trash"></i></button>

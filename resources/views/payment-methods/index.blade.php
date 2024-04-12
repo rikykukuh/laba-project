@@ -2,13 +2,13 @@
 
 @section('icon_page', 'exchange')
 
-@section('title', 'Payment Methods')
+@section('title', 'Metode Pembayaran')
 
 @section('menu_pagina')
 
 	<li role="presentation">
 		<a href="{{ route('payment-methods.create') }}" class="link_menu_page">
-			<i class="fa fa-plus"></i> Add
+			<i class="fa fa-plus"></i> Tambah Metode Pembayaran
 		</a>
 	</li>
 
@@ -25,9 +25,9 @@
 						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th>Nama</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -37,9 +37,9 @@
                                             <td>{{$payment_method->name}}</td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($payment_method->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
-                                                <a class="btn btn-default  btn-xs" href="{{ route('payment-methods.show', $payment_method->id) }}" title="See {{ $payment_method->name }}"><i class="fa fa-eye">   </i></a>
+                                                <a class="btn btn-default  btn-xs" href="{{ route('payment-methods.show', $payment_method->id) }}" title="Detail {{ $payment_method->name }}"><i class="fa fa-eye">   </i></a>
                                                 <a class="btn btn-warning  btn-xs" href="{{ route('payment-methods.edit', $payment_method->id) }}" title="Edit {{ $payment_method->name }}"><i class="fa fa-pencil"></i></a>
-                                                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('payment-methods.destroy', $payment_method->id) }}" method="post" style="display: inline-block">
+                                                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('payment-methods.destroy', $payment_method->id) }}" method="post" style="display: inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $payment_method->name}}" data-toggle="modal" data-target="#modal-delete-{{ $payment_method->id }}"><i class="fa fa-trash"></i></button>
@@ -52,9 +52,9 @@
 							</tbody>
 							<tfoot>
 								<tr>
-									<th>Name</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th>Nama</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</tfoot>
 						</table>

@@ -2,13 +2,13 @@
 
 @section('icon_page', 'shopping-basket')
 
-@section('title', 'Orders')
+@section('title', 'Pesanan')
 
 @section('menu_pagina')
 
     <li role="presentation">
         <a href="{{ route('orders.create') }}" class="link_menu_page">
-            <i class="fa fa-plus"></i> Add
+            <i class="fa fa-plus"></i> Tambah Pesanan
         </a>
     </li>
 
@@ -43,7 +43,7 @@
 {{--            <div class="box-footer with-border">--}}
 {{--                <a href="{{ route('orders.index') }}" class="btn btn-default pull-left" style="margin-right: 10px;">Back to Orders</a>--}}
 {{--                <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning pull-left" style="margin-right: 10px;">Edit Order</a>--}}
-{{--                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">--}}
+{{--                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">--}}
 {{--                    @csrf--}}
 {{--                    @method('DELETE')--}}
 {{--                    <button type="submit" class="btn btn-danger pull-left" style="margin-right: 10px;">Delete Order</button>--}}
@@ -64,15 +64,15 @@
     <div class="row">
         <div class="col-md-6">
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <div class="form-group">
-                        <label for="customer">Customer: <small class="text-danger">*</small></label>
+                        <label for="customer">Pelanggan: <small class="text-danger">*</small></label>
                         <select class="form-control" id="customer" name="customer" required></select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <!-- Trigger the modal with a button -->
-                    <button type="button" class="btn btn-info" id="btn-add-customer" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Add Customer</button>
+                    <button type="button" class="btn btn-info" id="btn-add-customer" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
                     <!-- Modal -->
                     <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
                         <div class="modal-dialog modal-md">
@@ -81,7 +81,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Add Customer</h4>
+                                        <h4 class="modal-title">Tambah Pelanggan</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -98,9 +98,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Close Form</button>
-                                        <button type="submit" class="btn btn-primary">Submit Form</button>
+                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Batalkan</button>
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </div>
                             </form>
@@ -112,7 +112,7 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label for="site_id">Site: <small class="text-danger">*</small></label>
+                <label for="site_id">Cabang: <small class="text-danger">*</small></label>
                 <select class="form-control" id="site_id" name="site_id" required>
                     @foreach($sites as $site)
                         <option value="{{ $site->id }}" {{ $order->site_id === $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
@@ -127,7 +127,7 @@
         <div class="col-md-6">
             <div class="box box-success">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Detail User</h3>
+                    <h3 class="box-title">Detail Pelanggan</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
@@ -135,11 +135,11 @@
                 </div>
                 <div class="box-body" id="detail-user">
                     <p class="text-muted well well-sm no-shadow margin-b-10">
-                        <strong>Customer Name:</strong> {{ $order->client->name ?? '-' }}
+                        <strong>Nama:</strong> {{ $order->client->name ?? '-' }}
                         <br>
-                        <strong>Address:</strong> {{ $order->client->address ?? '-' }}
+                        <strong>Alamat:</strong> {{ $order->client->address ?? '-' }}
                         <br>
-                        <strong>Phone:</strong> {{ $order->client->phone_number ?? '-' }}
+                        <strong>Telepon:</strong> {{ $order->client->phone_number ?? '-' }}
                     </p>
                 </div>
             </div>
@@ -168,7 +168,7 @@
         <div class="col-md-12" id="items">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Items:</h3>
+                    <h3 class="box-title">Barang:</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
@@ -179,14 +179,14 @@
                     <div class="table-responsive no-padding">
                         <table class="table table-hover" id="table-items">
                             <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Type</th>
-                                <th>Note</th>
-                                <th>Photo</th>
-                                <th>Expense</th>
-                                <th>Action</th>
-                            </tr>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Jenis</th>
+                                    <th>Keterangan</th>
+                                    <th>Foto</th>
+                                    <th>Biaya</th>
+                                    <th>Aksi</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 @foreach($order->orderItems as $orderItem)
@@ -196,7 +196,7 @@
                                         <td>{{ $orderItem->note }}</td>
                                         <td>
                                             <!--
-                                            <img src="${imageSource}" alt="Item Image" class="img-thumbnail" style="height:50px">
+                                            <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
                                             -->
                                             <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable({{ $loop->iteration - 1 }})">
                                                 <i class="fa fa-image margin-r-5"></i>
@@ -213,6 +213,16 @@
                                     </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Jenis</th>
+                                    <th>Keterangan</th>
+                                    <th>Foto</th>
+                                    <th>Biaya</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
 
@@ -225,11 +235,11 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Edit Item</h4>
+                                        <h4 class="modal-title">Edit Barang</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="type_edit">Item Type: <small class="text-danger">*</small></label>
+                                            <label for="type_edit">Jenis Barang: <small class="text-danger">*</small></label>
                                             <select id="type_edit" class="form-control" name="type_edit" required>
                                                 @foreach($item_types as $item_type)
                                                     <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
@@ -245,7 +255,7 @@
                                             <input type="text" class="form-control" id="biaya_edit" name="biaya_edit">
                                         </div>
                                         <div class="form-group">
-                                            <label for="gambar_edit">Gambar: <small class="text-danger">*</small></label>
+                                            <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
                                         </div>
                                         <hr>
@@ -253,15 +263,15 @@
                                             <thead>
                                             <tr>
                                                 <th width="300">#</th>
-                                                <th width="300">Image</th>
+                                                <th width="300">Foto</th>
                                             </tr>
                                             </thead>
                                             <tbody class="content-image"></tbody>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-warning">Update</button>
+                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                        <button type="submit" class="btn btn-warning">Simpan</button>
                                     </div>
                                 </div>
                             </form>
@@ -275,14 +285,14 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">All Image Item</h4>
+                                    <h4 class="modal-title">Item Foto</h4>
                                 </div>
                                 <div class="modal-body">
                                     <table role="presentation" class="table table-striped table-bordered table-hover">
                                         <thead>
                                         <tr>
                                             <th width="300">#</th>
-                                            <th width="300">Image</th>
+                                            <th width="300">Foto</th>
                                         </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
@@ -317,7 +327,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="type">Item Type: <small class="text-danger">*</small></label>
+                                    <label for="type">Jenis Barang: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
                                         @foreach($item_types as $item_type)
                                             <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
@@ -333,7 +343,7 @@
                                     <input type="text" class="form-control" id="biaya" name="biaya" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="gambar">Gambar: <small class="text-danger">*</small></label>
+                                    <label for="gambar">Foto: <small class="text-danger">*</small></label>
                                     <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
                                 </div>
                                 <hr>
@@ -362,7 +372,7 @@
         <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Total Value Items</h3>
+                    <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
@@ -373,7 +383,7 @@
                         <input type="hidden" name="customer_id" id="customer_id" value="{{ $order->client->id }}">
                         {{ csrf_field() }}
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Down payment: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">{{ number_format($order->orderItems->sum('total') - $order->uang_muka, null, ',', '.') }}</span></p>
                         <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" readonly class="form-control" style="display: inline"></p>
                     </form>
@@ -400,7 +410,7 @@
                              </div>
                              <div class="modal-body">
                                  <div class="form-group">
-                                     <label for="payment_method">Payment method: <small class="text-danger">*</small></label>
+                                     <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
                                      <select class="form-control" id="payment_method" name="payment_method" required>
                                          @foreach($payment_methods as $payment_method)
                                              <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
@@ -408,7 +418,7 @@
                                      </select>
                                  </div>
                                  <div class="form-group">
-                                     <label for="payment_merchant">Payment merchant: <small class="text-danger">*</small></label>
+                                     <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
                                      <select class="form-control" id="payment_merchant" name="payment_merchant" required>
                                          @foreach($payment_merchants as $payment_merchant)
                                              <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>
@@ -569,7 +579,7 @@
                             ${index + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Item Image ${index + 1}" title="Item Image ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `;
@@ -591,7 +601,7 @@
                             ${i + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${dataFile[i]}" alt="Item Image ${i + 1}" title="Item Image ${i + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `);
@@ -623,7 +633,7 @@
                             ${index + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Item Image ${index + 1}" title="Item Image ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
                     </tr>
                 `;
@@ -642,9 +652,9 @@
                     $('.total-items').hide();
                 }
 
-                const message = 'Remove item successfully!';
+                const message = 'Barang berhasil dihapus!';
                 $('.top-right').notify({
-                    message: { text: `Success! ${message}` }
+                    message: { text: `Sukses! ${message}` }
                 }).show();
 
             }
@@ -664,11 +674,11 @@
                     console.log(response);
                     const user_id = response.id;
                     const type = 'success';
-                    const message = 'Customer data saved successfully!'
+                    const message = 'Pelanggan berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                          <strong>Success!</strong> ${message}
+                          <strong>Sukses!</strong> ${message}
                         </div>
                     `;
                     $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
@@ -690,7 +700,7 @@
                     // Handle errors
                     console.error(error);
                     const type = 'danger';
-                    const message = 'Customer data does not saved successfully!'
+                    const message = 'Pelanggan tidak berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -738,11 +748,11 @@
                     console.log(response);
                     const user_id = response.id;
                     const type = 'success';
-                    const message = 'Pickup item successfully!'
+                    const message = 'Barang berhasil diambil!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                          <strong>Success!</strong> ${message}
+                          <strong>Sukses!</strong> ${message}
                         </div>
                     `;
                     $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
@@ -765,7 +775,7 @@
                     // Handle errors
                     console.error(error);
                     const type = 'danger';
-                    const message = 'Customer data does not saved successfully!'
+                    const message = 'Pelanggan tidak berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -791,7 +801,7 @@
 
             // Loop melalui setiap item dan tambahkan baris HTML untuk masing-masing item
             items.forEach(function(item, index) {
-                console.log('item type', item.type);
+                console.log('Jenis Barang', item.type);
                 let type = getTypeById(item.type, item_types);
                 const imageSource = ''; // Tentukan sumber gambar, misalnya dari properti gambar item
                 const row = `
@@ -801,7 +811,7 @@
                         <td>${item.keterangan}</td>
                         <td>
                             <!--
-                            <img src="${imageSource}" alt="Item Image" class="img-thumbnail" style="height:50px">
+                            <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
                             -->
                             <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable(${index})">
                                 <i class="fa fa-image margin-r-5"></i>
@@ -846,9 +856,9 @@
                 renderItems();
 
                 // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-                const message = 'Add item successfully!';
+                const message = 'Barangh berhasil ditambahkan!';
                 $('.top-right').notify({
-                    message: { text: `Success! ${message}` }
+                    message: { text: `Sukses! ${message}` }
                 }).show();
 
                 // Tutup modal setelah selesai menyimpan data
@@ -888,7 +898,7 @@
                 renderItems();
 
                 // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-                const message = 'Edit item successfully!';
+                const message = 'Barang berhasil diedit!';
                 $('.top-right').notify({
                     message: { text: `Success! ${message}` }
                 }).show();

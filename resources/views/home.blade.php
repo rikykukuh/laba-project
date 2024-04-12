@@ -4,7 +4,7 @@
 
 @section('title', 'Dashboard ')
 
-@section('menu_pagina')	
+@section('menu_pagina')
 
 @section('content')
   <div class="row">
@@ -14,12 +14,12 @@
         <div class="inner">
           <h3>{{ $permissionCount }}</h3>
 
-          <p>Roles</p>
+          <p>Peran</p>
         </div>
         <div class="icon">
           <i class="ion ion-person-stalker"></i>
         </div>
-        <a href="{{ route('role') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('role') }}" class="small-box-footer">Info lanjut <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
     <!-- ./col -->
@@ -29,12 +29,12 @@
         <div class="inner">
           <h3>{{ $activeUserCount }}</h3>
 
-          <p>Admin Registered</p>
+          <p>Admin Terdaftar</p>
         </div>
         <div class="icon">
           <i class="ion ion-person-add"></i>
         </div>
-        <a href="{{ route('user') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('user') }}" class="small-box-footer">Info lanjut <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
     <!-- ./col -->

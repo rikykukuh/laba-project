@@ -2,13 +2,13 @@
 
 @section('icon_page', 'shopping-basket')
 
-@section('title', 'Orders')
+@section('title', 'Pesanan')
 
 @section('menu_pagina')
 
 	<li role="presentation">
 		<a href="{{ route('orders.create') }}" class="link_menu_page">
-			<i class="fa fa-plus"></i> Add
+			<i class="fa fa-plus"></i> Tambar Pesanan
 		</a>
 	</li>
 
@@ -25,12 +25,12 @@
 						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th>Client Name</th>
+									<th>Nama Pelanggan</th>
 									{{-- <th>Note</th> --}}
 									{{-- <th class="text-center">Total</th> --}}
 									<th class="text-center">Status</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -65,9 +65,9 @@
                                             </td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($order->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
-                                                <a class="btn btn-default  btn-xs" href="{{ route('orders.show', $order->id) }}" title="See {{ $order->name }}"><i class="fa fa-eye">   </i></a>
-                                                <a class="btn btn-warning  btn-xs" href="{{ route('orders.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a>
-                                                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">
+                                                <a class="btn btn-default  btn-xs" href="{{ route('orders.show', $order->id) }}" title="Detail {{ $order->name }}"><i class="fa fa-eye">   </i></a>
+                                                {{-- <a class="btn btn-warning  btn-xs" href="{{ route('orders.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a> --}}
+                                                <form onsubmit="return confirm(''Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $order->name}}" data-toggle="modal" data-target="#modal-delete-{{ $order->id }}"><i class="fa fa-trash"></i></button>
@@ -80,12 +80,12 @@
 							</tbody>
 							<tfoot>
 								<tr>
-                                    <th>Client Name</th>
+                                    <th>Nama Pelanggan</th>
                                     {{-- <th>Note</th> --}}
 									{{-- <th class="text-center">Total</th> --}}
 									<th class="text-center">Status</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</tfoot>
 						</table>

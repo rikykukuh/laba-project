@@ -2,13 +2,13 @@
 
 @section('icon_page', 'plus')
 
-@section('title', 'Add Item Types')
+@section('title', 'Tambah Jenis Barang')
 
 @section('menu_pagina')
 
 	<li role="presentation">
 		<a href="{{ route('item-types.index') }}" class="link_menu_page">
-			<i class="fa fa-list-alt"></i> Item Types
+			<i class="fa fa-list-alt"></i> Jenis Barang
 		</a>
 	</li>
 
@@ -20,9 +20,9 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Add Item Type</h3>
+                    <h3 class="box-title">Tambah Jenis Barang</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Item Type">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Jenis Barang">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                                    <label for="name">Item Type Name</label>
+                                    <label for="name">Nama Jenis Barang</label>
                                     <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus>
                                     @if($errors->has('name'))
                                         <span class="help-block">
@@ -43,8 +43,8 @@
                                 </div>
                             </div>
                             <div class="col-lg-12">
-                               <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Add</button>
-                                <a href="{{ route('item-types.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Cancel</a>
+                               <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Tambah</button>
+                                <a href="{{ route('item-types.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Batalkan</a>
                             </div>
                         </div>
                     </form>

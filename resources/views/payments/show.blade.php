@@ -35,7 +35,7 @@
             <div class="box-footer with-border">
                 <a href="{{ route('cities.index') }}" class="btn btn-default pull-left" style="margin-right: 10px;">Back to Cities</a>
                 <a href="{{ route('cities.edit', $payment->id) }}" class="btn btn-warning pull-left" style="margin-right: 10px;">Edit Payment</a>
-                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('cities.destroy', $payment->id) }}" method="post" style="display: inline-block">
+                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('cities.destroy', $payment->id) }}" method="post" style="display: inline-block">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger pull-left" style="margin-right: 10px;">Delete Payment</button>

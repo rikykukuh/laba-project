@@ -18,7 +18,7 @@
             @endif
             <span class="hidden-xs">
             @if(Auth::user('name'))
-              {{ Auth::user()->name }}
+                {{ ucwords(Auth::user()->name) }}
             @endif
             </span>
           </a>
@@ -31,7 +31,7 @@
               @endif
               <p>
                 @if(Auth::user('name'))
-                  {{ Auth::user()->name }}
+                  {{ ucwords(Auth::user()->name) }}
                 @endif
                 <small>Member Since {{ Auth::user()->created_at->format('M Y') }}</small>
               </p>

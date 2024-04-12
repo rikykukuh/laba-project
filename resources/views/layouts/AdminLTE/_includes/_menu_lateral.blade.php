@@ -10,37 +10,37 @@
 			</li>
 
 			<li class="{{Request::segment(1) === 'orders' ? 'active' : null}}">
-				<a href="{{ route('orders.index') }}" title="Orders"><i class="fa fa-shopping-cart"></i> <span> Order</span></a>
+				<a href="{{ route('orders.index') }}" title="Pesanan"><i class="fa fa-shopping-cart"></i> <span> Pesanan</span></a>
 			</li>
 
             <li class="{{Request::segment(1) === 'cities' ? 'active' : null}}">
-                <a href="{{ route('cities.index') }}" title="City"><i class="fa fa-map-marker"></i> <span> City</span></a>
+                <a href="{{ route('cities.index') }}" title="Kota"><i class="fa fa-map-marker"></i> <span> Kota</span></a>
             </li>
 
             <li class="{{Request::segment(1) === 'clients' ? 'active' : null}}">
-                <a href="{{ route('clients.index') }}" title="Clients"><i class="fa fa-users"></i> <span> Client</span></a>
+                <a href="{{ route('clients.index') }}" title="Pelanggan"><i class="fa fa-users"></i> <span> Pelanggan</span></a>
             </li>
 
             <li class="{{Request::segment(1) === 'sites' ? 'active' : null}}">
-                <a href="{{ route('sites.index') }}" title="Site"><i class="fa fa-list-ol"></i> <span> Sites</span></a>
+                <a href="{{ route('sites.index') }}" title="Cabang"><i class="fa fa-list-ol"></i> <span> Cabang</span></a>
             </li>
 
             <li class="{{Request::segment(1) === 'item-types' ? 'active' : null}}">
-                <a href="{{ route('item-types.index') }}" title="Item Type"><i class="fa fa-list-alt"></i> <span> Item Type</span></a>
+                <a href="{{ route('item-types.index') }}" title="Jenis Barang"><i class="fa fa-list-alt"></i> <span> Jenis Barang</span></a>
             </li>
 
             <li class="{{Request::segment(1) === 'payment-methods' ? 'active' : null}}">
-                <a href="{{ route('payment-methods.index') }}" title="Payment Method"><i class="fa fa-exchange"></i> <span> Payment Method</span></a>
+                <a href="{{ route('payment-methods.index') }}" title="Metode Pembayaran"><i class="fa fa-exchange"></i> <span> Metode Pembayaran</span></a>
             </li>
 
             <li class="{{Request::segment(1) === 'payment-merchants' ? 'active' : null}}">
-                <a href="{{ route('payment-merchants.index') }}" title="Payment Merchant"><i class="fa fa-building"></i> <span> Payment Merchant</span></a>
+                <a href="{{ route('payment-merchants.index') }}" title="Penyedia Pembayaran"><i class="fa fa-building"></i> <span> Penyedia Pembayaran</span></a>
             </li>
 
 			@if(Request::segment(1) === 'profile')
 
 			<li class="{{ Request::segment(1) === 'profile' ? 'active' : null }}">
-				<a href="{{ route('profile') }}" title="Profile"><i class="fa fa-user"></i> <span> PROFILE</span></a>
+				<a href="{{ route('profile') }}" title="Profil"><i class="fa fa-user"></i> <span> Profil</span></a>
 			</li>
 
 			@endif
@@ -49,9 +49,9 @@
 				{{ Request::segment(1) === 'user' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'role' ? 'active menu-open' : null }}
 				">
-				<a href="#">
+				<a href="#" title="Pengaturan">
 					<i class="fa fa-gear"></i>
-					<span>SETTINGS</span>
+					<span>Pengaturan</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
@@ -68,8 +68,8 @@
 						{{ Request::segment(1) === 'user' ? 'active' : null }}
 						{{ Request::segment(1) === 'role' ? 'active' : null }}
 						">
-						<a href="{{ route('user') }}" title="Users">
-							<i class="fa fa-user"></i> <span> Users</span>
+						<a href="{{ route('user') }}" title="Pengguna">
+							<i class="fa fa-user"></i> <span> Pengguna</span>
 						</a>
 					</li>
 				</ul>

@@ -18,7 +18,7 @@ class CreatePaymentsTable extends Migration
             $table->integer('order_id');
             $table->integer('payment_method_id');
             $table->integer('payment_merchant_id');
-            $table->decimal('total', 10, 2)->nullable();
+            $table->decimal('value', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

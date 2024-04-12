@@ -41,7 +41,7 @@ class PaymentController extends Controller
         $payment = Payment::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('payments.index')->with('success', 'Great! Payment ' . $payment->name . ' created successfully!');
+        return redirect()->route('payments.index')->with('success', 'Sukses! Payment ' . $payment->name . ' berhasil dibuat!');
     }
 
     /**
@@ -81,7 +81,7 @@ class PaymentController extends Controller
         $payment->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('payments.index')->with('success', 'Excellence! Payment ' . $payment->name . ' updated successfully!');
+        return redirect()->route('payments.index')->with('success', 'Sukses Payment ' . $payment->name . ' berhasil diedit!');
     }
 
     /**
@@ -94,6 +94,6 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
         $payment->delete();
-        return redirect()->route('payments.index')->with('success', 'Well done! Payment ' . $payment->name . ' deleted successfully!');
+        return redirect()->route('payments.index')->with('success', 'Sukses! Payment ' . $payment->name . ' berhasil dihapus!');
     }
 }

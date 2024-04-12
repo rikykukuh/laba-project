@@ -43,7 +43,7 @@ class PaymentMerchantController extends Controller
             'name' => $request->name,
             'payment_method_id' => $request->payment_method_id,
         ]);
-        return redirect()->route('payment-merchants.index')->with('success', 'Great! Payment Merchant ' . $payment_merchant->name . ' created successfully!');
+        return redirect()->route('payment-merchants.index')->with('success', 'Sukses! Penyedia Pembayaran ' . $payment_merchant->name . ' berhasil dibuat!');
     }
 
     /**
@@ -85,7 +85,7 @@ class PaymentMerchantController extends Controller
             'name' => $request->name,
             'payment_method_id' => $request->payment_method_id,
         ]);
-        return redirect()->route('payment-merchants.index')->with('success', 'Excellence! Payment Merchant ' . $payment_merchant->name . ' updated successfully!');
+        return redirect()->route('payment-merchants.index')->with('success', 'Sukses! Penyedia Pembayaran ' . $payment_merchant->name . ' berhasil diedit!');
     }
 
     /**
@@ -98,6 +98,6 @@ class PaymentMerchantController extends Controller
     {
         $payment_merchant = PaymentMerchant::findOrFail($id);
         $payment_merchant->delete();
-        return redirect()->route('payment-merchants.index')->with('success', 'Well done! Payment Merchant ' . $payment_merchant->name . ' deleted successfully!');
+        return redirect()->route('payment-merchants.index')->with('success', 'Sukses! Penyedia Pembayaran ' . $payment_merchant->name . ' berhasil dihapus!');
     }
 }

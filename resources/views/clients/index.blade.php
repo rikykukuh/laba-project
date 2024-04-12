@@ -2,13 +2,13 @@
 
 @section('icon_page', 'users')
 
-@section('title', 'Clients')
+@section('title', 'Pelanggan')
 
 @section('menu_pagina')
 
 	<li role="presentation">
 		<a href="{{ route('clients.create') }}" class="link_menu_page">
-			<i class="fa fa-plus"></i> Add
+			<i class="fa fa-plus"></i> Tambah Pelanggan
 		</a>
 	</li>
 
@@ -25,12 +25,12 @@
 						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>Address</th>
-									<th>City</th>
-									<th class="text-center">Phone Number</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th>Nama</th>
+									<th>Alamat</th>
+									<th>Kota</th>
+									<th class="text-center">No Telepon</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -43,9 +43,9 @@
                                             <td class="text-center">{{$client->phone_number}}</td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($client->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
-                                                <a class="btn btn-default  btn-xs" href="{{ route('clients.show', $client->id) }}" title="See {{ $client->name }}"><i class="fa fa-eye">   </i></a>
+                                                <a class="btn btn-default  btn-xs" href="{{ route('clients.show', $client->id) }}" title="Detail {{ $client->name }}"><i class="fa fa-eye">   </i></a>
                                                 <a class="btn btn-warning  btn-xs" href="{{ route('clients.edit', $client->id) }}" title="Edit {{ $client->name }}"><i class="fa fa-pencil"></i></a>
-                                                <form onsubmit="return confirm('Do you really want to submit the form DELETE?');" action="{{ route('clients.destroy', $client->id) }}" method="post" style="display: inline-block">
+                                                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('clients.destroy', $client->id) }}" method="post" style="display: inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $client->name}}" data-toggle="modal" data-target="#modal-delete-{{ $client->id }}"><i class="fa fa-trash"></i></button>
@@ -58,12 +58,12 @@
 							</tbody>
 							<tfoot>
 								<tr>
-									<th>Name</th>
-									<th>Address</th>
-                                    <th>City</th>
-									<th class="text-center">Phone Number</th>
-									<th class="text-center">Created At</th>
-									<th class="text-center">Actions</th>
+									<th>Nama</th>
+									<th>Alamat</th>
+                                    <th>Kota</th>
+									<th class="text-center">No Telepon</th>
+									<th class="text-center">Tanggal Dibuat</th>
+									<th class="text-center">Aksi</th>
 								</tr>
 							</tfoot>
 						</table>
