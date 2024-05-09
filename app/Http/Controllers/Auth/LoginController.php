@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Site;
 
 class LoginController extends Controller
 {
@@ -59,5 +60,17 @@ class LoginController extends Controller
         return redirect()->back()
             ->withInput($request->only($this->username(), 'remember'))
             ->withErrors($errors);
+    }
+
+    public function showLoginForm(){
+        $sites = Site::all();
+        return view('auth.login', compact('sites'));
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        //
+        $request->session()->push('user.default_site', $request->site_id);
+        // dd($request->session());
     }
 }

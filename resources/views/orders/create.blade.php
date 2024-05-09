@@ -920,6 +920,11 @@
             //     }
             // });
 
+            var defaultSite = '{{ session("user.default_site.0") }}';
+            if (defaultSite) {
+                $('#site_id').val(defaultSite).trigger('change'); // Set value and trigger change event
+            }
+
         });
 
     </script>

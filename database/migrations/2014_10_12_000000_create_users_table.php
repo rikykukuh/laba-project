@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('avatar')->default('img/config/nopic.png');
             $table->boolean('active');
+            $table->integer('default_site')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

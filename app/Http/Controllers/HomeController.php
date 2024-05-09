@@ -15,10 +15,11 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $activeUserCount = User::where('active', true)->count();
         $permissionCount = Role::count();
+        // dd($request->session());
         return view('home',compact('activeUserCount', 'permissionCount'));
     }
 }
