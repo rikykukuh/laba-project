@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\DataTables\OrdersDataTable;
 use App\Http\Controllers\Controller;
 
 use App\Models\Client;
@@ -14,8 +15,10 @@ use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use App\Models\Site;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Yajra\DataTables\DataTables;
 
 class OrderController extends Controller
 {
@@ -25,11 +28,41 @@ class OrderController extends Controller
         $this->statuses = ['New', 'Process', 'Picked Up'];
     }
 
-    public function index()
+    public function index(OrdersDataTable $dataTable)
     {
-        $orders = Order::with('orderItems.orderItemPhotos')->paginate(10);
-        return view('orders.index', compact('orders'));
+        return $dataTable->render('orders.index');
     }
+
+    // public function index()
+    // {
+    //     // $orders = Order::with('orderItems.orderItemPhotos')->paginate(10);
+    //
+    //     if (request()->ajax()) {
+    //         $data = Order::with('orderItems.orderItemPhotos')->select('*');
+    //         return Datatables::of($data)
+    //             ->addIndexColumn()
+    //             ->addColumn('name', function($row) {
+    //                 return $row->client->name;
+    //             })->addColumn('total', function($row) {
+    //                 return 'Rp. '.number_format($row->total, 2, ",", ".");
+    //             })
+    //             ->addColumn('created_at', function($row) {
+    //                 return Carbon::parse($row->created_at)->timezone('Asia/Jakarta')->toDateTimeString();
+    //             })->addColumn('action', function($row) {
+    //                 $btn = '<a class="btn btn-default btn-xs" href="'.route('orders.show', $row->id).'" title="Detail '.$row->name.'"><i class="fa fa-eye"></i></a>';
+    //                 $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $row->id).'" method="post" style="display: inline-block">';
+    //                 $btn .= csrf_field();
+    //                 $btn .= method_field('DELETE');
+    //                 $btn .= '<button class="btn btn-danger btn-xs" type="submit" title="Delete '.$row->name.'" data-toggle="modal" data-target="#modal-delete-'.$row->id.'"><i class="fa fa-trash"></i></button>';
+    //                 $btn .= '</form>';
+    //                 return $btn;
+    //             })
+    //             ->rawColumns(['action'])
+    //             ->make(true);
+    //     }
+    //
+    //     return view('orders.index');
+    // }
 
     public function create()
     {

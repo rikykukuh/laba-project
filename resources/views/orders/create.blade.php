@@ -574,6 +574,8 @@
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
 
+                    $('#customer').val(user_id).trigger('change');
+
                     resetFormAddItem();
                 },
                 error: function(xhr, status, error) {
@@ -823,7 +825,7 @@
                 dataFile = [];
             });
             $('#customer').select2({
-                placeholder: '-- Customer --',
+                placeholder: '-- Pelanggan --',
                 ajax: {
                     url: '{{ route("client.search") }}', // Ganti dengan URL endpoint Anda
                     dataType: 'json',
