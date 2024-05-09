@@ -46,7 +46,7 @@ class LoginController extends Controller
     protected function sendFailedLoginResponse(Request $request)
     {
         $errors = [$this->username() => trans('auth.failed')];
-        
+
         $user = User::where($this->username(), $request->{$this->username()})->first();
 
         if ($user && \Hash::check($request->password, $user->password) && $user->active != 1) {
