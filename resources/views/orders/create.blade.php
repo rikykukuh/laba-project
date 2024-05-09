@@ -573,7 +573,7 @@
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
-
+                    
                     $('#customer').val(user_id).trigger('change');
 
                     resetFormAddItem();
@@ -825,7 +825,7 @@
                 dataFile = [];
             });
             $('#customer').select2({
-                placeholder: '-- Pelanggan --',
+                placeholder: '-- Customer --',
                 ajax: {
                     url: '{{ route("client.search") }}', // Ganti dengan URL endpoint Anda
                     dataType: 'json',
@@ -924,7 +924,7 @@
 
             var defaultSite = '{{ session("user.default_site.0") }}';
             if (defaultSite) {
-                $('#site_id').val(defaultSite).trigger('change'); // Set value and trigger change event
+                $('#site_id').val(defaultSite).trigger('change'); 
             }
 
         });
