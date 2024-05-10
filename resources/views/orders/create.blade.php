@@ -6,11 +6,11 @@
 
 @section('menu_pagina')
 
-	<li role="presentation">
-		<a href="{{ route('orders.index') }}" class="link_menu_page">
-			<i class="fa fa-shopping-basket"></i> Pesanan
-		</a>
-	</li>
+    <li role="presentation">
+        <a href="{{ route('orders.index') }}" class="link_menu_page">
+            <i class="fa fa-shopping-basket"></i> Pesanan
+        </a>
+    </li>
 
 @endsection
 
@@ -30,12 +30,15 @@
                 </div>
                 <div class="col-md-4">
                     <!-- Trigger the modal with a button -->
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer"
+                        style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
                     <!-- Modal -->
-                    <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog modal-md">
                             <!-- Modal content-->
-                            <form id="add-customer-form" action="{{ route('clients.store') }}" method="post" onsubmit="saveCustomer(event)" autocomplete="off">
+                            <form id="add-customer-form" action="{{ route('clients.store') }}" method="post"
+                                onsubmit="saveCustomer(event)" autocomplete="off">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -44,11 +47,14 @@
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="name">Nama: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="name" name="name" required>
+                                            <input type="text" class="form-control" id="name" name="name"
+                                                required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="phone">No Telepon: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="phone" name="phone" required>
+                                            <label for="phone_number">No Telepon: <small
+                                                    class="text-danger">*</small></label>
+                                            <input type="text" class="form-control" id="phone_number" name="phone_number"
+                                                required>
                                         </div>
                                         <div class="form-group">
                                             <label for="address">Alamat:</label>
@@ -56,8 +62,11 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Batalkan</button>
+                                        <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left"
+                                            onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                                            onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()"
+                                            style="margin-right: 15px;">Batalkan</button>
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </div>
@@ -72,7 +81,7 @@
             <div class="form-group">
                 <label for="site_id">Cabang: <small class="text-danger">*</small></label>
                 <select class="form-control select2" id="site_id" name="site_id" required>
-                    @foreach($sites as $site)
+                    @foreach ($sites as $site)
                         <option value="{{ $site->id }}">{{ $site->name }}</option>
                     @endforeach
                 </select>
@@ -118,7 +127,8 @@
                 <div class="box-header">
                     <h3 class="box-title">Barang:</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
                         </button>
                     </div>
                 </div>
@@ -151,10 +161,12 @@
                     </div>
 
                     <!-- Modal Edit Item -->
-                    <div class="modal fade" id="modal-edit-item" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div class="modal fade" id="modal-edit-item" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog">
                             <!-- Modal content-->
-                            <form id="edit-item-form" action="" method="get" onsubmit="formEditItem(event)" enctype="multipart/form-data" autocomplete="off">
+                            <form id="edit-item-form" action="" method="get" onsubmit="formEditItem(event)"
+                                enctype="multipart/form-data" autocomplete="off">
                                 <input type="hidden" name="item_element" id="item_element" value="">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -163,38 +175,44 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="type_edit">Jenis Barang: <small class="text-danger">*</small></label>
+                                            <label for="type_edit">Jenis Barang: <small
+                                                    class="text-danger">*</small></label>
                                             <select id="type_edit" class="form-control" name="type_edit">
-                                                @foreach($item_types as $item_type)
+                                                @foreach ($item_types as $item_type)
                                                     <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="keterangan_edit">Keterangan: <small class="text-danger">*</small></label>
+                                            <label for="keterangan_edit">Keterangan: <small
+                                                    class="text-danger">*</small></label>
                                             <textarea class="form-control" id="keterangan_edit" name="keterangan_edit"></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label for="biaya_edit">Biaya: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="biaya_edit" name="biaya_edit">
+                                            <input type="text" class="form-control" id="biaya_edit"
+                                                name="biaya_edit">
                                         </div>
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
-                                            <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
+                                            <input type="file" class="form-control-file" id="gambar_edit"
+                                                name="gambar_edit" accept=".jpg,.jpeg,.png" multiple
+                                                onchange="handleEditImageUpload(this)">
                                         </div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover">
                                             <thead>
-                                            <tr>
-                                                <th width="300">#</th>
-                                                <th width="300">Foto</th>
-                                            </tr>
+                                                <tr>
+                                                    <th width="300">#</th>
+                                                    <th width="300">Foto</th>
+                                                </tr>
                                             </thead>
                                             <tbody class="content-image"></tbody>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                        <button type="button" class="btn btn-default margin-r-5"
+                                            data-dismiss="modal">Batalkan</button>
                                         <button type="submit" class="btn btn-warning">Simpan</button>
                                     </div>
                                 </div>
@@ -203,7 +221,8 @@
                     </div>
 
                     <!-- Modal Show Image Item -->
-                    <div class="modal fade" id="modal-show-image-item" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div class="modal fade" id="modal-show-image-item" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog">
                             <!-- Modal content-->
                             <div class="modal-content">
@@ -214,16 +233,17 @@
                                 <div class="modal-body">
                                     <table role="presentation" class="table table-striped table-bordered table-hover">
                                         <thead>
-                                        <tr>
-                                            <th width="300">#</th>
-                                            <th width="300">Foto</th>
-                                        </tr>
+                                            <tr>
+                                                <th width="300">#</th>
+                                                <th width="300">Foto</th>
+                                            </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
                                     </table>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
+                                    <button type="button" class="btn btn-default margin-r-5"
+                                        data-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -236,14 +256,15 @@
     <div class="row">
         <div class="col-md-12" style="margin-bottom: 15px;">
             <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
-                        <i class="glyphicon glyphicon-plus"></i>
-                        <span>Tambah</span>
-                    </span>
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>Tambah</span>
+            </span>
             <!-- Modal Add Item -->
             <div class="modal fade" id="modal-add-item" role="dialog" data-keyboard="false" data-backdrop="static">
                 <div class="modal-dialog">
                     <!-- Modal content-->
-                    <form id="add-item-form" action="" method="get" onsubmit="saveItem(event)" enctype="multipart/form-data" autocomplete="off">
+                    <form id="add-item-form" action="" method="get" onsubmit="saveItem(event)"
+                        enctype="multipart/form-data" autocomplete="off">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -253,7 +274,7 @@
                                 <div class="form-group">
                                     <label for="type">Jenis Barang: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
-                                        @foreach($item_types as $item_type)
+                                        @foreach ($item_types as $item_type)
                                             <option value="{{ $item_type->id }}">{{ $item_type->name }}</option>
                                         @endforeach
                                     </select>
@@ -268,21 +289,24 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
-                                    <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
+                                    <input type="file" class="form-control-file" id="gambar" name="gambar"
+                                        accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
                                 </div>
                                 <hr>
-                                <table role="presentation" class="table table-striped table-bordered table-hover list-image">
+                                <table role="presentation"
+                                    class="table table-striped table-bordered table-hover list-image">
                                     <thead>
-                                    <tr>
-                                        <th width="300">#</th>
-                                        <th width="300">Foto</th>
-                                    </tr>
+                                        <tr>
+                                            <th width="300">#</th>
+                                            <th width="300">Foto</th>
+                                        </tr>
                                     </thead>
                                     <tbody id="list-image"></tbody>
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-default margin-r-5"
+                                    data-dismiss="modal">Batalkan</button>
                                 <button type="submit" class="btn btn-success">Simpan</button>
                             </div>
                         </div>
@@ -298,18 +322,22 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <form action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <form action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
+                        autocomplete="off">
                         <input type="hidden" name="customer_id" id="customer_id" value="">
                         {{ csrf_field() }}
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp"
+                                value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
-                        <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control" style="display: inline">
+                        <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control"
+                            style="display: inline">
                         {{-- <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" value="0" readonly class="form-control" style="display: inline"></p> --}}
                     </form>
                 </div>
@@ -337,7 +365,7 @@
             {{--                     <div class="form-group"> --}}
             {{--                         <label for="type">Metode Pembayaran: <small class="text-danger">*</small></label> --}}
             {{--                         <select class="form-control" id="type" name="type" required> --}}
-            {{--                             @foreach($item_types as $item_type) --}}
+            {{--                             @foreach ($item_types as $item_type) --}}
             {{--                                 <option value="{{ $item_type->id }}">{{ $item_type->name }}</option> --}}
             {{--                             @endforeach --}}
             {{--                         </select> --}}
@@ -345,7 +373,7 @@
             {{--                     <div class="form-group"> --}}
             {{--                         <label for="type_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label> --}}
             {{--                         <select class="form-control" id="type_merchant" name="type_merchant" required> --}}
-            {{--                             @foreach($payment_merchants as $payment_merchant) --}}
+            {{--                             @foreach ($payment_merchants as $payment_merchant) --}}
             {{--                                 <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option> --}}
             {{--                             @endforeach --}}
             {{--                         </select> --}}
@@ -370,11 +398,13 @@
             {{--         </form> --}}
             {{--     </div> --}}
             {{-- </div> --}}
-            <button type="button" class="btn bg-purple pull-left" id="btn-order" style="margin-right: 15px;" onclick="createOrder()">
+            <button type="button" class="btn bg-purple pull-left" id="btn-order" style="margin-right: 15px;"
+                onclick="createOrder()">
                 <i class="fa fa-fw fa-save"></i>
                 <span>Simpan</span>
             </button>
-            <a href="{{ route('orders.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i> Batalkan</a>
+            <a href="{{ route('orders.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i>
+                Batalkan</a>
         </div>
     </div>
 
@@ -389,8 +419,8 @@
         const items = [];
         let dataFile = [];
 
-        function getTypeById(nameKey, myArray){
-            for (let i=0; i < myArray.length; i++) {
+        function getTypeById(nameKey, myArray) {
+            for (let i = 0; i < myArray.length; i++) {
                 if (myArray[i].id === parseFloat(nameKey, 10)) {
                     return myArray[i];
                 }
@@ -399,14 +429,15 @@
 
         function uuid() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                let r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
         }
 
         function handleImageUpload(element) {
             const files = $(element)[0].files;
-            if(files.length === 0) return;
+            if (files.length === 0) return;
 
             // console.log(files);
             for (let i = 0; i < files.length; i++) {
@@ -414,7 +445,7 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         // Mengakses data URL base64 dari file
                         const base64Data = e.target.result;
                         // Memasukkan data URL base64 ke dalam array
@@ -432,7 +463,7 @@
 
         function handleEditImageUpload(element) {
             const files = $(element)[0].files;
-            if(files.length === 0) return;
+            if (files.length === 0) return;
 
             // console.log(files);
             for (let i = 0; i < files.length; i++) {
@@ -440,7 +471,7 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         // Mengakses data URL base64 dari file
                         const base64Data = e.target.result;
                         // Memasukkan data URL base64 ke dalam array
@@ -477,7 +508,7 @@
             $('.list-image').hide();
             $('.list-image').show();
             listImage.empty();
-            for(let i = 0; i < dataFile.length; i++) {
+            for (let i = 0; i < dataFile.length; i++) {
                 listImage.append(`
                     <tr>
                         <th>
@@ -537,10 +568,38 @@
 
                 const message = 'Item berhasil dihapus';
                 $('.top-right').notify({
-                    message: { text: `Sukses! ${message}` }
+                    message: {
+                        text: `Sukses! ${message}`
+                    }
                 }).show();
 
             }
+        }
+
+        function selectCustomerById(customerId) {
+            $.ajax({
+                type: 'GET',
+                url: '{{ route('client.search') }}' + '?term=' + customerId + '&_type=query&q=' +
+                customerId, // Asumsi endpoint mendukung query parameter 'id'
+                success: function(data) {
+                    if (data && data.length > 0) {
+                        let item = data[data.length -
+                        1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
+                        let newOption = new Option(item.name, item.id, true, true);
+
+                        $(newOption).data('address', item.address);
+                        $(newOption).data('phone', item.phone_number);
+
+                        $('#customer').append(newOption).trigger('change');
+                        $('#customer').trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: item,
+                            }
+                        });
+                    }
+                }
+            });
         }
 
         function saveCustomer(event) {
@@ -555,7 +614,8 @@
                 success: function(response) {
                     // Handle response
                     console.log(response);
-                    const user_id = response.id;
+                    const customerId = response.id;
+                    selectCustomerById(customerId);
                     const type = 'success';
                     const message = 'Pelanggan berhasil disimpan!'
                     const alert = `
@@ -564,7 +624,8 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -573,8 +634,8 @@
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
-                    
-                    $('#customer').val(user_id).trigger('change');
+
+                    $('#customer').val(customerId).trigger('change');
 
                     resetFormAddItem();
                 },
@@ -589,7 +650,8 @@
                           <strong>Oops!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
@@ -602,7 +664,7 @@
             listImage.empty();
             $('.list-image').hide();
             // Reset form
-            $('#add-item-form').trigger("reset");
+            $('#add-item-form, #add-customer-form').trigger("reset");
             // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
 
             dataFile = [];
@@ -656,7 +718,12 @@
             const gambar = dataFile;
 
             // Buat objek item
-            const newItem = { type, keterangan, biaya, gambar };
+            const newItem = {
+                type,
+                keterangan,
+                biaya,
+                gambar
+            };
 
             // console.log(newItem);
 
@@ -670,7 +737,9 @@
             // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
             const message = 'Barang berhasil ditambahkan!';
             $('.top-right').notify({
-                message: { text: `Sukses! ${message}` }
+                message: {
+                    text: `Sukses! ${message}`
+                }
             }).show();
 
             // Tutup modal setelah selesai menyimpan data
@@ -698,7 +767,12 @@
             const biaya = $('#biaya_edit').val().replace(/\./g, '');
 
             // Buat objek item
-            const newItem = { type, keterangan, biaya, gambar: dataFile };
+            const newItem = {
+                type,
+                keterangan,
+                biaya,
+                gambar: dataFile
+            };
 
             // console.log(newItem);
 
@@ -712,7 +786,9 @@
             // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
             const message = 'Barang berhasil diedit!';
             $('.top-right').notify({
-                message: { text: `Sukses! ${message}` }
+                message: {
+                    text: `Sukses! ${message}`
+                }
             }).show();
 
             // Tutup modal setelah selesai menyimpan data
@@ -732,7 +808,7 @@
 
             let total = 0;
 
-            for(let i = 0; i < items.length; i++) {
+            for (let i = 0; i < items.length; i++) {
                 total += parseInt(items[i].biaya, 10);
             }
 
@@ -760,7 +836,12 @@
             $.ajax({
                 url,
                 data: {
-                    items, customer_id, site_id, dp, total, kekurangan
+                    items,
+                    customer_id,
+                    site_id,
+                    dp,
+                    total,
+                    kekurangan
                 },
                 method: 'POST',
                 headers: {
@@ -777,7 +858,8 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -797,7 +879,8 @@
                           <strong>Oops!</strong> ${message} ${statusCode}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
                 }
             });
 
@@ -807,17 +890,17 @@
         }
 
         $(function() {
-            $('#modal-add-customer').on('shown.bs.modal', function () {
+            $('#modal-add-customer').on('shown.bs.modal', function() {
                 $('#add-customer-form #name').focus();
             });
-            $('#modal-show-image-item').on('hidden.bs.modal', function () {
+            $('#modal-show-image-item').on('hidden.bs.modal', function() {
                 $('.content-image').empty();
                 dataFile = [];
             });
-            $('#modal-add-item').on('hidden.bs.modal', function () {
+            $('#modal-add-item').on('hidden.bs.modal', function() {
                 resetFormAddItem();
             });
-            $('#modal-edit-item').on('hidden.bs.modal', function () {
+            $('#modal-edit-item').on('hidden.bs.modal', function() {
                 $('#item_element').val('');
                 // $(`#type_edit option[value='1']`).attr("selected");
                 $('#keterangan_edit').val('');
@@ -825,9 +908,9 @@
                 dataFile = [];
             });
             $('#customer').select2({
-                placeholder: '-- Customer --',
+                placeholder: '-- Pelanggan --',
                 ajax: {
-                    url: '{{ route("client.search") }}', // Ganti dengan URL endpoint Anda
+                    url: '{{ route('client.search') }}', // Ganti dengan URL endpoint Anda
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
@@ -852,12 +935,23 @@
 
             $('#customer').on('select2:select', function(e) {
                 const data = e.params.data;
-                const dataAttribute = data.data;
+                console.log('nih datanya', data);
 
-                const customerId = data.id;
-                const customerName = data.text;
-                const address = dataAttribute.address;
-                const phone = dataAttribute.phone;
+                let customerId, customerName, address, phone;
+
+                if (data.data === undefined) {
+                    customerId = data.id;
+                    customerName = data.name;
+                    address = data.address;
+                    phone = data.phone_number;
+                } else {
+                    const dataAttribute = data.data;
+
+                    customerId = data.id;
+                    customerName = data.text;
+                    address = dataAttribute.address;
+                    phone = dataAttribute.phone;
+                }
 
                 // detail-user
                 $('#detail-user').html(`
@@ -879,7 +973,7 @@
                 $('#customer_id').val(customerId);
             });
 
-            $('#dp').on('input', function (e) {
+            $('#dp').on('input', function(e) {
                 let total = $('#total').text().replace(/\./g, '');
                 const total_expense = parseInt(total, 10);
                 const dp = $(this).val();
@@ -900,7 +994,7 @@
                 $('#kekurangan-final').val(kekurangan.replace(/\D/g, ''));
             });
 
-            $('#biaya, #biaya_edit').on('input', function (e) {
+            $('#biaya, #biaya_edit').on('input', function(e) {
                 const value = $(this).val();
 
                 // Hapus semua karakter selain digit
@@ -922,13 +1016,12 @@
             //     }
             // });
 
-            var defaultSite = '{{ session("user.default_site.0") }}';
+            var defaultSite = '{{ session('user.default_site.0') }}';
             if (defaultSite) {
-                $('#site_id').val(defaultSite).trigger('change'); 
+                $('#site_id').val(defaultSite).trigger('change');
             }
 
         });
-
     </script>
 
 @endsection
