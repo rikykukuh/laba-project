@@ -36,8 +36,17 @@
                             <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name', $site->name) }}" autofocus>
                             @if($errors->has('name'))
                                 <span class="help-block">
-                                            <strong>{{ $errors->first('name') }}</strong>
-                                        </span>
+                                    <strong>{{ $errors->first('name') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                        <div class="form-group {{ $errors->has('code') ? 'has-error' : '' }}">
+                            <label for="code">Kode Cabang</label>
+                            <input type="text" name="code" id="code" class="form-control" placeholder="Kode Cabang" required value="{{ old('code', $site->code) }}" autofocus>
+                            @if($errors->has('code'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('code') }}</strong>
+                                </span>
                             @endif
                         </div>
                     </div>

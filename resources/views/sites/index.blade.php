@@ -25,7 +25,8 @@
 						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th>Nama</th>
+									<th class="text-center" style="width: 5%;">Kode</th>
+									<th class="text-center" style="width: 15%;">Nama</th>
 									<th class="text-center">Tanggal Dibuat</th>
 									<th class="text-center">Aksi</th>
 								</tr>
@@ -34,7 +35,8 @@
 								@foreach($sites as $site)
 									@if($site->id)
 										<tr>
-                                            <td>{{$site->name}}</td>
+                                            <th class="text-center" style="width: 5%;">{{$site->code}}</th>
+                                            <td class="text-center" style="width: 15%;">{{$site->name}}</td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($site->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
                                                 <a class="btn btn-default  btn-xs" href="{{ route('sites.show', $site->id) }}" title="Detail {{ $site->name }}"><i class="fa fa-eye">   </i></a>

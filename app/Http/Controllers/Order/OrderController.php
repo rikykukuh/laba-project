@@ -294,4 +294,21 @@ class OrderController extends Controller
         $paymentMerchants = PaymentMerchant::where('payment_method_id', $paymentMethod)->get();
         return response()->json($paymentMerchants);
     }
+
+    public function orderPrint($id)
+    {
+        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
+        // dd($order);
+        $clients = Client::all();
+        $statuses = $this->statuses;
+        // dd($statuses);
+
+        $payment_methods = PaymentMethod::all();
+        $payment_merchants = PaymentMerchant::all();
+        $item_types = ItemType::all('id', 'name');
+
+        $sites = Site::all();
+
+        return view('orders.print', compact('order', 'clients', 'statuses', 'payment_methods', 'payment_merchants', 'item_types', 'sites'));
+    }
 }

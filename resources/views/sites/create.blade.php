@@ -41,6 +41,15 @@
                                         </span>
                                     @endif
                                 </div>
+                                <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+                                    <label for="name">Kode Cabang</label>
+                                    <input type="text" name="code" id="code" class="form-control" placeholder="Kode Cabang" required value="">
+                                    @if($errors->has('code'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('code') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                             <div class="col-lg-12">
                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Tambah</button>

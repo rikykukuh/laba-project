@@ -54,6 +54,7 @@ Route::group(['namespace' => 'App\Http\Controllers\User', 'middleware' => 'auth'
 
 Route::middleware('auth')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
+    Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::resource('clients', \App\Http\Controllers\Client\ClientController::class);
     Route::resource('cities', \App\Http\Controllers\City\CityController::class);
     Route::resource('item-types', \App\Http\Controllers\ItemType\ItemTypeController::class);

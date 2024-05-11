@@ -453,6 +453,12 @@
                 <i class="glyphicon glyphicon-file"></i>
                 <span>Simpan</span>
             </button>
+            <div class="vl" style="display:inline-block; border-left: 1px solid black; height: 30px; margin: auto 15px;"></div>
+            &nbsp;
+            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                <i class="fa fa-fw fa-print"></i>
+                <span>Cetak</span>
+            </a>
             <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
         </div>
     </div>
@@ -489,7 +495,7 @@
 
         console.log('items', items);
 
-        getPaymentMerchant(); 
+        getPaymentMerchant();
 
         sumTotalItem();
 
@@ -517,7 +523,7 @@
         }
 
         $('#payment_method').on('change', function() {
-            getPaymentMerchant(); 
+            getPaymentMerchant();
         });
 
         function getPaymentMerchant() {
@@ -745,6 +751,7 @@
             console.log('all item', items);
             event.preventDefault();
             const customer_id = $('#customer_id').val();
+            const site_id = $('#site_id').val();
             const payment_method = $('#payment_method').val();
             const payment_merchant = $('#payment_merchant').val();
             const picked_by = $('#diambil').val();
@@ -760,7 +767,7 @@
             $('#status').text(status);
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, total, picked_by, picked_at, payment_method, payment_merchant, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, status };
+            let data = { customer_id, site_id, total, picked_by, picked_at, payment_method, payment_merchant, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, status };
 
             $.ajax({
                 url: $('#pickup-item-form').attr('action'),
@@ -1132,6 +1139,8 @@
                     // Update nilai input dengan angka yang diformat
                     $(this).val(formattedNumber);
                 });
+
+                $('#site_id').select2();
 
                 // $('.select2').select2();
                 // $('.select2').select2({

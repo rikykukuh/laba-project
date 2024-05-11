@@ -33,6 +33,16 @@ class Order extends Model
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class, 'site_id', 'id');
+    }
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class, 'payment_id', 'id');
+    }
+
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
