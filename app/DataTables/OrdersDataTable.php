@@ -116,7 +116,7 @@ class OrdersDataTable extends DataTable
     {
         return [
             Column::make('client.name')->title('Nama Pelanggan')->addClass( 'text-center' ),
-            Column::make('id')->title('ID Pesanan')->addClass( 'text-center' ),
+            Column::make('number_ticket')->title('ID Pesanan')->addClass( 'text-center' ),
             Column::make('total')->exportFormat('0.00')->addClass( 'text-center' ),
             Column::make('status')->addClass( 'text-center' ),
             Column::make('created_at')->title('Tanggal Dibuat')->addClass( 'text-center' ),

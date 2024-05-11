@@ -98,7 +98,6 @@ class OrderController extends Controller
             'total' => $total,
             'uang_muka' => $dp,
             'status' => 'DIPROSES',
-            'number_ticket' => Str::uuid(),
             'sisa_pembayaran' => $kekurangan,
             'client_id' => $client_id,
             'site_id' => $site_id,
@@ -109,6 +108,11 @@ class OrderController extends Controller
             // 'picked_by' => $request->picked_by,
             // 'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
         ]);
+
+        $ticket_format = sprintf('%06d', $order->id);
+        $code_site = Site::findOrFail($site_id);
+        $number_ticket = $code_site->code.'-'. $ticket_format;
+        $order->update(['number_ticket' => $number_ticket]);
 
         for ($i = 0; $i < count($items); $i++) {
             $gambar = $items[$i]['gambar'];
