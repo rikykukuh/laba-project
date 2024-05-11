@@ -36,9 +36,11 @@
                             <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name', $site->name) }}" autofocus>
                             @if($errors->has('name'))
                                 <span class="help-block">
-                                            <strong>{{ $errors->first('name') }}</strong>
-                                        </span>
+                                    <strong>{{ $errors->first('name') }}</strong>
+                                </span>
                             @endif
+                            <label for="name">Code Site</label>
+                            <input type="text" name="code" id="code" class="form-control" placeholder="Code Site For Ticket" value="{{ old('code', $site->code) }}" required value="">
                         </div>
                     </div>
                     <div class="col-lg-12">

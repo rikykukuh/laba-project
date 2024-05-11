@@ -17,6 +17,7 @@ class SiteTablesSeeder extends Seeder
     {
         $faker = Faker::create();
         $sites = ['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'];
+        $code = ['A','B','C','D','E'];
 
         foreach ($sites as $method) {
             Site::create([
