@@ -45,7 +45,7 @@
               <div class="col-sm-4 invoice-col">&nbsp;</div>
          @else
              <div class="col-sm-4 invoice-col">
-                 <b>Order Status</b><br>
+                 <b>Status Pesanan</b><br>
                  <address>
                      Status: {{ $order->status }}<br>
                      Diambil Oleh: {{ $order->picked_by }}<br>
