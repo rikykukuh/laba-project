@@ -38,7 +38,7 @@ class OrdersDataTable extends DataTable
                 return 'Rp. '.number_format($row->total, 2, ",", ".");
             })
             ->addColumn('action', function ($order) {
-                $btn = '<a class="btn btn-default btn-sm" style="margin-right:10px;" href="'.route('orders.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
+                $btn = '<a class="btn btn-primary btn-sm" style="margin-right:10px;" href="'.route('orders.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
                 $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $order->id).'" method="post" style="display: inline-block">';
                 $btn .= csrf_field();
                 $btn .= method_field('DELETE');
@@ -116,7 +116,7 @@ class OrdersDataTable extends DataTable
     {
         return [
             Column::make('client.name')->title('Nama Pelanggan')->addClass( 'text-center' ),
-            Column::make('number_ticket')->title('ID Pesanan')->addClass( 'text-center' ),
+            Column::make('id')->title('ID Pesanan')->addClass( 'text-center' ),
             Column::make('total')->exportFormat('0.00')->addClass( 'text-center' ),
             Column::make('status')->addClass( 'text-center' ),
             Column::make('created_at')->title('Tanggal Dibuat')->addClass( 'text-center' ),
