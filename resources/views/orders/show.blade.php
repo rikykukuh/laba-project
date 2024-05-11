@@ -427,7 +427,7 @@
                                  </div>
                                  <div class="form-group">
                                      <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label>
-                                     <input type="text" class="form-control" id="kekurangan-sisa" name="kekurangan" required>
+                                     <input type="text" class="form-control" id="kekurangan-sisa" name="kekurangan" value="{{ number_format($order->orderItems->sum('total') - $order->uang_muka, null, ',', '.') }}" readonly required>
                                  </div>
                                  <div class="form-group">
                                      <label for="diambil">Diambil oleh: <small class="text-danger">*</small></label>
@@ -489,6 +489,8 @@
 
         console.log('items', items);
 
+        getPaymentMerchant(); 
+
         sumTotalItem();
 
         let dataFile = [];
@@ -512,6 +514,30 @@
                     return myArray[i];
                 }
             }
+        }
+
+        $('#payment_method').on('change', function() {
+            getPaymentMerchant(); 
+        });
+
+        function getPaymentMerchant() {
+            $.ajax({
+                url: '{{ route("order.merchant_by_payment") }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    payment_method: $('#payment_method').val()
+                },
+                success: function(response) {
+                    $('#payment_merchant').empty();
+                    $.each(response, function(index, paymentMerchant) {
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
         }
 
         function uuid() {
@@ -1076,9 +1102,9 @@
                     $('#kekurangan').text(kekurangan);
                 });
 
-                $('#kekurangan-sisa').on('input', function (e) {
-                    const value = $(this).val();
-
+                $('#diambil').on('input', function (e) {
+                    const value = $('#kekurangan-sisa').val();
+                    console.log('test');
                     // Hapus semua karakter selain digit
                     let digitsOnly = value.replace(/\D/g, '');
 
@@ -1086,7 +1112,8 @@
                     let kekuranganSisa = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
                     const kekurangan = $('#kekurangan').text();
-                    console.log(kekurangan === kekuranganSisa);
+                    console.log(kekurangan);
+                    console.log(kekuranganSisa);
                     if (kekurangan === kekuranganSisa) {
                         $('#btn-ambil').removeAttr('disabled');
                     } else {

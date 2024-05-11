@@ -17,6 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/config/update/permission_group/{id}', 'App\Http\Controllers\ConfigController@updatePermissionGroup')->name('config.update.permission_group');
     Route::post('/config/store/permission', 'App\Http\Controllers\ConfigController@storePermission')->name('config.store.permission');
     Route::put('/config/update/permission/{id}', 'App\Http\Controllers\ConfigController@updatePermission')->name('config.update.permission');
+	Route::get('/order/merchant-by-payment', '\App\Http\Controllers\Order\OrderController@getPaymentMerchants')->name('order.merchant_by_payment');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){
@@ -60,7 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethod\PaymentMethodController::class);
     Route::resource('payment-merchants', \App\Http\Controllers\PaymentMerchant\PaymentMerchantController::class);
     Route::resource('sites', \App\Http\Controllers\Site\SiteController::class);
-
     Route::get('/search-customers', 'App\Http\Controllers\Client\ClientController@searchCustomers')->name('client.search');
 });
 

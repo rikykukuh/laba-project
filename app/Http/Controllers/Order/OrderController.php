@@ -288,4 +288,10 @@ class OrderController extends Controller
         $order->delete();
         return redirect()->route('orders.index')->with('success', 'Sukses! Order ' . $order->name . ' berhasil dihapus!');
     }
+
+    public function getPaymentMerchants(Request $request) {
+        $paymentMethod = $request->query('payment_method');
+        $paymentMerchants = PaymentMerchant::where('payment_method_id', $paymentMethod)->get();
+        return response()->json($paymentMerchants);
+    }
 }
