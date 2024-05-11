@@ -40,8 +40,6 @@
                                             <strong>{{ $errors->first('name') }}</strong>
                                         </span>
                                     @endif
-                                    <label for="name">Code Site</label>
-                                    <input type="text" name="code" id="code" class="form-control" placeholder="Code Site For Ticket" required value="">
                                 </div>
                             </div>
                             <div class="col-lg-12">

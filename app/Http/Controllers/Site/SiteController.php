@@ -39,7 +39,6 @@ class SiteController extends Controller
     {
         $site = Site::create([
             'name' => $request->name,
-            'code' => $request->code,
         ]);
         return redirect()->route('sites.index')->with('success', 'Sukses! Cabang ' . $site->name . ' berhasil ditambahkan!');
     }
@@ -80,7 +79,6 @@ class SiteController extends Controller
         $site = Site::findOrFail($id);
         $site->update([
             'name' => $request->name,
-            'code' => $request->code,
         ]);
         return redirect()->route('sites.index')->with('success', 'Sukses! Cabang ' . $site->name . ' berhasil diedit!');
     }

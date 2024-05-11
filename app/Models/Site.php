@@ -11,7 +11,6 @@ class Site extends Model
 
     protected $fillable = [
         'name',
-        'note',
-        'code',
+        'note'
     ];
 }

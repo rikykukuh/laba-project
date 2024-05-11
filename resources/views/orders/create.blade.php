@@ -613,7 +613,7 @@
                 },
                 success: function(response) {
                     // Handle response
-                    console.log(response);
+                    // console.log(response);
                     const customerId = response.id;
                     selectCustomerById(customerId);
                     const type = 'success';
@@ -935,7 +935,6 @@
 
             $('#customer').on('select2:select', function(e) {
                 const data = e.params.data;
-                console.log('nih datanya', data);
 
                 let customerId, customerName, address, phone;
 
