@@ -157,8 +157,8 @@
                 </div>
                 <div class="box-body" id="status-customer">
                     <p class="text-center margin-b-10"><b id="status">{{ $order->status }}</b></p>
-                    <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">-</span></p>
-                    <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">-</span></p>
+                    <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">{{ $order->picked_by ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">{{ $order->picked_at ?? '-' }}</span></p>
                 </div>
             </div>
         </div>
@@ -1192,15 +1192,11 @@
                         </p>
                     `);
 
-                    const status = '{{ $order->status === "DIPROSES" ? "DIPROSES" : "DIAMBIL"  }}';
-                    const oleh = '{{ $order->picked_by !== null ? $order->picked_by : "-"  }}';
-                    const pada = '{{ $order->status ? $order->status : "-"  }}';
-
                     // status-customer
                     $('#status-customer').html(`
-                        <p class="text-center margin-b-10"><b id="status">${status}</b></p>
-                        <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">${oleh}</span></p>
-                        <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">${pada}</span></p>
+                        <p class="text-center margin-b-10"><b id="status">DIPROSES</b></p>
+                        <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">-</span></p>
+                        <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">-</span></p>
                     `);
 
                     $('#customer_id').val(customerId);
