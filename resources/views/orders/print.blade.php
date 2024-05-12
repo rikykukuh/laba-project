@@ -1,6 +1,6 @@
 @extends('layouts.print')
 
-@section('title', 'Laba | Order Detail')
+@section('title', 'ORDER-' . Str::padLeft($order->id, 4, '0'))
 
 @section('style')
     <style>
@@ -13,7 +13,7 @@
 
         @media print {
             @page {
-                size: landscape;
+                size: A5 landscape;
             }
         }
     </style>

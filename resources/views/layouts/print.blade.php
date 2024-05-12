@@ -39,6 +39,7 @@
 <script type="text/javascript">
     window.print();
     window.onafterprint = window.close;
+    document.title = @yield('title');
 </script>
 @yield('script')
 </body>
