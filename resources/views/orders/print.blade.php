@@ -37,7 +37,7 @@
                  Nama: <strong>{{ $order->client->name }}</strong><br>
                  Telepon: {{ $order->client->phone_number }}<br>
                  Alamat: {{ $order->client->address }}<br>
-                 Kota: {{ $order->client->city->name }}<br>
+                 Kota: {{ $order->client->city->name ?? '-' }}<br>
              </address>
          </div>
          <!-- /.col -->
