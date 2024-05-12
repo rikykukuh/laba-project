@@ -984,7 +984,7 @@
                         $('.alert').alert('close');
                         window.location.reload();
                     }, 3000);
-                },deleteItemPhoto(id)
+                },
                 error: function(xhr, status, error) {
                     // Handle errors
                     console.error(error);
