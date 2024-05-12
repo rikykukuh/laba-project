@@ -27,7 +27,7 @@
 
     @yield('style')
 </head>
- <body onload="window.print();window.close()">
+ <body>
 <div class="wrapper">
     <!-- Main content -->
     <section class="invoice">
@@ -36,6 +36,10 @@
     <!-- /.content -->
 </div>
 <!-- ./wrapper -->
+<script type="text/javascript">
+    window.print();
+    window.onafterprint = window.close;
+</script>
 @yield('script')
 </body>
 </html>
