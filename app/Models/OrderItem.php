@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Models\ItemType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderItem extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'order_id',
@@ -18,15 +19,20 @@ class OrderItem extends Model
         'total',
     ];
 
-    public function order(){
-        return $this->belongsTo(Order::Class);
+    protected $dates = ['deleted_at'];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
-    public function itemTypes(){
-        return $this->hasMany(ItemType::Class, 'item_type_id', 'id');
+    public function itemTypes()
+    {
+        return $this->hasMany(ItemType::class, 'item_type_id', 'id');
     }
 
-    public function orderItemPhotos(){
-        return $this->hasMany(OrderItemPhoto::Class, 'order_item_id', 'id');
+    public function orderItemPhotos()
+    {
+        return $this->hasMany(OrderItemPhoto::class, 'order_item_id', 'id');
     }
 }

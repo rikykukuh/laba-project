@@ -41,7 +41,7 @@ class OrdersDataTable extends DataTable
                 $btn = '<a href="'.route('orders.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->name.'" style="margin-right: 15px;">
                     <i class="fa fa-fw fa-print"></i>
                 </a>';
-                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:10px;" href="'.route('orders.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
+                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('orders.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
                 $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $order->id).'" method="post" style="display: inline-block">';
                 $btn .= csrf_field();
                 $btn .= method_field('DELETE');
@@ -99,7 +99,7 @@ class OrdersDataTable extends DataTable
             ->addTableClass('table-striped table-bordered table-hover')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1)
+            ->orderBy(4, 'desc')
             ->parameters([
                 'dom'          => 'Bfrtip',
                 'buttons'      => [

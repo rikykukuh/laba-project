@@ -3,6 +3,24 @@
 @section('icon_page', 'plus')
 
 @section('title', 'Tambah Pesanan')
+@section('layout_css')
+    <style>
+        .glyphicon.spinning {
+            animation: spin 1s infinite linear;
+            -webkit-animation: spin2 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: scale(1) rotate(0deg); }
+            to { transform: scale(1) rotate(360deg); }
+        }
+
+        @-webkit-keyframes spin2 {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+        }
+    </style>
+@endsection
 
 @section('menu_pagina')
 
@@ -205,6 +223,7 @@
                                                 <tr>
                                                     <th width="300">#</th>
                                                     <th width="300">Foto</th>
+                                                    <th width="300">Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="content-image"></tbody>
@@ -236,6 +255,7 @@
                                             <tr>
                                                 <th width="300">#</th>
                                                 <th width="300">Foto</th>
+                                                <th width="300">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
@@ -299,6 +319,7 @@
                                         <tr>
                                             <th width="300">#</th>
                                             <th width="300">Foto</th>
+                                            <th width="300">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="list-image"></tbody>
@@ -458,7 +479,11 @@
 
             setTimeout(() => {
                 renderListImage();
+                if (dataFile.length === 0) {
+                    $(element).val(null);
+                }
             }, 500);
+
         }
 
         function handleEditImageUpload(element) {
@@ -495,6 +520,9 @@
                         <td class="text-center">
                             <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${index})">Hapus foto</button>
+                        </td>
                     </tr>
                 `;
                     contentImage.append(row);
@@ -502,23 +530,99 @@
             }, 500);
         }
 
-        function renderListImage() {
+        function renderListImage(itemIndex=null) {
             // console.log(dataFile);
             const listImage = $('#list-image');
             $('.list-image').hide();
             $('.list-image').show();
             listImage.empty();
             for (let i = 0; i < dataFile.length; i++) {
-                listImage.append(`
-                    <tr>
-                        <th>
-                            ${i + 1}
-                        </th>
-                        <td class="text-center">
-                            <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
-                        </td>
-                    </tr>
-                `);
+                if(itemIndex === null) {
+                    listImage.append(`
+                        <tr>
+                            <th>
+                                ${i + 1}
+                            </th>
+                            <td class="text-center">
+                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${i})">Hapus foto</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    listImage.append(`
+                        <tr>
+                            <th>
+                                ${i + 1}
+                            </th>
+                            <td class="text-center">
+                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${i})">Hapus foto</button>
+                            </td>
+                        </tr>
+                    `);
+                }
+            }
+        }
+
+        function removeImage(itemIndex) {
+            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
+
+                dataFile.splice(itemIndex, 1);
+
+                setTimeout(() => {
+                    renderListImage(itemIndex);
+
+                    const contentImage = $('.content-image');
+                    contentImage.empty();
+
+                    dataFile.forEach(function(image, imageIndex) {
+                        const row = `
+                            <tr>
+                                <th>
+                                    ${imageIndex + 1}
+                                </th>
+                                <td class="text-center">
+                                    <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>
+                                </td>
+                            </tr>
+                        `;
+                        contentImage.append(row);
+                    });
+
+                    if (dataFile.length === 0) {
+                        $('.list-image').hide();
+                        $('#gambar').val(null);
+                    }
+                }, 500);
+            }
+        }
+
+        function removeEditImage(e, el, itemIndex, imageIndex) {
+            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
+                items[itemIndex]['gambar'].splice(imageIndex, 1);
+
+                const message = 'Foto berhasil dihapus';
+                $('.top-right').notify({
+                    message: {
+                        text: `Sukses! ${message}`
+                    }
+                }).show();
+
+                setTimeout(() => {
+                    showImageAsTable(itemIndex);
+                    if (dataFile.length === 0) {
+                        $('.list-image').hide();
+                        $('#gambar_edit').val(null);
+                    }
+                }, 500);
             }
         }
 
@@ -534,19 +638,22 @@
             const biaya = $('#biaya_edit').val(parseInt(dataItem.biaya, 10).toLocaleString('id-ID'));
         }
 
-        function showImageAsTable(index) {
+        function showImageAsTable(itemIndex) {
             const contentImage = $('.content-image');
             // console.log(items)
             contentImage.empty();
 
-            items[index].gambar.forEach(function(image, index) {
+            items[itemIndex].gambar.forEach(function(image, imageIndex) {
                 const row = `
                     <tr>
                         <th>
-                            ${index + 1}
+                            ${imageIndex + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>
                         </td>
                     </tr>
                 `;
@@ -833,6 +940,15 @@
             const url = "{{ route('orders.store') }}";
             $('.alert').alert('close');
 
+            const alert = `
+                        <div class="alert alert-warning alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Mohon tunggu!</strong> Pesanan sedang diproses...
+                            &nbsp;<span class="glyphicon glyphicon-refresh spinning"></span>
+                        </div>
+                    `;
+            $('#alert-container').html(alert);
+
             $.ajax({
                 url,
                 data: {
@@ -850,12 +966,14 @@
                 success: function(response) {
                     // Handle response
                     console.log(response);
+                    $('#alert-container').empty();
                     const type = 'success';
-                    const message = 'Order berhasil dibuat'
+                    const message = 'Pesanan berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                           <strong>Sukses!</strong> ${message}
+                            &nbsp;<span class="glyphicon glyphicon-ok"></span>
                         </div>
                     `;
                     $('#alert-container').html(
@@ -866,17 +984,19 @@
                         $('.alert').alert('close');
                         window.location.reload();
                     }, 3000);
-                },
+                },deleteItemPhoto(id)
                 error: function(xhr, status, error) {
                     // Handle errors
                     console.error(error);
+                    $('#alert-container').empty();
                     const type = 'danger';
-                    const message = 'Order tidak berhasil disimpan!'
+                    const message = 'Pesanan tidak berhasil disimpan!'
                     const statusCode = `${xhr.statusText} (${xhr.status})`;
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                           <strong>Oops!</strong> ${message} ${statusCode}
+                        &nbsp;<span class="glyphicon glyphicon-remove"></span>
                         </div>
                     `;
                     $('#alert-container').html(
@@ -896,6 +1016,8 @@
             $('#modal-show-image-item').on('hidden.bs.modal', function() {
                 $('.content-image').empty();
                 dataFile = [];
+                $('#edit-item-form').trigger('reset');
+                resetFormAddItem();
             });
             $('#modal-add-item').on('hidden.bs.modal', function() {
                 resetFormAddItem();
@@ -906,6 +1028,8 @@
                 $('#keterangan_edit').val('');
                 $('#biaya_edit').val('');
                 dataFile = [];
+                $('#edit-item-form').trigger('reset');
+                resetFormAddItem();
             });
             $('#customer').select2({
                 placeholder: '-- Pelanggan --',

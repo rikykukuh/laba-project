@@ -200,7 +200,7 @@
                                             -->
                                             <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable({{ $loop->iteration - 1 }})">
                                                 <i class="fa fa-image margin-r-5"></i>
-                                                <span>Show images</span>
+                                                <span>Tampilkan Foto</span>
                                             </span>
                                         </td>
                                         <td>
@@ -259,7 +259,7 @@
                                             <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
                                         </div>
                                         <hr>
-                                        <table role="presentation" class="table table-striped table-bordered table-hover">
+                                        <table role="presentation" class="table table-striped table-bordered table-hover list-image">
                                             <thead>
                                             <tr>
                                                 <th width="300">#</th>
@@ -288,18 +288,19 @@
                                     <h4 class="modal-title">Item Foto</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <table role="presentation" class="table table-striped table-bordered table-hover">
+                                    <table role="presentation" class="table table-striped table-bordered table-hover list-image">
                                         <thead>
                                         <tr>
                                             <th width="300">#</th>
                                             <th width="300">Foto</th>
+                                            <th width="300">Aksi</th>
                                         </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
                                     </table>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -358,7 +359,7 @@
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
                                 <button type="submit" class="btn btn-success">Submit</button>
                             </div>
                         </div>
@@ -436,7 +437,7 @@
                              </div>
                              <div class="modal-footer">
                                    {{-- <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button> --}}
-                                   {{-- <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Close Form</button> --}}
+                                   {{-- <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Simpan Form</button> --}}
                                    {{-- <button type="submit" class="btn btn-primary">Submit Form</button> --}}
                                  <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
                                  <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
@@ -470,9 +471,12 @@
         $('#items').show();
         $('.total-items').show();
         $('.list-image').hide();
+        $('.list-image').show();
         $('#btn-ambil').attr('disabled', true);
         const item_types = @json($item_types);
+        let dataFile = [];
         let items = [];
+        let editItemSelected = null;
         let allItem = { id: null, type: '', keterangan: '', biaya: 0, gambar: [] };
 
         const orderItems = <?= $order->orderItems->toJson(); ?>;
@@ -498,8 +502,6 @@
         getPaymentMerchant();
 
         sumTotalItem();
-
-        let dataFile = [];
 
         const status ="{{ $order->status }}";
         if(status.toLowerCase() === 'diambil') {
@@ -613,6 +615,9 @@
                         <td class="text-center">
                             <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
                         </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${editItemSelected}, ${index}, '${image}')">Hapus foto</button>
+                        </td>
                     </tr>
                 `;
                     contentImage.append(row);
@@ -640,11 +645,126 @@
             }
         }
 
+        function removeImage(itemIndex, imageIndex, imageUrl=null) {
+            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
+
+                dataFile.splice(imageIndex, 1);
+                items[itemIndex]['gambar'].splice(imageIndex, 1);
+
+                setTimeout(() => {
+                    // renderListImage(itemIndex);
+
+                    const contentImage = $('.content-image');
+                    contentImage.empty();
+
+                    dataFile.forEach(function(image, imageIndex) {
+                        const row = `
+                            <tr>
+                                <th>
+                                    ${imageIndex + 1}
+                                </th>
+                                <td class="text-center">
+                                    <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${itemIndex}, ${imageIndex}, '${image}')">Hapus foto</button>
+                                </td>
+                            </tr>
+                        `;
+                        contentImage.append(row);
+                    });
+
+                    if (dataFile.length === 0) {
+                        $('.list-image').hide();
+                        $('#gambar').val(null);
+                    }
+
+                    if (imageUrl !== null) {
+                        if (isValidURL(imageUrl)) {
+                            const url = new URL(imageUrl);
+                            const pathname = url.pathname;
+                            const thumbnailPath = pathname.replace('/storage/', '');
+
+                            console.log(thumbnailPath);
+
+                            deleteItemPhoto(thumbnailPath);
+                        }
+                    }
+                }, 500);
+            }
+        }
+
+        function isValidURL(urlString) {
+            const url = new URL(urlString);
+            const pathname = url.pathname;
+            return pathname.includes('/storage/');
+            // try {
+            //     new URL(urlString);
+            //     return true;
+            // } catch (error) {
+            //     return false;
+            // }
+        }
+
+        function removeEditImage(e, el, itemIndex, imageIndex, imageId=null) {
+            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
+                items[itemIndex]['gambar'].splice(imageIndex, 1);
+
+                const message = 'Foto berhasil dihapus';
+                $('.top-right').notify({
+                    message: {
+                        text: `Sukses! ${message}`
+                    }
+                }).show();
+
+                if (imageId !== null) {
+                    deleteItemPhoto(imageId);
+                }
+
+                setTimeout(() => {
+                    showImageAsTable(itemIndex);
+                    if (dataFile.length === 0) {
+                        $('.list-image').hide();
+                        $('#gambar_edit').val(null);
+                    }
+                }, 500);
+            }
+        }
+
+        function deleteItemPhoto(thumbnail_url) {
+            $.ajax({
+                url: "{{ route('orders.index') }}/item/photo/",
+                type: 'DELETE',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    thumbnail_url
+                },
+                success: function(result) {
+                    // Tindakan setelah request berhasil
+                    console.log(result);
+                    const message = 'Foto Pesanan berhasil dihapus!';
+                    $('.top-right').notify({
+                        message: { text: `Sukses! ${message}` }
+                    }).show();
+                },
+                error: function(xhr, status, error) {
+                    // Tindakan jika terjadi kesalahan
+                    const message = 'Foto Pesanan tidak berhasil dihapus!';
+                    $('.top-right').notify({
+                        message: { text: `Sukses! ${message}` },
+                        type:'danger'
+                    }).show();
+                    console.log(error);
+                }
+            });
+        }
+
         function showEditItemForm(index) {
             showImageAsTable(index);
             $('#item_element').val(index);
 
             const dataItem = items[index];
+            editItemSelected = index;
 
             dataFile = dataItem.gambar;
 
@@ -654,22 +774,26 @@
             const biaya = $('#biaya_edit').val(parseInt(dataItem.biaya, 10).toLocaleString('id-ID'));
         }
 
-        function showImageAsTable(index) {
+        function showImageAsTable(itemIndex) {
             const contentImage = $('.content-image');
             contentImage.empty();
 
-            items[index].gambar.forEach(function(image, index) {
+            items[itemIndex].gambar.forEach(function(image, imageIndex) {
                 const row = `
                     <tr>
                         <th>
-                            ${index + 1}
+                            ${imageIndex + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${itemIndex}, ${imageIndex}, '${image}')">Hapus foto</button>
                         </td>
                     </tr>
                 `;
                 contentImage.append(row);
+                dataFile.push(image);
             });
         }
 
@@ -793,6 +917,7 @@
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
                         $('.alert').alert('close');
+                        window.location.reload();
                     }, 3000);
 
                     // Tutup modal setelah selesai menyimpan data

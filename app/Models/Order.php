@@ -8,9 +8,11 @@ use App\Models\ServiceType;
 use App\Models\ItemType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
+    use SoftDeletes;
 
     protected $fillable = [
         'id',
@@ -27,6 +29,8 @@ class Order extends Model
         'due_date',
         'sisa_pembayaran',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function client(): BelongsTo
     {

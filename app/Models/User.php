@@ -2,22 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Role;
 use App\Models\Permission;
-use Cache;
 use App\Models\Config;
 use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-
-    use HasFactory;
-
-    use Impersonate;
+    use Notifiable, HasFactory, Impersonate, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -25,12 +21,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 
-        'email', 
-        'password', 
+        'name',
+        'email',
+        'password',
         'active',
         'default_site'
     ];
+
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -45,7 +43,7 @@ class User extends Authenticatable
     {
         return $this->can('root-dev', '');
     }
-    
+
     public function roles()
     {
         return $this->belongsToMany(Role::class);
@@ -55,13 +53,13 @@ class User extends Authenticatable
     {
         return $this->hasAnyRoles($permission->roles);
     }
-    
+
     public function hasAnyRoles($roles)
     {
-        if(is_array($roles) || is_object($roles) ) {
-            return !! $roles->intersect($this->roles)->count();
+        if (is_array($roles) || is_object($roles)) {
+            return !!$roles->intersect($this->roles)->count();
         }
-        
+
         return $this->roles->contains('name', $roles);
     }
 
@@ -69,5 +67,4 @@ class User extends Authenticatable
     {
         return Cache::has('user-is-online-' . $this->id);
     }
-
 }

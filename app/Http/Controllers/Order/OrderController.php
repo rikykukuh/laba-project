@@ -14,6 +14,7 @@ use App\Models\Payment;
 use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use App\Models\Site;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -158,12 +159,14 @@ class OrderController extends Controller
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Sukses! Order ' . $order->name . ' berhasil dibuat!');
+        return redirect()->route('orders.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dibuat!');
     }
 
     public function show($id)
     {
-        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
+        $order = Order::with(['orderItems.orderItemPhotos' => function ($query) {
+            $query->whereNull('deleted_at');
+        }])->findOrFail($id);
         // dd($order);
         $clients = Client::all();
         $statuses = $this->statuses;
@@ -279,15 +282,16 @@ class OrderController extends Controller
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Sukses Order ' . $order->name . ' berhasil diedit!');
+        return redirect()->route('orders.index')->with('success', 'Sukses Pesanan ' . $order->name . ' berhasil diedit!');
     }
 
     public function destroy($id)
     {
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Sukses! Order ' . $order->name . ' berhasil dihapus!');
+        return redirect()->route('orders.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dihapus!');
     }
+
 
     public function getPaymentMerchants(Request $request) {
         $paymentMethod = $request->query('payment_method');
@@ -310,5 +314,16 @@ class OrderController extends Controller
         $sites = Site::all();
 
         return view('orders.print', compact('order', 'clients', 'statuses', 'payment_methods', 'payment_merchants', 'item_types', 'sites'));
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroyItemPhoto(Request $request): JsonResponse
+    {
+        $orderItemPhoto = OrderItemPhoto::where('thumbnail_url', '=', $request->thumbnail_url)->first();
+        $orderItemPhoto->delete();
+        return response()->json($orderItemPhoto);
     }
 }

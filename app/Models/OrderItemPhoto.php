@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\OrderItem;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderItemPhoto extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'order_item_id',
@@ -17,7 +18,10 @@ class OrderItemPhoto extends Model
         'preview_url',
     ];
 
-    public function orderItem(){
-        return $this->belongsTo(orderItem::Class, 'orderitem_id');
+    protected $dates = ['deleted_at'];
+
+    public function orderItem()
+    {
+        return $this->belongsTo(orderItem::class, 'orderitem_id');
     }
 }
