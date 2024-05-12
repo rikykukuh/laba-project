@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Config;
+use Cache;
 use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
