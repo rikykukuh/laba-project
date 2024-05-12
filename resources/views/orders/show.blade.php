@@ -386,7 +386,7 @@
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
                         <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">{{ number_format($order->orderItems->sum('total') - $order->uang_muka, null, ',', '.') }}</span></p>
-                        <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" readonly class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" readonly class="form-control" value="{{ $order->status == 'DIAMBIL' ? number_format($order->sisa_pembayaran, null, ',', '.') : null }}" style="display: inline"></p>
                     </form>
                 </div>
             </div>
