@@ -78,6 +78,15 @@
                                             <label for="address">Alamat:</label>
                                             <textarea class="form-control" id="address" name="address"></textarea>
                                         </div>
+                                        <div class="form-group">
+                                            <label for="city_id">Kota</label>
+                                            <select name="city_id" id="city_id" class="form-control" data-placeholder="Choose City" required>
+                                                <option disabled selected> -- Choose City -- </option>
+                                                @foreach($cities as $city)
+                                                    <option value="{{ $city->id }}"> {{ $city->name }} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left"

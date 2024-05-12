@@ -8,7 +8,7 @@
 
     <li role="presentation">
         <a href="{{ route('orders.create') }}" class="link_menu_page">
-            <i class="fa fa-plus"></i> Tambar Pesanan
+            <i class="fa fa-plus"></i> Tambah Pesanan
         </a>
     </li>
 

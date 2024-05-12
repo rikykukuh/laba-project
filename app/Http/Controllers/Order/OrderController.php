@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Order;
 use App\DataTables\OrdersDataTable;
 use App\Http\Controllers\Controller;
 
+use App\Models\City;
 use App\Models\Client;
 use App\Models\ItemType;
 use App\Models\Order;
@@ -74,8 +75,9 @@ class OrderController extends Controller
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
         $sites = Site::all();
+        $cities = City::all();
 
-        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods', 'payment_merchants', 'sites'));
+        return view('orders.create', compact('statuses', 'clients', 'item_types', 'payment_methods', 'payment_merchants', 'sites', 'cities'));
     }
 
     public function store(Request $request)
