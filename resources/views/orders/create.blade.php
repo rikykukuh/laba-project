@@ -4,6 +4,7 @@
 
 @section('title', 'Tambah Pesanan')
 @section('layout_css')
+    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
         .glyphicon.spinning {
             animation: spin 1s infinite linear;
@@ -441,6 +442,7 @@
 @endsection
 
 @section('layout_js')
+    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
         $('.total-items').hide();
@@ -527,7 +529,7 @@
                             ${index + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;"  data-magnify="gallery" data-caption="Foto Barang ${index + 1}" data-src="${image}">
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${index})">Hapus foto</button>
@@ -553,7 +555,7 @@
                                 ${i + 1}
                             </th>
                             <td class="text-center">
-                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
+                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${dataFile[i]}">
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${i})">Hapus foto</button>
@@ -567,7 +569,7 @@
                                 ${i + 1}
                             </th>
                             <td class="text-center">
-                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px">
+                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor: pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${dataFile[i]}">
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${i})">Hapus foto</button>
@@ -596,7 +598,7 @@
                                     ${imageIndex + 1}
                                 </th>
                                 <td class="text-center">
-                                    <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                                    <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${imageIndex + 1}" data-src="${image}">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>
@@ -659,7 +661,7 @@
                             ${imageIndex + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px">
+                            <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px;cursor: pointer;" data-magnify="gallery" data-caption="Foto Barang ${imageIndex + 1}" data-src="${image}">
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>

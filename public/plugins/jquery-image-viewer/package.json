@@ -1,0 +1,75 @@
+{
+  "name": "jquery.magnify",
+  "version": "1.6.2",
+  "description": "A jQuery plugin to view images just like in Windows",
+  "main": "dist/jquery.magnify.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "homepage": "https://github.com/nzbin/magnify#readme",
+  "author": "nzbin",
+  "license": "MIT",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nzbin/magnify.git"
+  },
+  "keywords": [
+    "magnify",
+    "lightbox",
+    "responsive",
+    "jquery",
+    "modal",
+    "draggable",
+    "resizable",
+    "zoomable",
+    "image-gallery",
+    "photoviewer"
+  ],
+  "bugs": {
+    "url": "https://github.com/nzbin/magnify/issues"
+  },
+  "scripts": {
+    "sass": "node-sass --output-style expanded src/sass/magnify.scss dist/jquery.magnify.css",
+    "sassmin": "node-sass --output-style compressed src/sass/magnify.scss dist/jquery.magnify.min.css",
+    "autoprefixer": "postcss -u autoprefixer --no-map --autoprefixer.browsers \"last 1 versions\" -r dist/*.css",
+    "build": "run-s build:css build:js",
+    "build:css": "run-s sass",
+    "build:js": "concat -o dist/jquery.magnify.js  src/js/intro.js src/js/utilities.js src/js/core.js src/js/draggable.js src/js/movable.js src/js/resizable.js src/js/outro.js src/js/rotate.js",
+    "compress": "run-s compress:css compress:js",
+    "compress:css": "run-s sassmin",
+    "compress:js": "uglifyjs dist/jquery.magnify.js -o dist/jquery.magnify.min.js -c -m --comments /^!/",
+    "copy": "run-s copy:css copy:js",
+    "copy:css": "cpy dist/jquery.magnify.css docs/css",
+    "copy:js": "cpy dist/jquery.magnify.js docs/js",
+    "release": "run-s clean build compress autoprefixer copy",
+    "release:css": "run-s build:css compress:css",
+    "release:js": "run-s build:js compress:js",
+    "lint": "run-s lint:css lint:js",
+    "lint:css": "stylelint --syntax scss \"src/**/*.scss\" --fix",
+    "lint:js": "eslint src/js --fix",
+    "clean": "rimraf dist",
+    "watch": "onchange src -- run-p build:js build:css"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.2.5",
+    "concat": "^1.0.3",
+    "cpy-cli": "^3.1.1",
+    "eslint": "^7.22.0",
+    "node-sass": "^5.0.0",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
+    "postcss": "^8.2.8",
+    "postcss-cli": "^8.3.1",
+    "rimraf": "^3.0.2",
+    "stylelint": "^13.12.0",
+    "stylelint-config-recommended-scss": "^4.2.0",
+    "stylelint-config-standard": "^21.0.0",
+    "stylelint-scss": "^3.19.0",
+    "uglify-js": "^3.13.1"
+  }
+}
