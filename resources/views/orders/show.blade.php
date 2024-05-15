@@ -57,7 +57,7 @@
 {{--@endsection--}}
 
 @section('layout_css')
-    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -163,6 +163,7 @@
                     <p class="text-center margin-b-10"><b id="status">{{ $order->status }}</b></p>
                     <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">{{ $order->picked_by ?? '-' }}</span></p>
                     <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">{{ $order->picked_at ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>Tanggal Transaksi: </b> <span id="oleh">{{ $order->created_at ?? '-' }}</span></p>
                 </div>
             </div>
         </div>
@@ -471,7 +472,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').show();
         $('.total-items').show();

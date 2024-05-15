@@ -41,26 +41,24 @@
              </address>
          </div>
          <!-- /.col -->
-         @if($order->status == 'DIPROSES')
-              <div class="col-sm-4 invoice-col">&nbsp;</div>
-         @else
              <div class="col-sm-4 invoice-col">
                  <b>Status Pesanan</b><br>
                  <address>
                      Status: {{ $order->status }}<br>
-                     Diambil Oleh: {{ $order->picked_by }}<br>
-                     Waktu Pengambilan: {{ $order->picked_at }}<br>
+                     @if($order->status == 'DIAMBIL')
+                         Diambil Oleh: {{ $order->picked_by }}<br>
+                         Waktu Pengambilan: {{ $order->picked_at }}<br>
+                     @endif
                  </address>
              </div>
-         @endif
 
          <!-- /.col -->
          <div class="col-sm-4 invoice-col">
              <b>Detail Order</b><br>
              <br>
-             <b>ID Pesanan:</b> {{ Str::padLeft($order->id, 4, '0') }}<br>
-             <b>Nomor Tiket:</b> {{ $order->number_ticket }}<br>
+             <b>No:</b> {{ $order->number_ticket }}<br>
              <b>Cabang:</b> {{ $order->site->name }}<br>
+             <b>Tanggal Transaksi:</b> {{ $order->created_at }}<br>
          </div>
          <!-- /.col -->
      </div>
