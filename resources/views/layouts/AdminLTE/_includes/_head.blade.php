@@ -58,6 +58,6 @@
                         format: "dd/mm/yyyy"
                 };
         });
-</script>       
+</script>
 
 @yield('layout_css')

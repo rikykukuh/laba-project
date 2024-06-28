@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\City;
-use App\Models\Client;
+use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ClientController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +17,8 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Client::paginate(10);
-        return view('clients.index', compact('clients'));
+        $customers = Customer::paginate(10);
+        return view('customers.index', compact('customers'));
     }
 
     /**
@@ -29,7 +29,7 @@ class ClientController extends Controller
     public function create()
     {
         $cities = City::all();
-        return view('clients.create', compact('cities'));
+        return view('customers.create', compact('cities'));
     }
 
     /**
@@ -40,7 +40,7 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $client = Client::create([
+        $customer = Customer::create([
             'name' => $request->name,
             'address' => $request->address,
             'city_id' => $request->city_id,
@@ -48,9 +48,9 @@ class ClientController extends Controller
         ]);
 
         if ($request->ajax()) {
-            return response()->json($client);
+            return response()->json($customer);
         }
-        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil dibuat!');
+        return redirect()->route('customers.index')->with('success', 'Sukses! Pelanggan ' . $customer->name . ' berhasil dibuat!');
     }
 
     /**
@@ -61,8 +61,8 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $client = CLient::findOrFail($id);
-        return view('clients.show', compact('client'));
+        $customer = CLient::findOrFail($id);
+        return view('customers.show', compact('customer'));
     }
 
     /**
@@ -73,9 +73,9 @@ class ClientController extends Controller
      */
     public function edit($id)
     {
-        $client = Client::findOrFail($id);
+        $customer = Customer::findOrFail($id);
         $cities = City::all();
-        return view('clients.edit', compact('client', 'cities'));
+        return view('customers.edit', compact('customer', 'cities'));
     }
 
     /**
@@ -87,14 +87,14 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $client = Client::findOrFail($id);
-        $client->update([
+        $customer = Customer::findOrFail($id);
+        $customer->update([
             'name' => $request->name,
             'address' => $request->address,
             'city_id' => $request->city_id,
             'phone_number' => $request->phone_number,
         ]);
-        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil diedit!');
+        return redirect()->route('customers.index')->with('success', 'Sukses! Pelanggan ' . $customer->name . ' berhasil diedit!');
     }
 
     /**
@@ -105,9 +105,9 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $client = Client::findOrFail($id);
-        $client->delete();
-        return redirect()->route('clients.index')->with('success', 'Sukses! Pelanggan ' . $client->name . ' berhasil dihapus!');
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
+        return redirect()->route('customers.index')->with('success', 'Sukses! Pelanggan ' . $customer->name . ' berhasil dihapus!');
     }
 
     /**
@@ -117,7 +117,7 @@ class ClientController extends Controller
     public function searchCustomers(Request $request): \Illuminate\Http\JsonResponse
     {
         $searchTerm = $request->input('q');
-        $customers = Client::where('id', 'like', "%$searchTerm%")
+        $customers = Customer::where('id', 'like', "%$searchTerm%")
             ->orWhere('name', 'like', "%$searchTerm%")
             ->get(['id', 'name', 'address', 'phone_number']);
 

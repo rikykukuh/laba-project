@@ -2,12 +2,12 @@
 
 @section('icon_page', 'shopping-basket')
 
-@section('title', 'Orders')
+@section('title', 'Penjualan')
 
 @section('menu_pagina')
 
     <li role="presentation">
-        <a href="{{ route('orders.create') }}" class="link_menu_page">
+        <a href="{{ route('order-products.create') }}" class="link_menu_page">
             <i class="fa fa-plus"></i> Add
         </a>
     </li>
@@ -18,7 +18,7 @@
 @section('content')
 
     <div class="box box-warning">
-        <div class="box-header with-border">
+        <div class="box-header with-border-product">
             <h3 class="box-title">Edit Order</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Edit Order">
@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="box-body">
-            <form action="{{ route('orders.update', $order->id) }}" method="post">
+            <form action="{{ route('order-products.update', $order->id) }}" method="post">
                 {{ csrf_field() }}
                 @method('PUT')
                 <div class="row">
@@ -139,9 +139,9 @@
                         </div>
                     </div>
                     <div class="col-lg-12">
-                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-default pull-left" style="margin-right: 15px;">Back to Detail Order</a>
+                        <a href="{{ route('order-products.show', $order->id) }}" class="btn btn-default pull-left" style="margin-right: 15px;">Back to Detail Order</a>
                         <button type="submit" class="btn btn-warning pull-right"><i class="fa fa-fw fa-save"></i> Update</button>
-                        <a href="{{ route('orders.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Orders</a>
+                        <a href="{{ route('order-products.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Back to Penjualan</a>
                     </div>
                 </div>
             </form>

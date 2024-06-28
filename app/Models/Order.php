@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Client;
+use App\Models\Customer;
 use App\Models\ServiceType;
-use App\Models\ItemType;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,7 +18,12 @@ class Order extends Model
         'id',
         'name',
         'site_id',
-        'client_id',
+        'customer_id',
+        'bruto',
+        'discount',
+        'netto',
+        'vat',
+        'transaction_type',
         'total',
         'payment_id',
         'status',
@@ -32,9 +37,9 @@ class Order extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function client(): BelongsTo
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     public function site(): BelongsTo

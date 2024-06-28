@@ -19,7 +19,7 @@
 		<script src="{{ asset('assets/adminlte/bower_components/jquery-knob/dist/jquery.knob.min.js') }}"></script>
 		<!-- daterangepicker -->
 		<script src="{{ asset('assets/adminlte/bower_components/moment/min/moment.min.js') }}"></script>
-		<script src="{{ asset('assets/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+		<script defer src="{{ asset('assets/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
 		<!-- datepicker -->
 		<script src="{{ asset('assets/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 		<!-- Bootstrap WYSIHTML5 -->
@@ -36,15 +36,15 @@
 		<!-- adminlte for demo purposes -->
 		<script src="{{ asset('assets/adminlte/dist/js/demo.js') }}"></script>
 		<!-- Select2 -->
-		<script src="{{ asset('assets/adminlte/bower_components/select2/dist/js/select2.full.min.js') }}"></script>
+		<script defer src="{{ asset('assets/adminlte/bower_components/select2/dist/js/select2.full.min.js') }}"></script>
 		<!-- Mask -->
-		
-		<script type="text/javascript"> 
+
+		<script type="text/javascript">
 	      $(document).ready( function() {
 	        $('#flash_message').delay(3000).fadeOut();
 	      });
 	    </script>
 
-		
+
 
 		@yield('layout_js')

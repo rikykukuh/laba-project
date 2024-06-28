@@ -12,8 +12,13 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->integer('site_id')->nullable();
-            $table->integer('client_id')->nullable();
-            $table->decimal('total', 10, 2)->nullable();
+            $table->integer('customer_id')->nullable();
+            $table->decimal('bruto', 15, 2)->default(0);
+            $table->decimal('discount', 15, 2)->default(0);
+            $table->decimal('netto', 15, 2)->default(0);
+            $table->decimal('vat', 15, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
+            $table->integer('transaction_type')->nullable();
             $table->integer('payment_id')->nullable();
             $table->string('status')->nullable();
             $table->string('number_ticket')->nullable();

@@ -5,10 +5,10 @@
 @section('style')
     <style>
         .table-total tr:first-child, .table-total tr:last-child {
-            border-top: 2px solid black;
+            border-product-top: 2px solid black;
         }
         .table-total tr:last-child {
-            border-bottom: 2px solid black;
+            border-product-bottom: 2px solid black;
         }
 
         @media print {
@@ -42,7 +42,7 @@
          </div>
          <!-- /.col -->
              <div class="col-sm-4 invoice-col">
-                 <b>Status Reparasi</b><br>
+                 <b>Status Pesanan</b><br>
                  <address>
                      Status: {{ $order->status }}<br>
                      @if($order->status == 'DIAMBIL')
@@ -73,6 +73,7 @@
                          <th class="text-center" style="width: 5%;">No.</th>
                          <th>Jenis Produk</th>
                          <th>Keterangan</th>
+                         <th>Qty</th>
                          <th class="text-right">Subtotal</th>
                      </tr>
                  </thead>
@@ -84,6 +85,7 @@
                          </td>
                          <td>{{ $products->find($orderItem->product_id)->name }}</td>
                          <td>{{ $orderItem->note }}</td>
+                         <td>{{ number_format($orderItem->quantity,null,",",".") }}</td>
                          <td class="text-right">Rp{{ number_format($orderItem->bruto,null,",",".") }}</td>
                      </tr>
                  @endforeach
@@ -114,23 +116,22 @@
 
              <div class="table-responsive">
                  <table class="table table-total">
+                   {{-- <tr> --}}
+                   {{--     <th style="width:50%">Subtotal:</th> --}}
+                   {{--     <td>Rp250.300</td> --}}
+                   {{-- </tr> --}}
+                   {{-- <tr> --}}
+                   {{--     <th>Pajak (9,3%)</th> --}}
+                   {{--     <td>Rp10.340</td> --}}
+                   {{-- </tr> --}}
+                   {{-- <tr> --}}
+                   {{--     <th>Pengiriman:</th> --}}
+                   {{--     <td>Rp5.800</td> --}}
+                   {{-- </tr> --}}
                      <tr>
                          <th>Total:</th>
-                         <td class="text-right">Rp{{ number_format($order->orderItems->sum('bruto'),null,",",".") }}</td>
+                         <th class="text-right">Rp{{ number_format($order->orderItems->sum('netto'),null,",",".") }}</th>
                      </tr>
-                    <tr>
-                        <th>DP:</th>
-                        <td class="text-right">Rp{{ number_format($order->uang_muka,null,",",".") }}</td>
-                    </tr>
-                     <tr>
-                         <th>Discount:</th>
-                         <td class="text-right">Rp{{ number_format($order->discount,null,",",".") }}</td>
-                     </tr>
-                    <tr>
-                        <th>Sisa Pembayaran:</th>
-                        <td class="text-right">Rp{{ number_format($order->sisa_pembayaran,null,",",".") }}</td>
-                    </tr>
-                     <tr></tr>
                  </table>
              </div>
          </div>

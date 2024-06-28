@@ -2,7 +2,7 @@
 
 @section('icon_page', 'plus')
 
-@section('title', 'Tambah Reparasi')
+@section('title', 'Tambah Penjualan')
 @section('layout_css')
     <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
@@ -26,8 +26,8 @@
 @section('menu_pagina')
 
     <li role="presentation">
-        <a href="{{ route('orders.index') }}" class="link_menu_page">
-            <i class="fa fa-shopping-basket"></i> Reparasi
+        <a href="{{ route('order-products.index') }}" class="link_menu_page">
+            <i class="fa fa-shopping-basket"></i> Penjualan
         </a>
     </li>
 
@@ -50,7 +50,7 @@
                 <div class="col-md-4">
                     <!-- Trigger the modal with a button -->
                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-add-customer"
-                        style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
+                        style="margin: 25px auto;border-product-left: 1px solid #ccc;">Tambah Pelanggan</button>
                     <!-- Modal -->
                     <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false"
                         data-backdrop="static">
@@ -119,9 +119,9 @@
 
     <div class="row">
         <!-- Detail Customer -->
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="box box-success">
-                <div class="box-header with-border">
+                <div class="box-header with-border-product">
                     <h3 class="box-title">Detail Pelanggan</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -129,21 +129,6 @@
                     </div>
                 </div>
                 <div class="box-body" id="detail-user">
-                </div>
-            </div>
-        </div>
-
-        <!-- Status Customer -->
-        <div class="col-md-6">
-            <div class="box box-danger">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Status</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="box-body" id="status-customer">
                 </div>
             </div>
         </div>
@@ -169,8 +154,9 @@
                                     <th class="text-center">#</th>
                                     <th class="text-center">Jenis</th>
                                     <th class="text-center">Keterangan</th>
-                                    <th class="text-center">Foto</th>
-                                    <th class="text-center">Biaya</th>
+                                    <th class="text-center">Harga</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Sub total</th>
                                     <th class="text-center">Discount</th>
                                     <th class="text-center">Total</th>
                                     <th class="text-center">Aksi</th>
@@ -195,9 +181,10 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="type_edit">Jenis Service: <small
+                                            <label for="type_item_edit">Jenis Produk: <small
                                                     class="text-danger">*</small></label>
-                                            <select id="type_edit" class="form-control" name="type_edit">
+                                            <select id="type_item_edit" class="form-control" name="type_item_edit">
+                                                <option value="" disabled selected>-- Pilih Jenis Produk --</option>
                                                 @foreach ($products as $product)
                                                     <option value="{{ $product->id }}">{{ $product->name }}</option>
                                                 @endforeach
@@ -209,14 +196,18 @@
                                             <textarea class="form-control" id="keterangan_edit" name="keterangan_edit"></textarea>
                                         </div>
                                         <div class="form-group">
-                                            <label for="biaya_edit">Biaya: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="biaya_edit"
-                                                name="biaya_edit">
+                                            <label for="harga_edit">Harga: <small class="text-danger">*</small></label>
+                                            <input type="text" readonly class="form-control" id="harga_item_edit"
+                                                name="harga_edit">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="kuantitas_item_edit">Quantity: <small class="text-danger">*</small></label>
+                                            <input type="text" class="form-control" id="kuantitas_item_edit"
+                                                   name="kuantitas_item_edit">
                                         </div>
                                          <div class="form-group">
                                              <label for="discount_item_edit">Discount: <small class="text-danger">*</small></label>
-                                             <input type="text" class="form-control" id="discount_item_edit"
-                                                 name="discount_item_edit">
+                                             <input type="text" class="form-control" id="discount_item_edit" name="discount_item_edit">
                                          </div>
                                         <div class="form-group" style="display: none;">
                                             <label for="total_after_discount_edit">Discount Amount: </label>
@@ -226,23 +217,6 @@
                                             <label for="total_item_edit">Total: <small class="text-danger">*</small></label>
                                             <input readonly type="text" class="form-control" id="total_item_edit" name="total_item_edit">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
-                                            <input type="file" class="form-control-file" id="gambar_edit"
-                                                name="gambar_edit" accept=".jpg,.jpeg,.png" multiple
-                                                onchange="handleEditImageUpload(this)">
-                                        </div>
-                                        <hr>
-                                        <table role="presentation" class="table table-striped table-bordered table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th width="300">#</th>
-                                                    <th width="300">Foto</th>
-                                                    <th width="300">Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="content-image"></tbody>
-                                        </table>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default margin-r-5"
@@ -251,36 +225,6 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-
-                    <!-- Modal Show Image Item -->
-                    <div class="modal fade" id="modal-show-image-item" role="dialog" data-keyboard="false"
-                        data-backdrop="static">
-                        <div class="modal-dialog">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Item Foto</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <table role="presentation" class="table table-striped table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th width="300">#</th>
-                                                <th width="300">Foto</th>
-                                                <th width="300">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="content-image"></tbody>
-                                    </table>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default margin-r-5"
-                                        data-dismiss="modal">Tutup</button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -307,10 +251,11 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="type">Jenis Service: <small class="text-danger">*</small></label>
-                                    <select id="type" class="form-control" name="type" required>
+                                    <label for="type_item">Jenis Produk: <small class="text-danger">*</small></label>
+                                    <select id="type_item" class="form-control" name="type_item" required>
+                                        <option value="" disabled selected>-- Pilih Jenis Produk --</option>
                                         @foreach ($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -319,8 +264,12 @@
                                     <textarea class="form-control" id="keterangan" name="keterangan" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="biaya">Biaya: <small class="text-danger">*</small></label>
-                                    <input type="text" class="form-control" id="biaya" name="biaya" required>
+                                    <label for="harga_item">Harga: <small class="text-danger">*</small></label>
+                                    <input type="text" readonly class="form-control" id="harga_item" name="harga_item" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="kuantitas_item">Quantity: <small class="text-danger">*</small></label>
+                                    <input type="text" class="form-control" id="kuantitas_item" name="kuantitas_item" value="1" required>
                                 </div>
                                  <div class="form-group">
                                      <label for="discount_item">Discount: <small class="text-danger">*</small></label>
@@ -334,23 +283,6 @@
                                     <label for="total_item">Total: <small class="text-danger">*</small></label>
                                     <input readonly type="text" class="form-control" id="total_item" name="total_item">
                                 </div>
-                                <div class="form-group">
-                                    <label for="gambar">Foto: <small class="text-danger">*</small></label>
-                                    <input type="file" class="form-control-file" id="gambar" name="gambar"
-                                        accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
-                                </div>
-                                <hr>
-                                <table role="presentation"
-                                    class="table table-striped table-bordered table-hover list-image">
-                                    <thead>
-                                        <tr>
-                                            <th width="300">#</th>
-                                            <th width="300">Foto</th>
-                                            <th width="300">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="list-image"></tbody>
-                                </table>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default margin-r-5"
@@ -365,9 +297,9 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12 total-items">
+        <div class="col-md-12 value-items">
             <div class="box box-primary">
-                <div class="box-header with-border">
+                <div class="box-header with-border-product">
                     <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
@@ -376,19 +308,17 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <form action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
+                    <form action="{{ route('order-products.store') }}" method="post" enctype="multipart/form-data"
                         autocomplete="off">
                         <input type="hidden" name="customer_id" id="customer_id" value="">
                         {{ csrf_field() }}
+                        <p class="margin-b-2" style="display: none;"><b>Bruto: </b><span id="bruto"></span></p>
                         <p class="margin-b-2"><b>Sub total: </b><span id="sub_total"></span></p>
                         <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount" name="discount" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2" style="display: none;"><b>Netto: </b><span id="netto"></span></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp"
-                                value="" class="form-control" style="display: inline"></p>
-                        <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
-                        <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control"
-                            style="display: inline">
+                        <p class="margin-b-2" style="display: none;"><b>VAT: </b><span id="vat"></span></p>
                         {{-- <p class="margin-b-2"><b>Pembayaran: </b><input type="text" id="pembayaran" name="pembayaran" value="0" readonly class="form-control" style="display: inline"></p> --}}
                     </form>
                 </div>
@@ -397,7 +327,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12 total-items">
+        <div class="col-md-12 value-items">
             {{--  <button type="submit" class="btn bg-olive pull-left" data-toggle="modal" data-target="#modal-take" style="margin-right: 15px;"> --}}
             {{--      <i class="fa fa-fw fa-save"></i> --}}
             {{--      <span>Ambil</span> --}}
@@ -449,12 +379,12 @@
             {{--         </form> --}}
             {{--     </div> --}}
             {{-- </div> --}}
-            <button type="button" class="btn bg-purple pull-left" id="btn-order" style="margin-right: 15px;"
+            <button type="button" class="btn bg-purple pull-left" id="btn-order-product" style="margin-right: 15px;"
                 onclick="createOrder()">
                 <i class="fa fa-fw fa-save"></i>
                 <span>Simpan</span>
             </button>
-            <a href="{{ route('orders.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i>
+            <a href="{{ route('order-products.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i>
                 Batalkan</a>
         </div>
     </div>
@@ -465,11 +395,9 @@
     <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
-        $('.total-items').hide();
-        $('.list-image').hide();
+        $('.value-items').hide();
         const products = @json($products);
         const items = [];
-        let dataFile = [];
 
         function getTypeById(nameKey, myArray) {
             for (let i = 0; i < myArray.length; i++) {
@@ -487,215 +415,24 @@
             });
         }
 
-        function handleImageUpload(element) {
-            const files = $(element)[0].files;
-            if (files.length === 0) return;
-
-            // console.log(files);
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const ext = file.name.split('.').pop().toLowerCase();
-                if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        // Mengakses data URL base64 dari file
-                        const base64Data = e.target.result;
-                        // Memasukkan data URL base64 ke dalam array
-                        dataFile.push(base64Data);
-                    };
-                    // Membaca file sebagai data URL
-                    reader.readAsDataURL(file);
-                }
-            }
-
-            setTimeout(() => {
-                renderListImage();
-                if (dataFile.length === 0) {
-                    $(element).val(null);
-                }
-            }, 500);
-
-        }
-
-        function handleEditImageUpload(element) {
-            const files = $(element)[0].files;
-            if (files.length === 0) return;
-
-            // console.log(files);
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const ext = file.name.split('.').pop().toLowerCase();
-                if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        // Mengakses data URL base64 dari file
-                        const base64Data = e.target.result;
-                        // Memasukkan data URL base64 ke dalam array
-                        dataFile.push(base64Data);
-                    };
-                    // Membaca file sebagai data URL
-                    reader.readAsDataURL(file);
-                }
-            }
-
-            setTimeout(() => {
-                const contentImage = $('.content-image');
-                contentImage.empty();
-
-                dataFile.forEach(function(image, index) {
-                    const row = `
-                    <tr>
-                        <th>
-                            ${index + 1}
-                        </th>
-                        <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;"  data-magnify="gallery" data-caption="Foto Barang ${index + 1}" data-src="${image}">
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${index})">Hapus foto</button>
-                        </td>
-                    </tr>
-                `;
-                    contentImage.append(row);
-                });
-            }, 500);
-        }
-
-        function renderListImage(itemIndex=null) {
-            // console.log(dataFile);
-            const listImage = $('#list-image');
-            $('.list-image').hide();
-            $('.list-image').show();
-            listImage.empty();
-            for (let i = 0; i < dataFile.length; i++) {
-                if(itemIndex === null) {
-                    listImage.append(`
-                        <tr>
-                            <th>
-                                ${i + 1}
-                            </th>
-                            <td class="text-center">
-                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${dataFile[i]}">
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${i})">Hapus foto</button>
-                            </td>
-                        </tr>
-                    `);
-                } else {
-                    listImage.append(`
-                        <tr>
-                            <th>
-                                ${i + 1}
-                            </th>
-                            <td class="text-center">
-                                <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor: pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${dataFile[i]}">
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${i})">Hapus foto</button>
-                            </td>
-                        </tr>
-                    `);
-                }
-            }
-        }
-
-        function removeImage(itemIndex) {
-            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
-
-                dataFile.splice(itemIndex, 1);
-
-                setTimeout(() => {
-                    renderListImage(itemIndex);
-
-                    const contentImage = $('.content-image');
-                    contentImage.empty();
-
-                    dataFile.forEach(function(image, imageIndex) {
-                        const row = `
-                            <tr>
-                                <th>
-                                    ${imageIndex + 1}
-                                </th>
-                                <td class="text-center">
-                                    <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${imageIndex + 1}" data-src="${image}">
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>
-                                </td>
-                            </tr>
-                        `;
-                        contentImage.append(row);
-                    });
-
-                    if (dataFile.length === 0) {
-                        $('.list-image').hide();
-                        $('#gambar').val(null);
-                    }
-                }, 500);
-            }
-        }
-
-        function removeEditImage(e, el, itemIndex, imageIndex) {
-            if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
-                items[itemIndex]['gambar'].splice(imageIndex, 1);
-
-                const message = 'Foto berhasil dihapus';
-                $('.top-right').notify({
-                    message: {
-                        text: `Sukses! ${message}`
-                    }
-                }).show();
-
-                setTimeout(() => {
-                    showImageAsTable(itemIndex);
-                    if (dataFile.length === 0) {
-                        $('.list-image').hide();
-                        $('#gambar_edit').val(null);
-                    }
-                }, 500);
-            }
-        }
-
         function showEditItemForm(index) {
-            showImageAsTable(index);
             $('#item_element').val(index);
 
             const dataItem = items[index];
-            let info_discount = parseInt(dataItem.discount_item, 10) > 100 ? dataItem.discount_item : dataItem.biaya * (parseInt(dataItem.discount_item, 10) / 100);
 
-
-            $(`#type_edit option[value='${dataItem.type}']`).prop('selected', true);
-            // const type = $('#type_edit').val();
+            $(`#type_item_edit option[value='${dataItem.type}']`).prop('selected', true);
+            // const type = $('#type_item_edit').val();
             const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
-            const biaya = $('#biaya_edit').val(parseInt(dataItem.biaya, 10).toLocaleString('id-ID'));
-            const discount_item = $('#discount_item_edit').val(parseInt(dataItem.discount_item, 10).toLocaleString('id-ID'));
-            const total_item_edit = $('#total_item_edit').val((parseInt(dataItem.biaya, 10) - parseInt(info_discount, 10)).toLocaleString('id-ID'));
-            $('#discount_item_edit').trigger('input');
-        }
+            const kuantitas = $('#kuantitas_item_edit').val(parseInt(dataItem.kuantitas, 10).toLocaleString('id-ID'));
+            const discount = $('#discount_item_edit').val(dataItem.discount_item === 0 ? '' : parseInt(dataItem.discount_item, 10).toLocaleString('id-ID'));
+            const harga = $('#harga_item_edit').val(parseInt(dataItem.harga, 10).toLocaleString('id-ID'));
 
-        function showImageAsTable(itemIndex) {
-            const contentImage = $('.content-image');
-            // console.log(items)
-            contentImage.empty();
-
-            items[itemIndex].gambar.forEach(function(image, imageIndex) {
-                const row = `
-                    <tr>
-                        <th>
-                            ${imageIndex + 1}
-                        </th>
-                        <td class="text-center">
-                            <img src="${image}" alt="Foto Barang ${imageIndex + 1}" title="Foto Barang ${imageIndex + 1}" class="img-thumbnail" style="height:100px;cursor: pointer;" data-magnify="gallery" data-caption="Foto Barang ${imageIndex + 1}" data-src="${image}">
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeEditImage(event, this, ${itemIndex}, ${imageIndex})">Hapus foto</button>
-                        </td>
-                    </tr>
-                `;
-                contentImage.append(row);
-                dataFile.push(image);
-            });
+            if(dataItem.discount_item > 100) {
+                $('#total_after_discount_edit').text('').parent().css('display', 'none');
+            } else {
+                $('#total_after_discount_edit').text((dataItem.harga * dataItem.kuantitas * (dataItem.discount_item / 100)).toLocaleString('id-ID')).parent().css('display', 'inline');
+            }
+            $('#kuantitas_item_edit, #discount_item_edit').trigger('input');
         }
 
         function removeItem(e, el, index) {
@@ -706,7 +443,7 @@
 
                 if (items && !items.length) {
                     $('#items').hide();
-                    $('.total-items').hide();
+                    $('.value-items').hide();
                 }
 
                 const message = 'Item berhasil dihapus';
@@ -803,14 +540,7 @@
         }
 
         function resetFormAddItem() {
-            const listImage = $('#list-image');
-            listImage.empty();
-            $('.list-image').hide();
-            // Reset form
             $('#add-item-form, #add-customer-form').trigger("reset");
-            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
-
-            dataFile = [];
         }
 
         function renderItems() {
@@ -821,8 +551,7 @@
             // Loop melalui setiap item dan tambahkan baris HTML untuk masing-masing item
             items.forEach(function(item, index) {
                 let type = getTypeById(item.type, products);
-                const imageSource = ''; // Tentukan sumber gambar, misalnya dari properti gambar item
-                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.biaya * (parseInt(item.discount_item, 10) / 100);
+                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.jumlah * (parseInt(item.discount_item, 10) / 100);
 
                 const row = `
                     <tr>
@@ -830,22 +559,22 @@
                         <td class="text-center">${type.name}</td>
                         <td class="text-center">${item.keterangan}</td>
                         <td class="text-center">
-                            <!--
-                            <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
-                            -->
-                            <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable(${index})">
-                                <i class="fa fa-image margin-r-5"></i>
-                                <span>Tampilkan Foto</span>
-                            </span>
+                            <b>${parseInt(item.harga, 10).toLocaleString('id-ID')}</b>
                         </td>
                         <td class="text-center">
-                            <b>${parseInt(item.biaya, 10).toLocaleString('id-ID')}</b>
+                            <b>${parseInt(item.kuantitas, 10).toLocaleString('id-ID')}</b>
                         </td>
                         <td class="text-center">
-                            <b>${parseInt(item.discount_item, 10).toLocaleString('id-ID')}${item.discount_item > 100 ? '' : '%'} ${item.discount_item > 100 ? '' : "(" + (parseInt(item.biaya, 10) * (item.discount_item / 100)).toLocaleString('id-ID') + ")"}</b>
+                            <b>${(parseInt(item.harga, 10) * parseInt(item.kuantitas, 10)).toLocaleString('id-ID')}</b>
                         </td>
                         <td class="text-center">
-                            <b>${(parseInt(item.biaya, 10) - parseInt(info_discount, 10)).toLocaleString('id-ID')}</b>
+                            <b>
+                                <!-- ${info_discount.toLocaleString('id-ID')}  -->
+                                ${item.discount_item.toLocaleString('id-ID')}${item.discount_item > 100 ? '' : '%'} ${item.discount_item > 100 ? '' : "(" + (parseInt(item.harga, 10) * parseInt(item.kuantitas, 10) * (item.discount_item / 100)).toLocaleString('id-ID') + ")"}
+                            </b>
+                        </td>
+                        <td class="text-center">
+                            <b>${(parseInt(item.harga, 10) * parseInt(item.kuantitas, 10) - parseInt(info_discount, 10)).toLocaleString('id-ID')}</b>
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-warning btn-xs margin-r-5" data-toggle="modal" data-target="#modal-edit-item" onclick="showEditItemForm(${index})">Edit</button>
@@ -859,24 +588,26 @@
 
         function saveItem(event) {
             $('#items').show();
-            $('.total-items').show();
+            $('.value-items').show();
             event.preventDefault(); // Menghentikan aksi default dari submit form
 
             // Ambil nilai dari form
-            const type = $('#type').val();
+            const type = $('#type_item').val();
             const keterangan = $('#keterangan').val();
-            const biaya = $('#biaya').val().replace(/\./g, '');
+            const harga = $('#harga_item').val().replace(/\./g, '');
+            const kuantitas = $('#kuantitas_item').val().replace(/\./g, '');
+            const jumlah = parseInt(harga, 10) * parseInt(kuantitas, 10);
             const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''), 10) : 0;
-            const gambar = dataFile;
+            const total_after_discount = $('total_after_discount').text().replace(/\./g, '');
 
             // Buat objek item
             const newItem = {
                 type,
                 keterangan,
-                biaya,
+                harga,
+                kuantitas,
+                jumlah,
                 discount_item,
-                // netto: biaya - discount_item,
-                gambar
             };
 
             // console.log(newItem);
@@ -898,37 +629,39 @@
 
             // Tutup modal setelah selesai menyimpan data
             $('#modal-add-item').modal('hide');
+            $('#total_after_discount').text('').parent().css('display', 'none');
 
             // Reset form
             $('#add-item-form').trigger("reset");
             // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
 
-            sumTotalItem();
+            sumValueItem();
             $('#discount').trigger('input');
-            dataFile = [];
         }
 
         function formEditItem(event) {
             $('#items').show();
-            $('.total-items').show();
+            $('.value-items').show();
             event.preventDefault(); // Menghentikan aksi default dari submit form
 
             const element = $('#item_element').val();
 
             // Ambil nilai dari form
-            const type = $('#type_edit').val();
+            const type = $('#type_item_edit').val();
             const keterangan = $('#keterangan_edit').val();
-            const biaya = $('#biaya_edit').val().replace(/\./g, '');
-            const discount_item = $('#discount_item_edit').val().replace(/\./g, '');
+            const harga = $('#harga_item_edit').val().replace(/\./g, '');
+            const kuantitas = $('#kuantitas_item_edit').val().replace(/\./g, '');
+            const jumlah = parseInt(harga, 10) * parseInt(kuantitas, 10);
+            const discount_item = $('#discount_item_edit').val() !== '' ? parseInt($('#discount_item_edit').val().replace(/\./g, ''), 10) : 0;
 
             // Buat objek item
             const newItem = {
                 type,
                 keterangan,
-                biaya,
+                harga,
+                kuantitas,
+                jumlah,
                 discount_item,
-                // netto: biaya - discount_item,
-                gambar: dataFile
             };
 
             // console.log(newItem);
@@ -950,55 +683,50 @@
 
             // Tutup modal setelah selesai menyimpan data
             $('#modal-edit-item').modal('hide');
+            $('#total_after_discount_edit').text('').parent().css('display', 'none');
 
             // Reset form
             $('#edit-item-form').trigger("reset");
             // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
 
-            sumTotalItem();
-
-            dataFile = [];
+            sumValueItem();
+            $('#discount').trigger('input');
         }
 
-        function sumTotalItem() {
-            const dp = $('#dp').val();
-
-            let total = 0;
+        function sumValueItem() {
+            let bruto = 0;
             let discount = 0;
 
             for (let i = 0; i < items.length; i++) {
-                total += parseInt(items[i].biaya, 10);
-                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].biaya * (parseInt(items[i].discount_item, 10) / 100);
+                // let info_discount = parseInt(items[i].discount_items, 10) > 100 ? items[i].discount_items : items[i].jumlah * (parseInt(items[i].discount_item, 10) / 100);
+                bruto += parseInt(items[i].jumlah, 10);
+                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].jumlah * (parseInt(items[i].discount_item, 10) / 100);
             }
-            console.log(total.toLocaleString('id-ID'))
 
-            $('#sub_total').text(total.toLocaleString('id-ID'));
-            $('#discount').val(discount.toLocaleString('id-ID'));
-            if (dp !== '') {
-                $('#kekurangan').text(parseInt(total - discount - dp.replace(/\./g, ''), 10).toLocaleString('id-ID'));
-            } else {
-                $('#kekurangan').text(parseInt(total - discount, 10).toLocaleString('id-ID'));
-            }
+            $('#bruto').text(bruto.toLocaleString('id-ID'));
+            $('#sub_total').text(bruto.toLocaleString('id-ID'));
+            $('#discount').val((discount).toLocaleString('id-ID'));
         }
 
         function createOrder() {
             const customer_id = $('#customer_id').val();
             const site_id = $('#site_id option:selected').val();
-            const dp = $('#dp').val().replace(/\./g, '');
+            const bruto = $('#bruto').text().replace(/\./g, '');
             const discount = $('#discount').val().replace(/\./g, '');
-            const total = $('#sub_total').text().replace(/\./g, '');
-            const kekurangan = $('#kekurangan-final').val();
+            const netto = $('#netto').text().replace(/\./g, '');
+            const vat = $('#vat').text().replace(/\./g, '');
+            const total = $('#total').text().replace(/\./g, '');
 
             // console.log('FINAL RESULT');
-            // console.table([{items}, {customer_id}, {site_id}, {dp}, {total}, {kekurangan}]);
+            // console.table([{items}, {customer_id}, {site_id}, {bruto}]);
 
-            const url = "{{ route('orders.store') }}";
+            const url = "{{ route('order-products.store') }}";
             $('.alert').alert('close');
 
             const alert = `
                         <div class="alert alert-warning alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                          <strong>Mohon tunggu!</strong> Reparasi sedang diproses...
+                          <strong>Mohon tunggu!</strong> Penjualan sedang diproses...
                             &nbsp;<span class="glyphicon glyphicon-refresh spinning"></span>
                         </div>
                     `;
@@ -1010,10 +738,11 @@
                     items,
                     customer_id,
                     site_id,
-                    dp,
+                    bruto,
                     discount: discount === '' ? 0 : discount,
+                    netto,
+                    vat,
                     total,
-                    kekurangan
                 },
                 method: 'POST',
                 headers: {
@@ -1024,7 +753,7 @@
                     console.log(response);
                     $('#alert-container').empty();
                     const type = 'success';
-                    const message = 'Reparasi berhasil disimpan!'
+                    const message = 'Penjualan berhasil disimpan!'
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -1046,7 +775,7 @@
                     console.error(error);
                     $('#alert-container').empty();
                     const type = 'danger';
-                    const message = 'Reparasi tidak berhasil disimpan!'
+                    const message = 'Penjualan tidak berhasil disimpan!'
                     const statusCode = `${xhr.statusText} (${xhr.status})`;
                     const alert = `
                         <div class="alert alert-${type} alert-dismissible">
@@ -1065,25 +794,24 @@
             }, 1000);
         }
 
+        function calculateIncludedVAT(totalValue, vatRate) {
+            const vatRateDecimal = vatRate / 100;
+            // console.log((totalValue * vatRateDecimal) / (1 + vatRateDecimal));
+            return (totalValue * vatRateDecimal) / (1 + vatRateDecimal);
+        }
+
         $(function() {
             $('#modal-add-customer').on('shown.bs.modal', function() {
                 $('#add-customer-form #name').focus();
-            });
-            $('#modal-show-image-item').on('hidden.bs.modal', function() {
-                $('.content-image').empty();
-                dataFile = [];
-                $('#edit-item-form').trigger('reset');
-                resetFormAddItem();
             });
             $('#modal-add-item').on('hidden.bs.modal', function() {
                 resetFormAddItem();
             });
             $('#modal-edit-item').on('hidden.bs.modal', function() {
                 $('#item_element').val('');
-                // $(`#type_edit option[value='1']`).attr("selected");
+                // $(`#type_item_edit option[value='1']`).attr("selected");
                 $('#keterangan_edit').val('');
-                $('#biaya_edit').val('');
-                dataFile = [];
+                $('#harga_item_edit').val('');
                 $('#edit-item-form').trigger('reset');
                 resetFormAddItem();
             });
@@ -1111,6 +839,17 @@
                     },
                     cache: true
                 }
+            });
+
+            $('#type_item').on('change', function(e) {
+                const price = $(this).find(":selected").data('price');
+                $('#harga_item').val(parseInt(price)).trigger('input')
+                $('#kuantitas_item, #discount_item').trigger('input')
+            });
+
+            $('#type_item_edit').on('change', function(e) {
+                const price = $(this).find(":selected").data('price');
+                $('#harga_item_edit').val(parseInt(price)).trigger('input')
             });
 
             $('#customer').on('select2:select', function(e) {
@@ -1142,69 +881,47 @@
                         <strong>Telepon:</strong> ${phone === null ? '-' : phone}
                     </p>
                 `);
-                // status-customer
-                $('#status-customer').html(`
-                    <p class="text-center margin-b-10"><b>BARU</b></p>
-                    <p class="text-center margin-b-2"><b>Oleh: </b> -<!-- ${customerName === null ? '-' : customerName} --></p>
-                    <p class="text-center margin-b-2"><b>Pada: </b> -<!-- ${phone === null ? '-' : phone} --></p>
-                `);
 
                 $('#customer_id').val(customerId);
             });
 
-            $('#dp, #discount').on('input', function(e) {
-                let total = $(this).val().replace(/\./g, '');
+            $('#discount_item, #discount_item_edit').on('input', function(e) {
+                const discount_item = $(this).val();
 
-                // Hapus semua karakter selain digit
-                let digitsOnly = total.replace(/\D/g, '');
+                let digitsOnly = discount_item.replace(/\D/g, '');
 
-                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
                 let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
             });
 
-            $('#dp').on('input', function(e) {
-                let total = $('#sub_total').text().replace(/\./g, '');
-                const total_expense = parseInt(total, 10);
-                const discount = $('#discount').val() === '' ? 0 : $('#discount').val().replace(/\./g, '');
-                const dp = $('#dp').val();
+            $('#kuantitas_item').on('input', function(e) {
+                const kuantitas_item = $(this).val();
 
-                // Hapus semua karakter selain digit
-                let digitsOnly = dp.replace(/\D/g, '');
+                let digitsOnly = kuantitas_item.replace(/\D/g, '');
 
-                total = (total_expense - parseInt(discount, 10)) - parseInt(digitsOnly, 10);
-
-                // let formattedNumber = 0;
-                // // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                // if($(this).val() !== '') {
-                //     formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                // }
-
-                // Update nilai input dengan angka yang diformat
-                // $(this).val(formattedNumber);
-
-                const kekurangan = !isNaN(total) ? total.toLocaleString('id-ID') : '-';
-                $('#kekurangan').text(kekurangan.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                $('#kekurangan-final').val(kekurangan.replace(/\D/g, ''));
-            });
-
-            $('#biaya, #biaya_edit, #discount_item, #discount_item_edit').on('input', function(e) {
-                const value = $(this).val();
-
-                // Hapus semua karakter selain digit
-                let digitsOnly = value.replace(/\D/g, '');
-
-                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
                 let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
-            });
 
-            $('#biaya').on('input', function(e) {
-                $('#discount_item').trigger('input');
+                const harga = $('#harga_item').val().replace(/\D/g, '');
+                const total_harga = (Number(harga) * Number(formattedNumber));
+
+                const discount_item = $('#discount_item').val().replace(/\D/g, '');
+                const total_item = $('#total_item');
+                if(discount_item === '') {
+                    total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
+                    $('#total_after_discount').text('').parent().css('display', 'none');
+                } else {
+                    if(Number(discount_item) > 100) {
+                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(discount_item)).toLocaleString('id-ID'));
+                        $('#total_after_discount').text('').parent().css('display', 'none');
+                    } else {
+                        const total_after_discount = total_harga * (Number(discount_item) / 100);
+                        $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID')).parent().css('display', 'inline');
+                        total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount).toLocaleString('id-ID'));
+                    }
+                }
             });
 
             $('#discount_item').on('input', function(e) {
@@ -1216,26 +933,57 @@
 
                 $(this).val(formattedNumber);
 
-                const biaya = $('#biaya').val().replace(/\D/g, '');
-                const total_biaya = (Number(biaya));
+                const kuantitas_item = $('#kuantitas_item').val().replace(/\D/g, '');
+
+                const harga = $('#harga_item').val().replace(/\D/g, '');
+                const total_harga = (Number(harga) * Number(kuantitas_item));
 
                 const total_item = $('#total_item');
                 if(discount_item === '') {
-                    total_item.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                    total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                     $('#total_after_discount_edit').text('').parent().css('display', 'none');
                 } else {
                     if(Number(digitsOnly) > 100) {
-                        total_item.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly)).toLocaleString('id-ID'));
+                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly)).toLocaleString('id-ID'));
                         $('#total_after_discount').text('').parent().css('display', 'none');
                     } else {
-                        const total_after_discount = total_biaya * (Number(digitsOnly) / 100);
+                        const total_after_discount = total_harga * (Number(digitsOnly) / 100);
                         if(Number(digitsOnly) === 100) {
-                            total_item.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                            total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                             $('#total_after_discount').text('').parent().css('display', 'none');
                         } else {
                             $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount).toLocaleString('id-ID'));
+                            total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount).toLocaleString('id-ID'));
                         }
+                    }
+                }
+            });
+
+            $('#kuantitas_item_edit').on('input', function(e) {
+                const kuantitas_item_edit = $(this).val();
+
+                let digitsOnly = kuantitas_item_edit.replace(/\D/g, '');
+
+                let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                $(this).val(formattedNumber);
+
+                const harga = $('#harga_item_edit').val().replace(/\D/g, '');
+                const total_harga = (Number(harga) * Number(formattedNumber));
+
+                const discount_item_edit = $('#discount_item_edit').val().replace(/\D/g, '');
+                const total_item_edit = $('#total_item_edit');
+                if(discount_item_edit === '') {
+                    total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
+                    $('#total_after_discount_edit').text('').parent().css('display', 'none');
+                } else {
+                    if(Number(discount_item_edit) > 100) {
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(discount_item_edit)).toLocaleString('id-ID'));
+                        $('#total_after_discount_edit').text('').parent().css('display', 'none');
+                    } else {
+                        const total_after_discount_edit = total_harga * (Number(discount_item_edit) / 100);
+                        $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - total_after_discount_edit).toLocaleString('id-ID'));
                     }
                 }
             });
@@ -1249,57 +997,75 @@
 
                 $(this).val(formattedNumber);
 
+                const kuantitas_item_edit = $('#kuantitas_item_edit').val().replace(/\D/g, '');
 
-                const biaya = $('#biaya_edit').val().replace(/\D/g, '');
-                const total_biaya = (Number(biaya));
+                const harga = $('#harga_item_edit').val().replace(/\D/g, '');
+                const total_harga = (Number(harga) * Number(kuantitas_item_edit));
 
                 const total_item_edit = $('#total_item_edit');
                 if(discount_item_edit === '') {
-                    total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                    total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                 } else {
                     if(Number(digitsOnly) > 100) {
-                        total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly)).toLocaleString('id-ID'));
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly)).toLocaleString('id-ID'));
                         $('#total_after_discount_edit_edit').text('').parent().css('display', 'none');
                     } else {
-                        const total_after_discount_edit = total_biaya * (Number(digitsOnly) / 100);
+                        const total_after_discount_edit = total_harga * (Number(digitsOnly) / 100);
                         if(Number(digitsOnly) === 100) {
-                            total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                            total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                             $('#total_after_discount_edit').text('').parent().css('display', 'none');
                         } else {
                             $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount_edit).toLocaleString('id-ID'));
+                            total_item_edit.val(total_harga === 0 ? '' : (total_harga - total_after_discount_edit).toLocaleString('id-ID'));
                         }
                     }
                 }
             });
 
             $('#discount').on('input', function(e) {
-                const value = $(this).val();
-                let amount = $('#sub_total').text().replace(/\./g, '');
-                const amount_value = parseInt(amount, 10);
-                const discount = value === '' ? 0 : value;
+                let bruto = $('#bruto').text().replace(/\./g, '');
+                const bruto_value = parseInt(bruto, 10);
+                const discount = $(this).val() === '' ? 0 : $(this).val();
 
                 // Hapus semua karakter selain digit
                 let digitsOnly = discount === 0 ? 0 : discount.replace(/\D/g, '');
 
-                let netto = amount_value - (digitsOnly === 0 ? 0 : parseInt(digitsOnly, 10));
+                let netto = bruto_value - (digitsOnly === 0 ? 0 : parseInt(digitsOnly, 10));
 
-                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
                 let formattedNumber = '';
                 // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                if(value !== '') {
+                if($(this).val() !== '') {
                     formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 }
 
                 // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
 
+                const totalValue = $(this).val() === '' ? bruto.toLocaleString('id-ID') :  netto.toLocaleString('id-ID');
+                $('#netto').text(totalValue);
+                // console.log(totalValue);
+                $('#total').text(totalValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                const vatRate = 11;
+                let vatAmount = calculateIncludedVAT(netto, vatRate);
+                vatAmount = vatAmount;
+                $('#vat').text(vatAmount.toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }));
+
+            });
+
+            $('#harga_item, #harga_item_edit').on('input', function(e) {
+                const value = $(this).val();
+
+                // Hapus semua karakter selain digit
+                let digitsOnly = value.replace(/\D/g, '');
+
+                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
+                let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
                 // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
-                // $('#dp').trigger('input');
-                const totalValue = value === '' ? amount_value.toLocaleString('id-ID') :  parseInt(netto, 10).toLocaleString('id-ID');
-                console.log(totalValue);
-                $('#total').text((totalValue));
             });
 
             $('#site_id').select2();

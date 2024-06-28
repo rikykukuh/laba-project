@@ -2,13 +2,13 @@
 
 @section('icon_page', 'shopping-basket')
 
-@section('title', 'Reparasi')
+@section('title', 'Penjualan')
 
 @section('menu_pagina')
 
     <li role="presentation">
-        <a href="{{ route('orders.create') }}" class="link_menu_page">
-            <i class="fa fa-plus"></i> Tambah Reparasi
+        <a href="{{ route('order-products.create') }}" class="link_menu_page">
+            <i class="fa fa-plus"></i> Tambah Penjualan
         </a>
     </li>
 
@@ -16,6 +16,7 @@
 
 
 @section('content')
+
     @if(Request::segment(1) === 'laporan')
     <div class="box box-primary">
         <div class="box-body">
@@ -23,19 +24,18 @@
                 <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
                 <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select id='status' class="form-control" style="width: 200px" name="status">
-                                <optgroup label="--Select Status--">
-                                    <option value="ALL" {{ request()->get('status') == 'ALL' || request()->get('status') == '' ? 'selected' : ''  }}>All</option>
-                                    <option value="DIPROSES" {{ request()->get('status') == 'DIPROSES' ? 'selected' : ''  }}>Diproses</option>
-                                    <option value="DIAMBIL" {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    {{-- <div class="col-md-6"> --}}
+                    {{--     <div class="form-group"> --}}
+                    {{--         <label for="status">Status:</label> --}}
+                    {{--         <select id='status' class="form-control" style="width: 200px" name="status"> --}}
+                    {{--             <optgroup label="--Select Status--"> --}}
+                    {{--                 <option value="DIBAYAR" {{ request()->get('status') == 'DIBAYAR' ? 'selected' : ''  }}>Dibayar</option> --}}
+                    {{--                 <option value="DIAMBIL" {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option> --}}
+                    {{--             </optgroup> --}}
+                    {{--         </select> --}}
+                    {{--     </div> --}}
+                    {{-- </div> --}}
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label>Date range:</label>
                             <div class="input-group">
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="site_id">Cabang:</label>
                             <select class="form-control" id="site_id" name="site_id">
@@ -76,7 +76,7 @@
                 <div class="col-md-12">
                     <div class="table-responsive">
                         {{--                        {!! $dataTable->table() !!} --}}
-                        {{--  						<table id="table-order" class="table table-condensed table-bordered table-hover"> --}}
+                        {{--  						<table id="table-order-product" class="table table-condensed table-border-producted table-hover"> --}}
                         {{--  							<thead> --}}
                         {{--  								<tr> --}}
                         {{--  									<th class="text-center">#</th> --}}
@@ -119,9 +119,9 @@
                         {{--                               --}}{{--                </td> --}}
                         {{--                               --}}{{--                <td class="text-center">{{ Carbon\Carbon::parse($order->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td> --}}
                         {{--                               --}}{{--                <td class="text-center"> --}}
-                        {{--                               --}}{{--                    <a class="btn btn-default  btn-xs" href="{{ route('orders.show', $order->id) }}" title="Detail {{ $order->name }}"><i class="fa fa-eye">   </i></a> --}}
-                        {{--                               --}}{{--                       <a class="btn btn-warning  btn-xs" href="{{ route('orders.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a> --}}
-                        {{--                               --}}{{--                    <form onsubmit="return confirm(''Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block"> --}}
+                        {{--                               --}}{{--                    <a class="btn btn-default  btn-xs" href="{{ route('order-products.show', $order->id) }}" title="Detail {{ $order->name }}"><i class="fa fa-eye">   </i></a> --}}
+                        {{--                               --}}{{--                       <a class="btn btn-warning  btn-xs" href="{{ route('order-products.edit', $order->id) }}" title="Edit {{ $order->name }}"><i class="fa fa-pencil"></i></a> --}}
+                        {{--                               --}}{{--                    <form onsubmit="return confirm(''Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('order-products.destroy', $order->id) }}" method="post" style="display: inline-block"> --}}
                         {{--                               --}}{{--                        @csrf --}}
                         {{--                               --}}{{--                        @method('DELETE') --}}
                         {{--                               --}}{{--                        <button class="btn btn-danger btn-xs" type="submit" title="Delete {{ $order->name}}" data-toggle="modal" data-target="#modal-delete-{{ $order->id }}"><i class="fa fa-trash"></i></button> --}}
@@ -148,7 +148,7 @@
             </div>
         </div>
         {{--        @if ($orders->hasPages()) --}}
-        {{--            <div class="box-footer with-border"> --}}
+        {{--            <div class="box-footer with-border-product"> --}}
         {{--                {{ $orders->links() }} --}}
         {{--            </div> --}}
         {{--        @endif --}}
@@ -159,9 +159,8 @@
 @include('layouts.AdminLTE._includes._data_tables')
 
 @section('scripts')
-    <script src="{{ asset('/vendor/datatables/buttons.server-side.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
     {!! $dataTable->scripts() !!}
-    @if(Request::segment(1) === 'laporan')
     <script type="text/javascript">
         $(function () {
             const date_start = "{{ request()->get('date_start') }}";
@@ -215,7 +214,6 @@
             // });
         });
     </script>
-    @endif
     {{-- <script> --}}
     {{--     DataTable.ext.buttons.print = { --}}
     {{--         className: 'buttons-print', --}}
@@ -232,7 +230,7 @@
     {{-- </script> --}}
     {{-- <script> --}}
     {{--     $(function () { --}}
-    {{--         $('#table-order').DataTable({ --}}
+    {{--         $('#table-order-product').DataTable({ --}}
     {{--             dom: 'Bfrtip', --}}
     {{--             buttons: ['csv', 'excel', 'pdf', 'print'], --}}
     {{--             lengthMenu: [5, 10, 25, 50, 100, 250], --}}
@@ -243,17 +241,17 @@
     {{--                 // $(row).find('td:eq(1)').addClass('text-center'); --}}
     {{--                 // $(row).find('td:eq(2)').addClass('text-center'); --}}
     {{--             }, --}}
-    {{--             order: [ --}}
+    {{--             order-product: [ --}}
     {{--                 [2, "asc"] --}}
     {{--             ], --}}
     {{--             processing: true, --}}
     {{--             serverSide: true, --}}
-    {{--             ajax: "{{ route('orders.index') }}", --}}
+    {{--             ajax: "{{ route('order-products.index') }}", --}}
     {{--             columns: [ --}}
     {{--                 { --}}
     {{--                     data: 'DT_RowIndex', --}}
     {{--                     name: 'DT_RowIndex', --}}
-    {{--                     orderable: false, --}}
+    {{--                     order-productable: false, --}}
     {{--                     searchable: false --}}
     {{--                 }, --}}
     {{--                 {data: 'name', name: 'name'}, --}}

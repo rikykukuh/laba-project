@@ -7,7 +7,7 @@
 @section('menu_pagina')
 
 	<li role="presentation">
-		<a href="{{ route('clients.index') }}" class="link_menu_page">
+		<a href="{{ route('customers.index') }}" class="link_menu_page">
 			<i class="fa fa-users"></i> Pelanggan
 		</a>
 	</li>
@@ -22,12 +22,12 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Tambah Pelanggan</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Client">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Customer">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
                 <div class="box-body">
-					 <form action="{{ route('clients.store') }}" method="post">
+					 <form action="{{ route('customers.store') }}" method="post">
                         {{ csrf_field() }}
                         <input type="hidden" name="active" value="1">
                         <div class="row">
@@ -82,7 +82,7 @@
                             </div>
                             <div class="col-lg-12">
                                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-plus"></i> Simpan</button>
-                                <a href="{{ route('clients.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Batalkan</a>
+                                <a href="{{ route('customers.index') }}" class="btn btn-default pull-right" style="margin-right: 15px;"><i class="fa fa-fw fa-close"></i> Batalkan</a>
                             </div>
                         </div>
                     </form>

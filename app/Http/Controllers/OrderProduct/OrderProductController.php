@@ -1,28 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Order;
+namespace App\Http\Controllers\OrderProduct;
 
-use App\DataTables\OrdersDataTable;
+use App\DataTables\OrderProductsDataTable;
 use App\Http\Controllers\Controller;
-
 use App\Models\City;
 use App\Models\Customer;
-use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderItemPhoto;
 use App\Models\Payment;
 use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Yajra\DataTables\DataTables;
 
-class OrderController extends Controller
+class OrderProductController extends Controller
 {
     private $statuses;
     public function __construct()
@@ -30,10 +25,10 @@ class OrderController extends Controller
         $this->statuses = ['New', 'Process', 'Picked Up'];
     }
 
-    public function index(OrdersDataTable $dataTable)
+    public function index(OrderProductsDataTable $dataTable)
     {
         $sites = Site::all();
-        return $dataTable->render('orders.index', compact('sites'));
+        return $dataTable->render('order-products.index', compact('sites'));
     }
 
     // public function index()
@@ -52,8 +47,8 @@ class OrderController extends Controller
     //             ->addColumn('created_at', function($row) {
     //                 return Carbon::parse($row->created_at)->timezone('Asia/Jakarta')->toDateTimeString();
     //             })->addColumn('action', function($row) {
-    //                 $btn = '<a class="btn btn-default btn-xs" href="'.route('orders.show', $row->id).'" title="Detail '.$row->name.'"><i class="fa fa-eye"></i></a>';
-    //                 $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $row->id).'" method="post" style="display: inline-block">';
+    //                 $btn = '<a class="btn btn-default btn-xs" href="'.route('order-products.show', $row->id).'" title="Detail '.$row->name.'"><i class="fa fa-eye"></i></a>';
+    //                 $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('order-products.destroy', $row->id).'" method="post" style="display: inline-block">';
     //                 $btn .= csrf_field();
     //                 $btn .= method_field('DELETE');
     //                 $btn .= '<button class="btn btn-danger btn-xs" type="submit" title="Delete '.$row->name.'" data-toggle="modal" data-target="#modal-delete-'.$row->id.'"><i class="fa fa-trash"></i></button>';
@@ -64,7 +59,7 @@ class OrderController extends Controller
     //             ->make(true);
     //     }
     //
-    //     return view('orders.index');
+    //     return view('order-products.index');
     // }
 
     public function create()
@@ -72,13 +67,13 @@ class OrderController extends Controller
         $customers = Customer::all();
         $statuses = $this->statuses;
 
-        $products = Product::where('type', '=', 1)->get();
+        $products = Product::where('type', '=', 0)->get();
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
         $sites = Site::all();
         $cities = City::all();
 
-        return view('orders.create', compact('statuses', 'customers', 'products', 'payment_methods', 'payment_merchants', 'sites', 'cities'));
+        return view('order-products.create', compact('statuses', 'customers', 'products', 'payment_methods', 'payment_merchants', 'sites', 'cities'));
     }
 
     public function store(Request $request)
@@ -95,25 +90,26 @@ class OrderController extends Controller
         $dp = $request->dp;
         $kekurangan = $request->kekurangan;
         $total = $request->total;
-        $discount = $request->discount;
-        $netto = $total - $discount;
         $customer_id = $request->customer_id;
         $site_id = $request->site_id;
-
+        $bruto = $request->bruto;
+        $discount = $request->discount;
+        $netto = $request->netto;
+        // $vat = (int) $request->vat;
         $vat = calculate_included_vat($netto, 11);
 
         $order = Order::create([
-            'bruto' => $total,
+            'total' => $netto - $vat,
+            'uang_muka' => $dp,
+            'status' => 'DIBAYAR',
+            'sisa_pembayaran' => $kekurangan,
+            'customer_id' => $customer_id,
+            'transaction_type' => 1,
+            'site_id' => $site_id,
+            'bruto' => $bruto,
             'discount' => $discount,
             'netto' => $netto,
             'vat' => $vat,
-            'total' => $netto - $vat,
-            'uang_muka' => $dp,
-            'status' => 'DIPROSES',
-            'sisa_pembayaran' => $kekurangan,
-            'customer_id' => $customer_id,
-            'transaction_type' => 0,
-            'site_id' => $site_id,
 
             // 'name' => $random_string,
             // 'payment' => rand(1000, 100000),
@@ -128,71 +124,44 @@ class OrderController extends Controller
         $order->update(['number_ticket' => $number_ticket]);
 
         for ($i = 0; $i < count($items); $i++) {
-            $gambar = $items[$i]['gambar'];
-            $totalItem = $items[$i]['biaya'];
-            $discountItem = $items[$i]['discount_item'];
+            $jumlah = (int) $items[$i]['jumlah'];
+            $kuantitas = (int) $items[$i]['kuantitas'];
+            $discount_item = (int) $items[$i]['discount_item'];
 
-            if($discountItem > 100) {
+            if($discount_item > 100) {
                 $total_discount_item = (int) $items[$i]['discount_item'];
             } else {
-                $total_discount_item = $totalItem * ($discountItem / 100);
+                $total_discount_item = ($jumlah * $kuantitas) * $discount_item / 100;
             }
 
-            $nettoItem = $totalItem - $total_discount_item;
-            $vatItem = calculate_included_vat($nettoItem, 11);
+            $amount = ($jumlah - $total_discount_item) * $kuantitas;
+            $vatItem = calculate_included_vat($amount, 11);
 
+            $vatAmount = calculate_included_vat($jumlah, 11);
             $order_item = OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $items[$i]['type'],
-                'bruto' => $totalItem,
-                'discount' => $discountItem,
-                'netto' => $nettoItem,
-                'vat' => $vatItem,
-                'total' => $nettoItem - $vatItem,
                 'note' => $items[$i]['keterangan'],
-                'transaction_type' => 0,
+                'transaction_type' => 1,
+                'bruto' => $jumlah,
+                'discount' => $discount_item,
+                'quantity' => $kuantitas,
+                'netto' => $amount,
+                'vat' => $vatItem,
+                'total' => $amount - $vatItem,
             ]);
-
-            for ($j = 0; $j < count($gambar); $j++) {
-                $randomFilename = Str::uuid()->toString();
-                $base64Image = $gambar[$j];
-                $split = explode(',', substr($base64Image, 5), 2);
-                $mime = $split[0];
-                $mime_split_without_base64 = explode(';', $mime, 2);
-                $mime_split = explode('/', $mime_split_without_base64[0], 2);
-                $extension = $mime_split[1];
-
-                $filePathPreview = "previews/$randomFilename.$extension";
-                $filePathThumbnail = "thumbnails/$randomFilename.$extension";
-
-                $image = explode('base64,',$base64Image);
-                $image = end($image);
-                $image = str_replace(' ', '+', $image);
-
-                Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
-                Storage::disk('public')->put($filePathPreview,base64_decode($image));
-
-                // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
-                // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
-
-                OrderItemPhoto::create([
-                    'order_item_id' => $order_item->id,
-                    'thumbnail_url' => $filePathThumbnail,
-                    'preview_url' => $filePathPreview,
-                ]);
-            }
         }
 
         if ($request->ajax()) {
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dibuat!');
+        return redirect()->route('order-products.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dibuat!');
     }
 
     public function show($id)
     {
-        $order = Order::where('transaction_type', 0)->with(['orderItems.orderItemPhotos' => function ($query) {
+        $order = Order::where('transaction_type', 1)->with(['orderItems.orderItemPhotos' => function ($query) {
             $query->whereNull('deleted_at');
         }])->findOrFail($id);
         // dd($order);
@@ -206,7 +175,7 @@ class OrderController extends Controller
 
         $sites = Site::all();
 
-        return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites'));
+        return view('order-products.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites'));
     }
 
     public function edit($id)
@@ -215,7 +184,7 @@ class OrderController extends Controller
         $customers = Customer::all();
         $statuses = $this->statuses;
 
-        return view('orders.edit', compact('order', 'statuses', 'customers'));
+        return view('order-products.edit', compact('order', 'statuses', 'customers'));
     }
 
     public function update(Request $request, $id)
@@ -225,26 +194,27 @@ class OrderController extends Controller
         // }
 
         $items = $request->items;
-        $bruto = $request->bruto;
-        $discount = $request->discount;
+        $total = $request->total;
         $status = $request->status;
         $sisa_pembayaran = $request->sisa_pembayaran;
         $customer_id = $request->customer_id;
         $picked_by = $request->picked_by;
         $picked_at = $request->picked_at;
         $site_id = $request->site_id;
-
-        $nettoItem = $bruto - $discount;
-        $vatItem = calculate_included_vat($nettoItem, 11);
+        $bruto = $request->bruto;
+        $discount = $request->discount;
+        $netto = $request->netto;
+        // $vat = (int) $request->vat;
+        $vat = calculate_included_vat($netto, 11);
 
         $data = collect([
             // 'uang_muka' => $request->uang_muka,
             // 'due_date' => $request->due_date,
-            'total' => $nettoItem - $vatItem,
-            'vat' => $vatItem,
-            'netto' => $nettoItem,
-            'discount' => $discount,
+            'total' => $netto - $vat,
             'bruto' => $bruto,
+            'discount' => $discount,
+            'netto' => $netto,
+            'vat' => $vat,
             'status' => $status,
             'sisa_pembayaran' => $sisa_pembayaran,
             'customer_id' => $customer_id,
@@ -258,7 +228,7 @@ class OrderController extends Controller
         if (!is_null($picked_by)) {
             $payment = Payment::create([
                 'order_id' => $order->id,
-                'value' => (int) ($nettoItem - $vatItem),
+                'value' => (int) $netto - $vat,
                 'payment_method_id' => (int) $request->payment_method,
                 'payment_merchant_id' => (int) $request->payment_merchant,
             ]);
@@ -271,77 +241,46 @@ class OrderController extends Controller
         $order->update($data->all());
 
         for ($i = 0; $i < count($items); $i++) {
-            $order_item = OrderItem::findOrFail($items[$i]['id']);
+            $jumlah = (int) $items[$i]['harga'];
+            $kuantitas = (int) $items[$i]['kuantitas'];
+            $discount_item = (int) $items[$i]['discount_item'];
 
-            $totalItem = (int) $items[$i]['bruto'];
-            $discountItem = (int) $items[$i]['discount'];
-
-            if($discountItem > 100) {
-                $total_discount_item = (int) $items[$i]['discount'];
+            if($discount_item > 100) {
+                $total_discount_item = (int) $items[$i]['discount_item'];
             } else {
-                $total_discount_item = (int) ($totalItem * ($discountItem / 100));
+                $total_discount_item = ($jumlah * $kuantitas) * $discount_item / 100;
             }
 
-            $nettoItem = $totalItem - $total_discount_item;
-            $vatItem = calculate_included_vat($nettoItem, 11);
+            $amount = ($jumlah - $total_discount_item) * $kuantitas;
+            $vatItem = calculate_included_vat($amount, 11);
+
+            $order_item = OrderItem::findOrFail($items[$i]['id']);
 
             $order_item->update([
                 // 'order_id' => (int) $id,
                 'product_id' => (int) $items[$i]['type'],
-                'bruto' => $totalItem,
-                'discount' => $discountItem,
-                'netto' => $nettoItem,
+                'bruto' => $jumlah,
+                'discount' => $discount_item,
+                'quantity' => $kuantitas,
+                'netto' => $amount,
                 'vat' => $vatItem,
-                'total' => $nettoItem - $vatItem,
+                'total' => $amount - $vatItem,
                 'note' => $items[$i]['keterangan'],
             ]);
-
-            for ($k = 0; $k < count($items[$i]['gambar']); $k++) {
-                $gambar = $items[$i]['gambar'];
-                if (filter_var($gambar[$k], FILTER_VALIDATE_URL) !== false) {
-                    continue;
-                }
-                $base64Image = $gambar[$k];
-                $randomFilename = Str::uuid()->toString();
-                $split = explode(',', substr($base64Image, 5), 2);
-                $mime = $split[0];
-                $mime_split_without_base64 = explode(';', $mime, 2);
-                $mime_split = explode('/', $mime_split_without_base64[0], 2);
-                $extension = $mime_split[1];
-
-                $filePathPreview = "previews/$randomFilename.$extension";
-                $filePathThumbnail = "thumbnails/$randomFilename.$extension";
-
-                $image = explode('base64,',$base64Image);
-                $image = end($image);
-                $image = str_replace(' ', '+', $image);
-
-                Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
-                Storage::disk('public')->put($filePathPreview,base64_decode($image));
-
-                // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
-                // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
-
-                OrderItemPhoto::create([
-                    'order_item_id' => $order_item->id,
-                    'thumbnail_url' => $filePathThumbnail,
-                    'preview_url' => $filePathPreview,
-                ]);
-            }
         }
 
         if ($request->ajax()) {
             return response()->json($order);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Sukses Pesanan ' . $order->name . ' berhasil diedit!');
+        return redirect()->route('order-products.index')->with('success', 'Sukses Pesanan ' . $order->name . ' berhasil diedit!');
     }
 
     public function destroy($id)
     {
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dihapus!');
+        return redirect()->route('order-products.index')->with('success', 'Sukses! Pesanan ' . $order->name . ' berhasil dihapus!');
     }
 
 
@@ -365,7 +304,7 @@ class OrderController extends Controller
 
         $sites = Site::all();
 
-        return view('orders.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites'));
+        return view('order-products.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites'));
     }
 
     /**

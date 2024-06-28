@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Client;
+use App\Models\Customer;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
-class ClientTablesSeeder extends Seeder
+class CustomerTablesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,7 +18,7 @@ class ClientTablesSeeder extends Seeder
         $faker = Faker::create();
 
         for ($i = 1; $i <= 25; $i++) {
-            Client::create([
+            Customer::create([
                 'name' => $faker->name,
                 'address' => $faker->sentence(5),
                 'phone_number' => $faker->phoneNumber,

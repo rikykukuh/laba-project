@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\ItemType;
+namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\ItemType;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ItemTypeController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class ItemTypeController extends Controller
      */
     public function index()
     {
-        $item_types = ItemType::paginate(10);
-        return view('item-types.index', compact('item_types'));
+        $products = Product::paginate(10);
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -26,7 +26,7 @@ class ItemTypeController extends Controller
      */
     public function create()
     {
-        return view('item-types.create');
+        return view('products.create');
     }
 
     /**
@@ -37,10 +37,14 @@ class ItemTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $item_type = ItemType::create([
-            'name' => $request->name,
+        $data = $request->validate([
+            'name' => 'required',
+            'type' => 'required',
+            'price' => 'numeric|between:1,99999999999999|nullable',
         ]);
-        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil dibuat!');
+
+        $product = Product::create($data);
+        return redirect()->route('products.index')->with('success', 'Sukses! Jenis Produk ' . $product->name . ' berhasil dibuat!');
     }
 
     /**
@@ -51,8 +55,8 @@ class ItemTypeController extends Controller
      */
     public function show($id)
     {
-        $item_type = ItemType::findOrFail($id);
-        return view('item-types.show', compact('item_type'));
+        $product = Product::findOrFail($id);
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -63,8 +67,8 @@ class ItemTypeController extends Controller
      */
     public function edit($id)
     {
-        $item_type = ItemType::findOrFail($id);
-        return view('item-types.edit', compact('item_type'));
+        $product = Product::findOrFail($id);
+        return view('products.edit', compact('product'));
     }
 
     /**
@@ -76,11 +80,11 @@ class ItemTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $item_type = ItemType::findOrFail($id);
-        $item_type->update([
+        $product = Product::findOrFail($id);
+        $product->update([
             'name' => $request->name,
         ]);
-        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil diedit!');
+        return redirect()->route('products.index')->with('success', 'Sukses! Jenis Produk ' . $product->name . ' berhasil diedit!');
     }
 
     /**
@@ -91,8 +95,8 @@ class ItemTypeController extends Controller
      */
     public function destroy($id)
     {
-        $item_type = ItemType::findOrFail($id);
-        $item_type->delete();
-        return redirect()->route('item-types.index')->with('success', 'Sukses! Jenis Barang ' . $item_type->name . ' berhasil dihapus!');
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Sukses! Jenis Produk ' . $product->name . ' berhasil dihapus!');
     }
 }

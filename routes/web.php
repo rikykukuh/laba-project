@@ -18,6 +18,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/config/store/permission', 'App\Http\Controllers\ConfigController@storePermission')->name('config.store.permission');
     Route::put('/config/update/permission/{id}', 'App\Http\Controllers\ConfigController@updatePermission')->name('config.update.permission');
 	Route::get('/order/merchant-by-payment', '\App\Http\Controllers\Order\OrderController@getPaymentMerchants')->name('order.merchant_by_payment');
+	Route::get('/order-products/merchant-by-payment', '\App\Http\Controllers\OrderProduct\OrderProductController@getPaymentMerchants')->name('order-products.merchant_by_payment');
+});
+
+Route::group(['prefix'=>'laporan'], function(){
+    Route::get('/penjualan', '\App\Http\Controllers\OrderProduct\OrderProductController@index')->name('laporan.penjualan');
+    Route::get('/reparasi', '\App\Http\Controllers\Order\OrderController@index')->name('laporan.reparasi');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){
@@ -53,17 +59,19 @@ Route::group(['namespace' => 'App\Http\Controllers\User', 'middleware' => 'auth'
 });
 
 Route::middleware('auth')->group(function () {
+    Route::resource('order-products', \App\Http\Controllers\OrderProduct\OrderProductController::class);
+    Route::get('/order-products/print/{id}', 'App\Http\Controllers\OrderProduct\OrderProductController@orderPrint')->name('order-products.print');
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::delete('/orders/item/photo/', 'App\Http\Controllers\Order\OrderController@destroyItemPhoto')->name('orders.item-photo');
-    Route::resource('clients', \App\Http\Controllers\Client\ClientController::class);
+    Route::resource('customers', \App\Http\Controllers\Customer\CustomerController::class);
     Route::resource('cities', \App\Http\Controllers\City\CityController::class);
-    Route::resource('item-types', \App\Http\Controllers\ItemType\ItemTypeController::class);
+    Route::resource('products', \App\Http\Controllers\Product\ProductController::class);
     Route::resource('payments', \App\Http\Controllers\Payment\PaymentController::class);
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethod\PaymentMethodController::class);
     Route::resource('payment-merchants', \App\Http\Controllers\PaymentMerchant\PaymentMerchantController::class);
     Route::resource('sites', \App\Http\Controllers\Site\SiteController::class);
-    Route::get('/search-customers', 'App\Http\Controllers\Client\ClientController@searchCustomers')->name('client.search');
+    Route::get('/search-customers', 'App\Http\Controllers\Customer\CustomerController@searchCustomers')->name('customer.search');
 });
 
 

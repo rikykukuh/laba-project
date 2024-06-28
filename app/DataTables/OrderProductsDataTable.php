@@ -10,7 +10,7 @@ use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class OrdersDataTable extends DataTable
+class OrderProductsDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -26,18 +26,12 @@ class OrdersDataTable extends DataTable
         $datatables = datatables()->of($query)
             ->addIndexColumn()
             ->filter(function ($query) {
-                // if (request()->has('id')) {
-                //     $query->where('id', 'like', "%" . request('id') . "%");
-                // }
-                //
-                // if (request()->has('name')) {
-                //     $query->where('name', 'like', "%" . request('name') . "%");
-                // }
+                if (request()->has('id')) {
+                    $query->where('id', 'like', "%" . request('id') . "%");
+                }
 
-                if (request()->has('status')) {
-                    if(request()->get('status') != 'ALL') {
-                        $query->where('status', 'like', "%" . request('status') . "%");
-                    }
+                if (request()->has('name')) {
+                    $query->where('name', 'like', "%" . request('name') . "%");
                 }
 
                 if (request()->has('site_id')) {
@@ -47,7 +41,7 @@ class OrdersDataTable extends DataTable
                 }
 
                 if (request()->has('date_start') || request()->has('date_end')) {
-                    // $query->whereBetween('created_at', [Carbon::parse(request('date_start'))->format('Y-m-d'), Carbon::parse(request('date_end'))->addDay(1)->format('Y-m-d')]);
+                    // $query->whereBetween('created_at', [Carbon::parse(request('date_start'))->format('Y-m-d'), Carbon::parse(request('date_end'))->format('Y-m-d')]);
                     $query->where('created_at', '>=', Carbon::parse(request('date_start'))->startOfDay()->format('Y-m-d'))
                         ->where('created_at', '<', Carbon::parse(request('date_end'))->addDay(1)->format('Y-m-d'));
                 }
@@ -86,11 +80,11 @@ class OrdersDataTable extends DataTable
 
         if (!$segment) {
             $datatables->addColumn('action', function ($order) {
-                $btn = '<a href="'.route('orders.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->name.'" style="margin-right: 15px;">
+                $btn = '<a href="'.route('order-products.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->name.'" style="margin-right: 15px;">
                     <i class="fa fa-fw fa-print"></i>
                 </a>';
-                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('orders.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
-                $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $order->id).'" method="post" style="display: inline-block">';
+                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
+                $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('order-products.destroy', $order->id).'" method="post" style="display: inline-block">';
                 $btn .= csrf_field();
                 $btn .= method_field('DELETE');
                 $btn .= '<button class="btn btn-danger btn-sm" type="submit" title="Delete '.$order->name.'" data-toggle="modal" data-target="#modal-delete-'.$order->id.'"><i class="fa fa-trash"></i></button>';
@@ -109,14 +103,14 @@ class OrdersDataTable extends DataTable
         //     ->addIndexColumn()
         //     ->addColumn('name', function($row) {
         //         return $row->customer->name;
-        //     })->addColumn('netto', function($row) {
-        //         return 'Rp. '.number_format($row->netto, 2, ",", ".");
+        //     })->addColumn('total', function($row) {
+        //         return 'Rp. '.number_format($row->total, 2, ",", ".");
         //     })
         //     ->addColumn('created_at', function($row) {
         //         return Carbon::parse($row->created_at)->timezone('Asia/Jakarta')->toDateTimeString();
         //     })->addColumn('action', function($row) {
-        //         $btn = '<a class="btn btn-default btn-sm" href="'.route('orders.show', $row->id).'" title="Detail '.$row->name.'"><i class="fa fa-eye"></i></a>';
-        //         $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('orders.destroy', $row->id).'" method="post" style="display: inline-block">';
+        //         $btn = '<a class="btn btn-default btn-sm" href="'.route('order-products.show', $row->id).'" title="Detail '.$row->name.'"><i class="fa fa-eye"></i></a>';
+        //         $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('order-products.destroy', $row->id).'" method="post" style="display: inline-block">';
         //         $btn .= csrf_field();
         //         $btn .= method_field('DELETE');
         //         $btn .= '<button class="btn btn-danger btn-sm" type="submit" title="Delete '.$row->name.'" data-toggle="modal" data-target="#modal-delete-'.$row->id.'"><i class="fa fa-trash"></i></button>';
@@ -135,7 +129,7 @@ class OrdersDataTable extends DataTable
      */
     public function query(Order $model): \Illuminate\Database\Eloquent\Builder
     {
-        return $model->newQuery()->where('transaction_type', '=', 0)->with(['customer', 'site', 'orderItems.orderItemPhotos'])->select('*');
+        return $model->newQuery()->where('transaction_type', '=', 1)->with(['customer', 'site', 'orderItems.orderItemPhotos'])->select('*');
         // return Order::with('orderItems.orderItemPhotos')->select('*');
     }
 
@@ -147,7 +141,7 @@ class OrdersDataTable extends DataTable
     public function html(): \Yajra\DataTables\Html\Builder
     {
         return $this->builder()
-            ->setTableId('table-service')
+            ->setTableId('table-order')
             ->addTableClass('table-striped table-bordered table-hover')
             ->columns($this->getColumns())
             ->minifiedAjax()
@@ -210,6 +204,6 @@ class OrdersDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Orders-' . date('YmdHis');
+        return 'OrderProduct-' . date('YmdHis');
     }
 }

@@ -16,9 +16,15 @@ class CreateOrderItemsTable extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
-            $table->integer('item_type_id');
+            $table->integer('product_id');
             $table->string('note')->nullable();
-            $table->decimal('total', 10, 2)->nullable();
+            $table->decimal('bruto', 15, 2)->default(0);
+            $table->integer('quantity')->nullable()->default(0);
+            $table->decimal('discount', 15, 2)->default(0);
+            $table->decimal('netto', 15, 2)->default(0);
+            $table->decimal('vat', 15, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
+            $table->integer('transaction_type')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -39,10 +39,10 @@ class DatabaseSeeder extends Seeder
             RoleUserTablesSeeder::class,
             PaymentMerchantTablesSeeder::class,
             PaymentMethodTablesSeeder::class,
-            ItemTypeTablesSeeder::class,
+            ProductTablesSeeder::class,
             CityTablesSeeder::class,
             SiteTablesSeeder::class,
-            ClientTablesSeeder::class,
+            CustomerTablesSeeder::class,
         ]);
 
         $this->command->info('Finished!');
