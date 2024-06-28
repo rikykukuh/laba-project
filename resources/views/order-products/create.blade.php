@@ -206,7 +206,7 @@
                                                    name="kuantitas_item_edit">
                                         </div>
                                          <div class="form-group">
-                                             <label for="discount_item_edit">Discount: <small class="text-danger">*</small></label>
+                                             <label for="discount_item_edit">Discount:</label>
                                              <input type="text" class="form-control" id="discount_item_edit" name="discount_item_edit">
                                          </div>
                                         <div class="form-group" style="display: none;">
@@ -272,7 +272,7 @@
                                     <input type="text" class="form-control" id="kuantitas_item" name="kuantitas_item" value="1" required>
                                 </div>
                                  <div class="form-group">
-                                     <label for="discount_item">Discount: <small class="text-danger">*</small></label>
+                                     <label for="discount_item">Discount:</label>
                                      <input type="text" class="form-control" id="discount_item" name="discount_item">
                                  </div>
                                 <div class="form-group" style="display: none;">
