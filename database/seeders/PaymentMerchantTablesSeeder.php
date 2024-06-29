@@ -62,7 +62,7 @@ class PaymentMerchantTablesSeeder extends Seeder
         //     PaymentMerchant::create($payment_merchant);
         // }
 
-        DB::table('payment_merchants')->insert([
+        PaymentMerchant::insert([
             ['payment_method_id' => 1, 'name' => '-'],
             ['payment_method_id' => 2, 'name' => 'BCA'],
             ['payment_method_id' => 2, 'name' => 'BRI'],

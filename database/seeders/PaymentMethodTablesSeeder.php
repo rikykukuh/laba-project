@@ -23,7 +23,7 @@ class PaymentMethodTablesSeeder extends Seeder
         //     ]);
         // }
 
-        DB::table('payment_methods')->insert([
+        PaymentMethod::insert([
             ['id' => 1, 'name' => 'Cash'],
             ['id' => 2, 'name' => 'Transfer/QRIS'],
             ['id' => 3, 'name' => 'Debit'],

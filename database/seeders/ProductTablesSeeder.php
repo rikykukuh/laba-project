@@ -49,7 +49,7 @@ class ProductTablesSeeder extends Seeder
         //     ]);
         // }
 
-        DB::table('products')->insert([
+        Product::insert([
             ['name' => 'Ganti Resleting', 'price' => 1, 'type' => 1],
             ['name' => 'Ganti Roda Koper', 'price' => 1, 'type' => 1],
             ['name' => 'Jahit Tas', 'price' => 1, 'type' => 1],
