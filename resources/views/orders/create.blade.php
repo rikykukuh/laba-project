@@ -366,6 +366,33 @@
 
     <div class="row">
         <div class="col-md-12 total-items">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Estimasi</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>Estimasi Selesai Reparasi:</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-right" id="estimate_service_done">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Estimasi Pengambilan Barang:</label>
+                        <span id="estimate_take_item">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
@@ -394,7 +421,7 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
 
     <div class="row">
         <div class="col-md-12 total-items">
@@ -988,6 +1015,8 @@
             const discount = $('#discount').val().replace(/\./g, '');
             const total = $('#sub_total').text().replace(/\./g, '');
             const kekurangan = $('#kekurangan-final').val();
+            const estimate_service_done = $('#estimate_service_done').val();
+            const estimate_take_item = $('#estimate_take_item').text();
 
             // console.log('FINAL RESULT');
             // console.table([{items}, {customer_id}, {site_id}, {dp}, {total}, {kekurangan}]);
@@ -1013,7 +1042,9 @@
                     dp,
                     discount: discount === '' ? 0 : discount,
                     total,
-                    kekurangan
+                    kekurangan,
+                    estimate_service_done,
+                    estimate_take_item,
                 },
                 method: 'POST',
                 headers: {
@@ -1303,6 +1334,21 @@
             });
 
             $('#site_id').select2();
+
+            $('#estimate_service_done').datepicker({
+                todayHighlight: true,
+                endDate: '+30d',
+                datesDisabled: '+30d',
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            }).datepicker("setDate",'now').on('changeDate', function(e) {
+                // Dapatkan nilai dari datepicker
+                const selectedDate = $('#estimate_service_done').datepicker('getDate');
+                if (selectedDate) {
+                    let newDate = moment(selectedDate).add(3, 'days');
+                    $('#estimate_take_item').text(newDate.format('YYYY-MM-DD'));
+                }
+            }).trigger('changeDate');
             // $('#city_id').select2();
             // $('.select2').select2({
             //     "language": {

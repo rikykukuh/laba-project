@@ -30,6 +30,8 @@ class Order extends Model
         'number_ticket',
         'uang_muka',
         'picked_by',
+        'estimate_service_done',
+        'estimate_take_item',
         'picked_at',
         'due_date',
         'sisa_pembayaran',

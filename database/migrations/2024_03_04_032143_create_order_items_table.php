@@ -23,7 +23,7 @@ class CreateOrderItemsTable extends Migration
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('netto', 15, 2)->default(0);
             $table->decimal('vat', 15, 2)->default(0);
-            $table->decimal('total', 10, 2)->default(0);
+            $table->decimal('total', 15, 2)->default(0);
             $table->integer('transaction_type')->nullable();
             $table->timestamps();
             $table->softDeletes();

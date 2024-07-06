@@ -16,6 +16,7 @@ use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -99,6 +100,8 @@ class OrderController extends Controller
         $netto = $total - $discount;
         $customer_id = $request->customer_id;
         $site_id = $request->site_id;
+        $estimate_service_done = $request->estimate_service_done;
+        $estimate_take_item =  $request->estimate_take_item;
 
         $vat = calculate_included_vat($netto, 11);
 
@@ -114,6 +117,8 @@ class OrderController extends Controller
             'customer_id' => $customer_id,
             'transaction_type' => 0,
             'site_id' => $site_id,
+            'estimate_service_done' => $estimate_service_done,
+            'estimate_take_item' => $estimate_take_item,
 
             // 'name' => $random_string,
             // 'payment' => rand(1000, 100000),
@@ -218,6 +223,11 @@ class OrderController extends Controller
         return view('orders.edit', compact('order', 'statuses', 'customers'));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse|RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         // if ($request->ajax()) {
@@ -233,6 +243,8 @@ class OrderController extends Controller
         $picked_by = $request->picked_by;
         $picked_at = $request->picked_at;
         $site_id = $request->site_id;
+        $estimate_service_done = $request->estimate_service_done;
+        $estimate_take_item =  $request->estimate_take_item;
 
         $nettoItem = $bruto - $discount;
         $vatItem = calculate_included_vat($nettoItem, 11);
@@ -251,6 +263,8 @@ class OrderController extends Controller
             'site_id' => $site_id,
             'picked_by' => $picked_by,
             'picked_at' => date('Y-m-d H:i:s', strtotime($picked_at)),
+            'estimate_service_done' => $estimate_service_done,
+            'estimate_take_item' => $estimate_take_item,
         ]);
 
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
@@ -377,5 +391,18 @@ class OrderController extends Controller
         $orderItemPhoto = OrderItemPhoto::where('thumbnail_url', '=', $request->thumbnail_url)->first();
         $orderItemPhoto->delete();
         return response()->json($orderItemPhoto);
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function setStatus(Request $request, $id): JsonResponse
+    {
+        $order = Order::find($id);
+        $order->status = $request->status;
+        $order->save();
+        return response()->json($order);
     }
 }

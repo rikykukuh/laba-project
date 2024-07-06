@@ -390,6 +390,33 @@
 
     <div class="row">
         <div class="col-md-12 total-items">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Estimasi</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>Estimasi Selesai Reparasi:</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-right" id="estimate_service_done" value="{{ $order->estimate_service_done }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Estimasi Pengambilan Barang:</label>
+                        <span id="estimate_take_item">{{ $order->estimate_take_item ?? '-' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
@@ -477,7 +504,20 @@
             </button>
             <div class="vl" style="display:inline-block; border-left: 1px solid black; height: 30px; margin: auto 15px;"></div>
             &nbsp;
-            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+
+            <button type="button" class="btn bg-orange" id="btn-cancel" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('cancel')">
+                <i class="glyphicon glyphicon-remove"></i>
+                <span>Cancel</span>
+            </button>
+            <button type="button" class="btn bg-maroon" id="btn-failed" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('gagal')">
+                <i class="glyphicon glyphicon-ban-circle"></i>
+                <span>Gagal</span>
+            </button>
+            <button type="button" class="btn btn-primary" id="btn-ready" style="margin-left: 15px;margin-top: -20px;" {{ $order->status == 'READY' ? 'disabled' : '' }} onclick="setStatus('ready')">
+                <i class="glyphicon glyphicon-save-file"></i>
+                <span>Ready</span>
+            </button>
+            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('cancel')">
                 <i class="fa fa-fw fa-print"></i>
                 <span>Cetak</span>
             </a>
@@ -901,6 +941,56 @@
             });
         }
 
+        function setStatus(status) {
+            const newStatus = status.toUpperCase();
+            if (confirm("Apakah Anda yakin ingin merubah status menjadi " + newStatus + "?") === true) {
+                const estimate_service_done = $('#estimate_service_done').val();
+                const estimate_take_item = $('#estimate_take_item').text();
+                const data = { status: newStatus, estimate_service_done, estimate_take_item };
+                $.ajax({
+                    url: "{{ route('orders.status', $order->id) }}",
+                    method: 'PUT',
+                    data,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        const type = 'success';
+                        const message = `Status berubah menjadi ${newStatus}!`
+                        const alert = `
+                            <div class="alert alert-${type} alert-dismissible">
+                              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                              <strong>Sukses!</strong> ${message}
+                            </div>
+                        `;
+                        $('#alert-container').html(alert);
+
+                        setTimeout(() => {
+                            $('.alert').alert('close');
+                            window.location.reload();
+                        }, 3000);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        const type = 'danger';
+                        const message = 'Status tidak berubah!'
+                        const alert = `
+                            <div class="alert alert-${type} alert-dismissible">
+                              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                              <strong>Oops!</strong> ${message}
+                            </div>
+                        `;
+                        $('#alert-container').html(alert);
+                    }
+                });
+
+                $('html, body').animate({
+                    scrollTop: $("#alert-container").offset().top - 125
+                }, 1000);
+            }
+        }
+
         function pickUpItemForm(event) {
             console.log('all item', items);
             event.preventDefault();
@@ -917,12 +1007,14 @@
             const kekuranganSisa = picked_by.length > 0 ? $('#kekurangan-sisa').val().replace(/\./g, '') : 0;
             const pembayaran = parseInt(kekuranganSisa, 10);
             const status = picked_by.length > 0 ? 'DIAMBIL' : 'DIPROSES';
+            const estimate_service_done = $('#estimate_service_done').val();
+            const estimate_take_item = $('#estimate_take_item').text();
             // $('#pembayaran').text(picked_by.length > 0 ? pembayaran.toLocaleString('id-ID') : '');
             // $('#kekurangan').text(picked_by.length > 0 ? parseInt(kekurangan, 10) - parseInt(kekuranganSisa, 10) - parseInt(discount, 10) : $('#kekurangan').text() - parseInt(discount, 10));
             $('#status').text(status);
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, site_id, picked_by, picked_at, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, status };
+            let data = { customer_id, site_id, picked_by, picked_at, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item };
 
             $.ajax({
                 url: $('#pickup-item-form').attr('action'),
@@ -1352,6 +1444,21 @@
                 });
 
                 $('#site_id').select2();
+
+                $('#estimate_service_done').datepicker({
+                    todayHighlight: true,
+                    endDate: '+30d',
+                    datesDisabled: '+30d',
+                    autoclose: true,
+                    format: 'yyyy-mm-dd'
+                }).datepicker("setDate",'now').on('changeDate', function(e) {
+                    // Dapatkan nilai dari datepicker
+                    const selectedDate = $('#estimate_service_done').datepicker('getDate');
+                    if (selectedDate) {
+                        let newDate = moment(selectedDate).add(3, 'days');
+                        $('#estimate_take_item').text(newDate.format('YYYY-MM-DD'));
+                    }
+                });
 
                 // $('.select2').select2();
                 // $('.select2').select2({

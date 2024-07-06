@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-products/print/{id}', 'App\Http\Controllers\OrderProduct\OrderProductController@orderPrint')->name('order-products.print');
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
+    Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
     Route::delete('/orders/item/photo/', 'App\Http\Controllers\Order\OrderController@destroyItemPhoto')->name('orders.item-photo');
     Route::resource('customers', \App\Http\Controllers\Customer\CustomerController::class);
     Route::resource('cities', \App\Http\Controllers\City\CityController::class);

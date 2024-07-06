@@ -159,8 +159,20 @@
 @include('layouts.AdminLTE._includes._data_tables')
 
 @section('scripts')
-    <script src="{{ asset('/vendor/datatables/buttons.server-side.js') }}"></script>
+    <script src="{{ asset('public/vendor/datatables/buttons.server-side.js') }}"></script>
     {!! $dataTable->scripts() !!}
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi DataTable dan tambahkan elemen footer
+            $('#table-service').DataTable().on('init', function() {
+                $('<tfoot>').appendTo('#table-service');
+                $(`#table-service tfoot`).html(`<tr><th colspan="5">Total</th><th id="total_bruto"></th><th id="total_discount"></th><th id="total_netto"></th><th id="total_vat"></th><th id="total_total"></th><th colspan="5"></th></tr>`);
+            });
+
+            // Panggil DataTable lagi setelah menambahkan elemen footer
+            $('#table-service').DataTable().draw();
+        });
+    </script>
     @if(Request::segment(1) === 'laporan')
     <script type="text/javascript">
         $(function () {
