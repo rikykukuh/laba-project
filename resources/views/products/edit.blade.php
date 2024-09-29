@@ -40,6 +40,15 @@
                                         </span>
                             @endif
                         </div>
+                        <div class="form-group {{ $errors->has('price') ? 'has-error' : '' }}">
+                            <label for="price">Harga Produk</label>
+                            <input type="number" name="price" id="price" class="form-control" placeholder="Masukkan harga produk" required value="{{ old('price', (int)$product->price) }}" autofocus>
+                            @if($errors->has('price'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('price') }}</strong>
+                                </span>
+                            @endif
+                        </div>
                     </div>
                     <div class="col-lg-12">
                         <a href="{{ route('products.show', $product->id) }}" class="btn btn-default pull-left" style="margin-right: 15px;">Kembali ke Detail Jenis Produk</a>

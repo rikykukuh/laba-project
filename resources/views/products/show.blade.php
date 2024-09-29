@@ -28,6 +28,9 @@
                 <strong><i class="fa fa-map-marker margin-r-5"></i> Nama</strong>
                 <p>{{ $product->name }}</p>
                 <hr>
+                <strong><i class="fa fa-money margin-r-5"></i> Harga</strong>
+                <p>{{ 'Rp. '.number_format($product->price, 2, ",", ".") }}</p>
+                <hr>
                 <strong><i class="fa fa-calendar-o margin-r-5"></i> Tanggal Dibuat</strong>
                 <p>{{ $product->created_at }}</p>
             </div>

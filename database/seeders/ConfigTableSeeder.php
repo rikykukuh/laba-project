@@ -31,6 +31,7 @@ class ConfigTableSeeder extends Seeder
             'favicon'  => 'img/config/favicon.png', //String
             'default_role_id'  => '2', //String
             'register'  => 'T', // 'T' or 'F'
+            'disclaimer'  => 'Barang yang telah melebihi masa tiga bulan sejak tanggal pembelian tidak lagi mendapatkan perlindungan garansi.',
         ]);
     }
 }

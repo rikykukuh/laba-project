@@ -32,9 +32,9 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function itemTypes()
+    public function products()
     {
-        return $this->hasMany(Product::class, 'product_id', 'id');
+        return $this->hasMany(Product::class, 'id', 'product_id');
     }
 
     public function orderItemPhotos()

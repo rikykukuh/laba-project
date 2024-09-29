@@ -45,17 +45,14 @@
                  <b>Status Reparasi</b><br>
                  <address>
                      Status: {{ $order->status }}<br>
-                     @if($order->status == 'DIAMBIL')
-                         Diambil Oleh: {{ $order->picked_by }}<br>
-                         Waktu Pengambilan: {{ $order->picked_at }}<br>
-                     @endif
+                     Diambil Oleh: {{ $order->status == 'DIAMBIL' ? $order->picked_by : '-' }}<br>
+                     Estimasi Pengambilan: {{ $order->estimate_take_item }}<br>
                  </address>
              </div>
 
          <!-- /.col -->
          <div class="col-sm-4 invoice-col">
              <b>Detail Order</b><br>
-             <br>
              <b>No:</b> {{ $order->number_ticket }}<br>
              <b>Cabang:</b> {{ $order->site->name }}<br>
              <b>Tanggal Transaksi:</b> {{ $order->created_at }}<br>
@@ -106,6 +103,9 @@
                          -
                      @endif
                  </strong>
+                 <p style="margin-top: 20px;font-size: 12px;">
+                    <b>Disclaimer:</b> {{ $config->disclaimer }}
+                 </p>
              </h4>
          </div>
          <!-- /.col -->
@@ -128,7 +128,7 @@
                      </tr>
                     <tr>
                         <th>Sisa Pembayaran:</th>
-                        <td class="text-right">Rp{{ number_format($order->sisa_pembayaran,null,",",".") }}</td>
+                        <td class="text-right">Rp{{ number_format((($order->orderItems->sum('bruto') - $order->uang_muka) - $order->discount),null,",",".") }}</td>
                     </tr>
                      <tr></tr>
                  </table>

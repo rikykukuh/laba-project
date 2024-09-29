@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -83,6 +84,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->update([
             'name' => $request->name,
+            'price' => $request->price,
         ]);
         return redirect()->route('products.index')->with('success', 'Sukses! Jenis Produk ' . $product->name . ' berhasil diedit!');
     }
@@ -98,5 +100,20 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Sukses! Jenis Produk ' . $product->name . ' berhasil dihapus!');
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function searchProducts(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $searchTerm = $request->input('q');
+        $type = $request->input('type');
+        $products = Product::where('type', $type)
+            ->where('name', 'like', "%$searchTerm%")
+            ->get(['id', 'name', 'price', 'type']);
+
+        return response()->json($products);
     }
 }

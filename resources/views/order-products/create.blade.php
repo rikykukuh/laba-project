@@ -4,8 +4,11 @@
 
 @section('title', 'Tambah Penjualan')
 @section('layout_css')
-    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
+        .select2-container {
+            width: 100% !important;
+        }
         .glyphicon.spinning {
             animation: spin 1s infinite linear;
             -webkit-animation: spin2 1s infinite linear;
@@ -233,7 +236,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12" style="margin-bottom: 15px;">
+        <div class="col-md-1" style="margin-bottom: 15px;">
             <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
                 <i class="glyphicon glyphicon-plus"></i>
                 <span>Tambah</span>
@@ -294,16 +297,98 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-1">
+            <button type="button" class="btn bg-blue" data-toggle="modal" data-target="#modal-add-product">Tambah Produk</button>
+            <div id="modal-add-product" class="modal fade" role="dialog" data-keyboard="false"
+                 data-backdrop="static">
+                <div class="modal-dialog modal-md">
+                    <!-- Modal content-->
+                    <form id="form-add-product" action="{{ route('products.store') }}" method="post"
+                          onsubmit="saveProduct(event)" autocomplete="off">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Tambah Produk</h4>
+                            </div>
+                            <div class="modal-body">
+                                {{ csrf_field() }}
+                                <input type="hidden" name="type" id="add_type" value="0">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-price form-group {{ $errors->has('price') ? 'has-error' : '' }}">
+                                            <label for="price">Harga</label>
+                                            <input type="number" name="price" id="price" class="form-control" placeholder="Harga" value="{{ old('name') }}" autofocus>
+                                            @if($errors->has('price'))
+                                                <span class="help-block">
+                                            <strong>{{ $errors->first('price') }}</strong>
+                                        </span>
+                                            @endif
+                                        </div>
+                                        <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+                                            <label for="name">Nama Produk</label>
+                                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus>
+                                            @if($errors->has('name'))
+                                                <span class="help-block">
+                                            <strong>{{ $errors->first('name') }}</strong>
+                                        </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left" onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()">Reset</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal"
+                                        onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()"
+                                        style="margin-right: 15px;">Batalkan</button>
+                                <button type="submit" class="btn bg-blue">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
+        <div class="col-md-12 value-items">
+            <div class="box box-info">
+                <div class="box-header with-border-product">
+                    <h3 class="box-title">Pembayaran</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="" data-original-title="Collapse Form Pembayaran">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
+                        <select class="form-control" id="payment_method" name="payment_method" required>
+                            @foreach($payment_methods as $payment_method)
+                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
+                        <select class="form-control" id="payment_merchant" name="payment_merchant" required>
+                            <option value="">-</option>
+{{--                            @foreach($payment_merchants as $payment_merchant)--}}
+{{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>--}}
+{{--                            @endforeach--}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-12 value-items">
             <div class="box box-primary">
                 <div class="box-header with-border-product">
                     <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                            title="" data-original-title="Collapse Form Order">
+                            title="" data-original-title="Collapse Form Nilai">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -392,7 +477,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
         $('.value-items').hide();
@@ -405,6 +490,30 @@
                     return myArray[i];
                 }
             }
+        }
+
+        $('#payment_method').on('change', function() {
+            getPaymentMerchant();
+        });
+
+        function getPaymentMerchant() {
+            $.ajax({
+                url: '{{ route("order-products.merchant_by_payment") }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    payment_method: $('#payment_method').val()
+                },
+                success: function(response) {
+                    $('#payment_merchant').empty();
+                    $.each(response, function(index, paymentMerchant) {
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
         }
 
         function uuid() {
@@ -535,6 +644,60 @@
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
+                }
+            });
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $('#form-add-product').attr('action'),
+                method: 'POST',
+                data: $('#form-add-product').serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Handle response
+                    // console.log(response);
+                    const productId = response.id;
+                    const type = 'success';
+                    const message = 'Barang berhasil disimpan!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Sukses!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup alert setelah 3 detik
+                    setTimeout(() => {
+                        $('.alert').alert('close');
+                    }, 3000);
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-product').modal('hide');
+
+                    $('#type').val(productId).trigger('change');
+
+                    $('#form-add-product').trigger("reset");
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors
+                    console.error(error);
+                    const type = 'danger';
+                    const message = 'Barang tidak bisa disimpan!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Oops!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-product').modal('hide');
                 }
             });
         }
@@ -716,6 +879,8 @@
             const netto = $('#netto').text().replace(/\./g, '');
             const vat = $('#vat').text().replace(/\./g, '');
             const total = $('#total').text().replace(/\./g, '');
+            const payment_method = $('#payment_method').val();
+            const payment_merchant = $('#payment_merchant').val();
 
             // console.log('FINAL RESULT');
             // console.table([{items}, {customer_id}, {site_id}, {bruto}]);
@@ -743,6 +908,8 @@
                     netto,
                     vat,
                     total,
+                    payment_method,
+                    payment_merchant,
                 },
                 method: 'POST',
                 headers: {
@@ -826,10 +993,40 @@
                         $.each(data, function(index, item) {
                             options.push({
                                 id: item.id,
-                                text: item.name,
+                                text: `${item.name} (${item.phone_number})`,
                                 data: {
                                     address: item.address,
                                     phone: item.phone_number
+                                }
+                            });
+                        });
+                        return {
+                            results: options
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            $('#type_item').select2({
+                dropdownAutoWidth: true,
+                width: 'resolve',
+                dropdownParent: $("#modal-add-item .modal-body"),
+                placeholder: '-- Jenis Produk --',
+                ajax: {
+                    url: '{{ route('products.search', ['type' => 0]) }}',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        const options = [];
+                        $.each(data, function(index, item) {
+                            options.push({
+                                id: item.id,
+                                text: `${item.name}`,
+                                data: {
+                                    id: item.id,
+                                    name: item.name,
+                                    price: item.price
                                 }
                             });
                         });

@@ -18,6 +18,7 @@ class Payment extends Model
         'payment_method_id',
         'payment_merchant_id',
         'value',
+        'payment_type',
     ];
 
     protected $dates = ['deleted_at'];

@@ -1,19 +1,19 @@
-<?php 
+<?php
 
-namespace App\Http\Controllers\User; 
+namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\User\StoreRoleRequest;  
-use App\Http\Requests\User\UpdateRoleRequest;  
-use App\Models\Role; 
-use App\Models\PermissionGroup; 
-use App\Models\Permission; 
+use App\Http\Requests\User\StoreRoleRequest;
+use App\Http\Requests\User\UpdateRoleRequest;
+use App\Models\Role;
+use App\Models\PermissionGroup;
+use App\Models\Permission;
 
-class RoleController extends Controller 
-{ 
+class RoleController extends Controller
+{
     public function index()
-    { 
+    {
         $this->authorize('show-role', Role::class);
 
         $roles = Role::paginate(15);
@@ -22,19 +22,19 @@ class RoleController extends Controller
     }
 
     public function show($id)
-    { 
+    {
         $this->authorize('show-role', User::class);
 
         $role = Role::find($id);
 
         if(!$role){
-            $this->flashMessage('warning', 'Permission not found!', 'danger');            
+            $this->flashMessage('warning', 'Permission not found!', 'danger');
             return redirect()->route('role');
-        }  
+        }
 
         $permissions_ids = Permission::permissionsRole($role);
 
-        $permission_groups = PermissionGroup::all();                       
+        $permission_groups = PermissionGroup::all();
 
         return view('users.roles.show',compact('role', 'permissions_ids', 'permission_groups'));
     }
@@ -64,19 +64,19 @@ class RoleController extends Controller
     }
 
     public function edit($id)
-    { 
+    {
         $this->authorize('edit-role', Role::class);
 
         $role = Role::find($id);
 
         if(!$role){
-            $this->flashMessage('warning', 'Permission not found!', 'danger');            
+            $this->flashMessage('warning', 'Permission not found!', 'danger');
             return redirect()->route('role');
-        }  
+        }
 
         $permissions_ids = Permission::permissionsRole($role);
 
-        $permission_groups = PermissionGroup::all();                       
+        $permission_groups = PermissionGroup::all();
 
         return view('users.roles.edit',compact('role', 'permission_groups', 'permissions_ids'));
     }
@@ -88,7 +88,7 @@ class RoleController extends Controller
         $role = Role::find($id);
 
         if(!$role){
-            $this->flashMessage('warning', 'Permission not found!', 'danger');            
+            $this->flashMessage('warning', 'Permission not found!', 'danger');
             return redirect()->route('role');
         }
 
@@ -110,7 +110,7 @@ class RoleController extends Controller
         $role = Role::find($id);
 
         if(!$role){
-            $this->flashMessage('warning', 'Permissão não encontrada!', 'danger');            
+            $this->flashMessage('warning', 'Permissão não encontrada!', 'danger');
             return redirect()->route('role');
         }
 

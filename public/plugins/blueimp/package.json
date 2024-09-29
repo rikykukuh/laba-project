@@ -112,5 +112,8 @@
     "js/jquery.fileupload.js",
     "js/jquery.iframe-transport.js"
   ],
-  "main": "js/jquery.fileupload.js"
+  "main": "js/jquery.fileupload.js",
+  "dependencies": {
+    "blueimp-file-upload": "file:"
+  }
 }

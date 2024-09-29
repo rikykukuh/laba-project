@@ -57,7 +57,19 @@
 {{--@endsection--}}
 
 @section('layout_css')
-    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <style>
+        #cameraContainer, #photoContainer {
+            display: none;
+        }
+        #video {
+            width: 100%;
+            height: auto;
+        }
+        #canvas {
+            display: none;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -277,6 +289,8 @@
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
                                         </div>
+                                        <p>OR</p>
+                                        <div class="webcam-container"></div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover list-image">
                                             <thead>
@@ -410,8 +424,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="">Estimasi Pengambilan Barang:</label>
-                        <span id="estimate_take_item">{{ $order->estimate_take_item ?? '-' }}</span>
+                        <label>Estimasi Pengambilan Barang:</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-right" id="estimate_take_item">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -517,7 +536,7 @@
                 <i class="glyphicon glyphicon-save-file"></i>
                 <span>Ready</span>
             </button>
-            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('cancel')">
+            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left: 15px;margin-top: -20px;">
                 <i class="fa fa-fw fa-print"></i>
                 <span>Cetak</span>
             </a>
@@ -528,7 +547,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').show();
         $('.total-items').show();
@@ -542,6 +561,149 @@
         let allItem = { id: null, type: '', keterangan: '', biaya: 0, gambar: [] };
 
         const orderItems = <?= $order->orderItems->toJson(); ?>;
+
+        const cameraContent = `
+            <div class="form-group" style="margin-top: 15px;">
+                <a href="javascript:void(0)" id="startCamera" class="btn btn-primary"><i class="fa fa-camera fa-fw"></i> Access Camera</a>
+            </div>
+            <div id="cameraContainer" class="form-group" style="margin-top: 15px;">
+                <div class="text-center">
+                    <label for="cameraSelect">Select Camera:</label>
+                    <select id="cameraSelect" class="form-control mb-3"></select>
+                    <video id="video" class="img-thumbnail" playsinline autoplay style="margin-top: 25px;"></video>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <a href="javascript:void(0)" id="takePhoto" class="btn btn-success" style="margin-right: 10px;"><i class="fa fa-check fa-fw"></i> Take Photo</a>
+                        <a href="javascript:void(0)" id="closeCamera" class="btn btn-danger"><i class="fa fa-close fa-fw"></i> Close Camera</a>
+                    </div>
+                </div>
+            </div>
+            <div id="photoContainer" class="form-group" style="margin-top: 25px;">
+                <div class="text-center">
+                    <canvas id="canvas"></canvas>
+                    <img id="photo" class="img-thumbnail"/>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <a href="javascript:void(0)" id="retakePhoto" class="btn bg-navy"><i class="fa fa-camera fa-fw"></i> Retake Photo</a>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        function initializeCamera() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const photo = document.getElementById('photo');
+            const cameraContainer = $('#cameraContainer');
+            const photoContainer = $('#photoContainer');
+            const cameraSelect = $('#cameraSelect');
+            let stream = null;
+
+            $(document).on('click', '#startCamera', function () {
+                cameraContainer.show();
+                $('#startCamera').hide();
+                navigator.mediaDevices.enumerateDevices()
+                    .then(devices => {
+                        devices.forEach(device => {
+                            if (device.kind === 'videoinput') {
+                                const option = document.createElement('option');
+                                option.value = device.deviceId;
+                                option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                                cameraSelect.append(option);
+                            }
+                        });
+                        return startCamera(cameraSelect.val());
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+            });
+
+            $(document).on('change', '#cameraSelect', function () {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                startCamera(cameraSelect.val());
+            });
+
+            function startCamera(deviceId) {
+                navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: deviceId ? { exact: deviceId } : undefined }
+                })
+                    .then(function (mediaStream) {
+                        stream = mediaStream;
+                        video.srcObject = stream;
+                        video.play();
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+            }
+
+            $(document).on('click', '#takePhoto', function () {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                photo.src = canvas.toDataURL('image/png');
+                dataFile.push(photo.src);
+                setTimeout(() => {
+                    const contentImage = $('.content-image');
+                    contentImage.empty();
+
+                    dataFile.forEach(function(image, index) {
+                        const row = `
+                                <tr>
+                                    <th>
+                                        ${index + 1}
+                                    </th>
+                                    <td class="text-center">
+                                        <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px" data-magnify="gallery" data-caption="Foto Barang ${index + 1}" data-src="${image}" style="cursor: pointer;">
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${editItemSelected}, ${index}, '${image}')">Hapus foto</button>
+                                    </td>
+                                </tr>
+                            `;
+                        contentImage.append(row);
+                    });
+                }, 0);
+                setTimeout(function () {
+                    $('#retakePhoto').trigger('click');
+                }, 0)
+                photoContainer.show();
+                cameraContainer.hide();
+                canvas.show();
+            });
+
+            $(document).on('click', '#closeCamera', function () {
+                if (stream) {
+                    stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
+                cameraContainer.hide();
+                $('#startCamera').show();
+                cameraSelect.empty();
+            });
+
+            $(document).on('click', '#retakePhoto', function () {
+                photoContainer.hide();
+                cameraContainer.show();
+            });
+
+            $(document).on('click', '#cancelPhoto', function () {
+                photo.src = "";
+                canvas.hide();
+                photoContainer.hide();
+                $('#startCamera').show();
+                if (stream) {
+                    stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
+                cameraContainer.hide();
+                cameraSelect.empty();
+            });
+        }
 
         for (let i=0; i < orderItems.length; i++) {
             const orderItemPhotos = orderItems[i].order_item_photos;
@@ -691,6 +853,10 @@
                     contentImage.append(row);
                 });
             }, 500);
+
+            if($('#closeCamera').length > 0) {
+                $('#closeCamera').trigger('click');
+            }
         }
 
         function renderListImage() {
@@ -706,7 +872,7 @@
                             ${i + 1}
                         </th>
                         <td class="text-center">
-                            <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${image}">
+                            <img src="${dataFile[i]}" alt="Foto Barang ${i + 1}" title="Foto Barang ${i + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;" data-magnify="gallery" data-caption="Foto Barang ${i + 1}" data-src="${dataFile[i]}">
                         </td>
                     </tr>
                 `);
@@ -945,7 +1111,7 @@
             const newStatus = status.toUpperCase();
             if (confirm("Apakah Anda yakin ingin merubah status menjadi " + newStatus + "?") === true) {
                 const estimate_service_done = $('#estimate_service_done').val();
-                const estimate_take_item = $('#estimate_take_item').text();
+                const estimate_take_item = $('#estimate_take_item').val();
                 const data = { status: newStatus, estimate_service_done, estimate_take_item };
                 $.ajax({
                     url: "{{ route('orders.status', $order->id) }}",
@@ -1008,13 +1174,13 @@
             const pembayaran = parseInt(kekuranganSisa, 10);
             const status = picked_by.length > 0 ? 'DIAMBIL' : 'DIPROSES';
             const estimate_service_done = $('#estimate_service_done').val();
-            const estimate_take_item = $('#estimate_take_item').text();
+            const estimate_take_item = $('#estimate_take_item').val();
             // $('#pembayaran').text(picked_by.length > 0 ? pembayaran.toLocaleString('id-ID') : '');
             // $('#kekurangan').text(picked_by.length > 0 ? parseInt(kekurangan, 10) - parseInt(kekuranganSisa, 10) - parseInt(discount, 10) : $('#kekurangan').text() - parseInt(discount, 10));
             $('#status').text(status);
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, site_id, picked_by, picked_at, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item };
+            let data = { customer_id, site_id, picked_by, picked_at, status, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item };
 
             $.ajax({
                 url: $('#pickup-item-form').attr('action'),
@@ -1099,7 +1265,7 @@
                             -->
                             <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable(${index})">
                                 <i class="fa fa-image margin-r-5"></i>
-                                <span>Show images</span>
+                                <span>Tampilkan Foto</span>
                             </span>
                         </td>
                         <td class="text-center">
@@ -1282,12 +1448,21 @@
                 $('#modal-add-item').on('hidden.bs.modal', function () {
                     resetFormAddItem();
                 });
+                $('#modal-edit-item').on('shown.bs.modal', function () {
+                    $('.webcam-container').append(cameraContent);
+                    initializeCamera();
+                });
                 $('#modal-edit-item').on('hidden.bs.modal', function () {
                     $('#item_element').val('');
                     // $(`#type_edit option[value='1']`).attr("selected");
                     $('#keterangan_edit').val('');
                     $('#biaya_edit').val('');
                     $('#discount_item_edit').val('');
+                    if ($('.webcam-container').length > 0) {
+                        $('#closeCamera').trigger('click');
+                    }
+                    $('.webcam-container').empty();
+                    dataFile = [];
                 });
 
                 $('#customer').select2({
@@ -1301,7 +1476,7 @@
                             $.each(data, function(index, item) {
                                 options.push({
                                     id: item.id,
-                                    text: item.name,
+                                    text: `${item.name} (${item.phone_number})`,
                                     data: {
                                         address: item.address,
                                         phone: item.phone_number
@@ -1445,20 +1620,29 @@
 
                 $('#site_id').select2();
 
+                let estimateServiceDone = moment("{{ $order->estimate_service_done }}").format('YYYY-MM-DD');
+                let estimateTakeItem = moment("{{ $order->estimate_take_item }}").format('YYYY-MM-DD');
                 $('#estimate_service_done').datepicker({
                     todayHighlight: true,
                     endDate: '+30d',
                     datesDisabled: '+30d',
                     autoclose: true,
                     format: 'yyyy-mm-dd'
-                }).datepicker("setDate",'now').on('changeDate', function(e) {
+                }).datepicker("setDate", estimateServiceDone).on('changeDate', function(e) {
                     // Dapatkan nilai dari datepicker
                     const selectedDate = $('#estimate_service_done').datepicker('getDate');
                     if (selectedDate) {
-                        let newDate = moment(selectedDate).add(3, 'days');
-                        $('#estimate_take_item').text(newDate.format('YYYY-MM-DD'));
+                        let newDate = moment(selectedDate).add(1, 'days');
+                        $('#estimate_take_item').val(newDate.format('YYYY-MM-DD')).trigger('changeDate');
                     }
-                });
+                }).trigger('changeDate');
+                $('#estimate_take_item').datepicker({
+                    todayHighlight: true,
+                    endDate: '+30d',
+                    datesDisabled: '+30d',
+                    autoclose: true,
+                    format: 'yyyy-mm-dd'
+                }).datepicker('setDate', estimateTakeItem).trigger('changeDate');
 
                 // $('.select2').select2();
                 // $('.select2').select2({

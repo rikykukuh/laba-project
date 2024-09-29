@@ -69,6 +69,12 @@
         </div>
     </div>
     @endif
+    @if(Session::has('success'))
+        <div class="alert alert-success alert-dismissible fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> {{ Session::get('success') }}
+        </div>
+    @endif
 
     <div class="box box-primary">
         <div class="box-body">
@@ -154,6 +160,30 @@
         {{--        @endif --}}
     </div>
 
+    <div class="modal fade" id="modal-delete" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Form Delete Order</h4>
+                </div>
+                <form method="POST" id="form-delete">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="order_id" id="order_id">
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin MENGHAPUS pesanan <strong id="order-name"></strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-danger margin-r-5">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @include('layouts.AdminLTE._includes._data_tables')
@@ -161,16 +191,38 @@
 @section('scripts')
     <script src="{{ asset('public/vendor/datatables/buttons.server-side.js') }}"></script>
     {!! $dataTable->scripts() !!}
-    <script>
-        $(document).ready(function() {
+    <script type="text/javascript">
+        $(function() {
             // Inisialisasi DataTable dan tambahkan elemen footer
             $('#table-service').DataTable().on('init', function() {
                 $('<tfoot>').appendTo('#table-service');
-                $(`#table-service tfoot`).html(`<tr><th colspan="5">Total</th><th id="total_bruto"></th><th id="total_discount"></th><th id="total_netto"></th><th id="total_vat"></th><th id="total_total"></th><th colspan="5"></th></tr>`);
+                $(`#table-service tfoot`).html(`
+                    <tr>
+                        <th colspan="4">Total</th>
+                        <th id="total_total"></th>
+                        <th id="total_dp"></th>
+                        <th></th>
+                        <th></th>
+                    </tr>`);
+                // $(`#table-service tfoot`).html(`<tr><th colspan="5">Total</th><th id="total_bruto"></th><th id="total_discount"></th><th id="total_netto"></th><th id="total_vat"></th><th id="total_total"></th><th colspan="5"></th></tr>`);
             });
 
             // Panggil DataTable lagi setelah menambahkan elemen footer
             $('#table-service').DataTable().draw();
+
+            $('#table-service').on('click', '.btn-delete', function (e) {
+                const order_id = $(this).data('order-id');
+                const order_name = $(this).data('order-name');
+                const url = "{{ route('orders.index') }}/" + order_id;
+                $('#order_id').val(order_id);
+                $('#order-name').text(order_name);
+                $('#form-delete').attr('action', url)
+            });
+
+            // $('#modal-delete').on('hidden.bs.modal', function(e) {
+            //     $('#order_id').val('');
+            //     $('#order-name').text('');
+            // });
         });
     </script>
     @if(Request::segment(1) === 'laporan')
@@ -202,24 +254,24 @@
                 $('#form-filter').submit();
             });
 
-            let table = $('#table-service').DataTable({
-                retrieve: true,
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('orders.index') }}",
-                    data: function (d) {
-                        d.status = $('#status').val(),
-                            d.search = $('input[type="search"]').val()
-                    }
-                },
-                // columns: [
-                //     {data: 'id', name: 'id'},
-                //     {data: 'name', name: 'name'},
-                //     {data: 'email', name: 'email'},
-                //     {data: 'status', name: 'status'},
-                // ]
-            });
+            {{--let table = $('#table-service').DataTable({--}}
+            {{--    retrieve: true,--}}
+            {{--    processing: true,--}}
+            {{--    serverSide: true,--}}
+            {{--    ajax: {--}}
+            {{--        url: "{{ route('orders.index') }}",--}}
+            {{--        data: function (d) {--}}
+            {{--            d.status = $('#status').val(),--}}
+            {{--                d.search = $('input[type="search"]').val()--}}
+            {{--        }--}}
+            {{--    },--}}
+            {{--    // columns: [--}}
+            {{--    //     {data: 'id', name: 'id'},--}}
+            {{--    //     {data: 'name', name: 'name'},--}}
+            {{--    //     {data: 'email', name: 'email'},--}}
+            {{--    //     {data: 'status', name: 'status'},--}}
+            {{--    // ]--}}
+            {{--});--}}
 
             // $('#form-filter').submit(function(e){
             //     // e.preventDefault();

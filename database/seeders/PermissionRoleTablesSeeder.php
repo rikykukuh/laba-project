@@ -36,20 +36,20 @@ class PermissionRoleTablesSeeder extends Seeder
         $this->createPermissions();
 
         // vincula as permissões aos papéis
-        $this->sync();    	    
+        $this->sync();
     }
 
     private function createRoles()
     {
         Role::create([
-            'name' => 'Developer', 
+            'name' => 'Developer',
             'label'  => 'System Developer'
-        ]);       
+        ]);
 
         Role::create([
-            'name' => 'Administrators', 
+            'name' => 'Administrators',
             'label'  => 'System Administrators'
-        ]); 
+        ]);
 
         $this->command->info('Roles created!');
     }
@@ -62,11 +62,11 @@ class PermissionRoleTablesSeeder extends Seeder
 
         PermissionGroup::create([
             'name' => 'System Settings', //2
-        ]);       
+        ]);
 
         PermissionGroup::create([
             'name' => 'Users', //3
-        ]); 
+        ]);
 
         PermissionGroup::create([
             'name' => 'Permissions', //4
@@ -78,75 +78,79 @@ class PermissionRoleTablesSeeder extends Seeder
     private function createPermissions()
     {
         Permission::create([
-            'permission_group_id' => '1', 
-            'name' => 'root-dev', 
+            'permission_group_id' => '1',
+            'name' => 'root-dev',
             'label'  => 'Developer Permission'
         ]);
 
     	Permission::create([
-            'permission_group_id' => '2', 
-            'name' => 'edit-config', 
+            'permission_group_id' => '2',
+            'name' => 'edit-config',
             'label'  => 'Edit System Settings'
-        ]);       
-
-        Permission::create([
-            'permission_group_id' => '3', 
-            'name' => 'show-user', 
-            'label'  => 'View User'
-        ]); 
+        ]);
 
         Permission::create([
             'permission_group_id' => '3',
-            'name' => 'create-user', 
+            'name' => 'show-user',
+            'label'  => 'View User'
+        ]);
+
+        Permission::create([
+            'permission_group_id' => '3',
+            'name' => 'create-user',
             'label'  => 'Add User'
         ]);
 
         Permission::create([
             'permission_group_id' => '3',
-            'name' => 'edit-user', 
+            'name' => 'edit-user',
             'label'  => 'Edit User'
         ]);
 
         Permission::create([
             'permission_group_id' => '3',
-            'name' => 'destroy-user', 
+            'name' => 'destroy-user',
             'label'  => 'Delete User'
-        ]); 
+        ]);
 
         Permission::create([
             'permission_group_id' => '4',
-            'name' => 'show-role', 
+            'name' => 'show-role',
             'label'  => 'View Permission'
         ]);
 
         Permission::create([
             'permission_group_id' => '4',
-            'name' => 'create-role', 
+            'name' => 'create-role',
             'label'  => 'Add Permission'
         ]);
 
         Permission::create([
             'permission_group_id' => '4',
-            'name' => 'edit-role', 
+            'name' => 'edit-role',
             'label'  => 'Edit Permission'
         ]);
 
         Permission::create([
             'permission_group_id' => '4',
-            'name' => 'destroy-role', 
+            'name' => 'destroy-role',
             'label'  => 'Delete Permission'
-        ]); 
+        ]);
 
         $this->command->info('Permissions created!');
     }
 
     private function sync()
-    { 
+    {
         $permissions_id = Permission::permissionsId(1);
-        $role = Role::find(1);        
+        $role = Role::find(1);
         $role->permissions()->sync($permissions_id);
 
         $permissions_id = Permission::permissionsId(2);
+        $role = Role::find(2);
+        $role->permissions()->sync($permissions_id);
+
+        $permissions_id = Permission::permissionsId(1);
         $role = Role::find(2);
         $role->permissions()->sync($permissions_id);
 

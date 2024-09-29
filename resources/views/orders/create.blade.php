@@ -4,8 +4,11 @@
 
 @section('title', 'Tambah Reparasi')
 @section('layout_css')
-    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
+        .select2-container {
+            width: 100% !important;
+        }
         .glyphicon.spinning {
             animation: spin 1s infinite linear;
             -webkit-animation: spin2 1s infinite linear;
@@ -19,6 +22,17 @@
         @-webkit-keyframes spin2 {
             from { -webkit-transform: rotate(0deg); }
             to { -webkit-transform: rotate(360deg); }
+        }
+
+        #cameraContainer, #photoContainer {
+            display: none;
+        }
+        #video {
+            width: 100%;
+            height: auto;
+        }
+        #canvas {
+            display: none;
         }
     </style>
 @endsection
@@ -232,6 +246,8 @@
                                                 name="gambar_edit" accept=".jpg,.jpeg,.png" multiple
                                                 onchange="handleEditImageUpload(this)">
                                         </div>
+                                        <p>OR</p>
+                                        <div class="webcam-edit-container"></div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover">
                                             <thead>
@@ -289,7 +305,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12" style="margin-bottom: 15px;">
+        <div class="col-md-1" style="margin-bottom: 15px;">
             <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
                 <i class="glyphicon glyphicon-plus"></i>
                 <span>Tambah</span>
@@ -309,9 +325,9 @@
                                 <div class="form-group">
                                     <label for="type">Jenis Service: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
-                                        @foreach ($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                        @endforeach
+{{--                                        @foreach ($products as $product)--}}
+{{--                                            <option value="{{ $product->id }}">{{ $product->name }}</option>--}}
+{{--                                        @endforeach--}}
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -337,8 +353,10 @@
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
                                     <input type="file" class="form-control-file" id="gambar" name="gambar"
-                                        accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
+                                        accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)">
                                 </div>
+                                <p>OR</p>
+                                <div class="webcam-container"></div>
                                 <hr>
                                 <table role="presentation"
                                     class="table table-striped table-bordered table-hover list-image">
@@ -362,9 +380,95 @@
                 </div>
             </div>
         </div>
+        {{-- <div class="col-md-1"> --}}
+        {{--     <button type="button" class="btn bg-blue" data-toggle="modal" data-target="#modal-add-product">Tambah Reparasi</button> --}}
+        {{--     <div id="modal-add-product" class="modal fade" role="dialog" data-keyboard="false" --}}
+        {{--          data-backdrop="static"> --}}
+        {{--         <div class="modal-dialog modal-md"> --}}
+        {{--             <!-- Modal content--> --}}
+        {{--             <form id="form-add-product" action="{{ route('products.store') }}" method="post" --}}
+        {{--                   onsubmit="saveProduct(event)" autocomplete="off"> --}}
+        {{--                 <div class="modal-content"> --}}
+        {{--                     <div class="modal-header"> --}}
+        {{--                         <button type="button" class="close" data-dismiss="modal">&times;</button> --}}
+        {{--                         <h4 class="modal-title">Tambah Reparasi</h4> --}}
+        {{--                     </div> --}}
+        {{--                     <div class="modal-body"> --}}
+        {{--                         {{ csrf_field() }} --}}
+        {{--                         <input type="hidden" name="type" id="add_type" value="1"> --}}
+        {{--                         <div class="row"> --}}
+        {{--                             <div class="col-lg-12"> --}}
+        {{--                                 <div class="form-price form-group {{ $errors->has('price') ? 'has-error' : '' }}"> --}}
+        {{--                                     <label for="price">Harga</label> --}}
+        {{--                                     <input type="number" name="price" id="price" class="form-control" placeholder="Harga" value="{{ old('name') }}" autofocus> --}}
+        {{--                                     @if($errors->has('price')) --}}
+        {{--                                         <span class="help-block"> --}}
+        {{--                                     <strong>{{ $errors->first('price') }}</strong> --}}
+        {{--                                 </span> --}}
+        {{--                                     @endif --}}
+        {{--                                 </div> --}}
+        {{--                                 <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}"> --}}
+        {{--                                     <label for="name">Nama Jenis Produk</label> --}}
+        {{--                                     <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus> --}}
+        {{--                                     @if($errors->has('name')) --}}
+        {{--                                         <span class="help-block"> --}}
+        {{--                                     <strong>{{ $errors->first('name') }}</strong> --}}
+        {{--                                 </span> --}}
+        {{--                                     @endif --}}
+        {{--                                 </div> --}}
+        {{--                             </div> --}}
+        {{--                         </div> --}}
+        {{--                     </div> --}}
+        {{--                     <div class="modal-footer"> --}}
+        {{--                          <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left" onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()">Reset</button> --}}
+        {{--                         <button type="button" class="btn btn-default" data-dismiss="modal" onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()" style="margin-right: 15px;">Batalkan</button> --}}
+        {{--                         <button type="submit" class="btn bg-blue">Simpan</button> --}}
+        {{--                     </div> --}}
+        {{--                 </div> --}}
+        {{--             </form> --}}
+        {{--         </div> --}}
+        {{--     </div> --}}
+        {{-- </div> --}}
     </div>
-
     <div class="row">
+        <div class="col-md-12 total-items">
+            <div class="box box-info">
+                <div class="box-header with-border-product">
+                    <h3 class="box-title">Pembayaran</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="" data-original-title="Collapse Form Pembayaran">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
+                        <select class="form-control" id="payment_method" name="payment_method" required>
+                            @foreach($payment_methods as $payment_method)
+                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
+                        <select class="form-control" id="payment_merchant" name="payment_merchant" required>
+                            <option value="">-</option>
+                            {{--                            @foreach($payment_merchants as $payment_merchant)--}}
+                            {{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>--}}
+                            {{--                            @endforeach--}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_type">Tipe Pembayaran: <small class="text-danger">*</small></label>
+                        <select class="form-control" id="payment_type" name="payment_type" required>
+                            <option value="0">DP</option>
+                            <option value="1">Lunas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-12 total-items">
             <div class="box box-warning">
                 <div class="box-header with-border">
@@ -386,8 +490,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="">Estimasi Pengambilan Barang:</label>
-                        <span id="estimate_take_item">-</span>
+                        <label>Estimasi Pengambilan Barang:</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-right" id="estimate_take_item">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -489,7 +598,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
         $('.total-items').hide();
@@ -498,12 +607,181 @@
         const items = [];
         let dataFile = [];
 
+        const cameraContent = `
+            <div class="form-group" style="margin-top: 15px;">
+                <a href="javascript:void(0)" id="startCamera" class="btn btn-primary"><i class="fa fa-camera fa-fw"></i> Access Camera</a>
+            </div>
+            <div id="cameraContainer" class="form-group" style="margin-top: 15px;">
+                <div class="text-center">
+                    <label for="cameraSelect">Select Camera:</label>
+                    <select id="cameraSelect" class="form-control mb-3"></select>
+                    <video id="video" class="img-thumbnail" playsinline autoplay style="margin-top: 25px;"></video>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <a href="javascript:void(0)" id="takePhoto" class="btn btn-success" style="margin-right: 10px;"><i class="fa fa-check fa-fw"></i> Take Photo</a>
+                        <a href="javascript:void(0)" id="closeCamera" class="btn btn-danger"><i class="fa fa-close fa-fw"></i> Close Camera</a>
+                    </div>
+                </div>
+            </div>
+            <div id="photoContainer" class="form-group" style="margin-top: 25px;">
+                <div class="text-center">
+                    <canvas id="canvas"></canvas>
+                    <img id="photo" class="img-thumbnail"/>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <a href="javascript:void(0)" id="retakePhoto" class="btn bg-navy"><i class="fa fa-camera fa-fw"></i> Retake Photo</a>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        function initializeCamera() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const photo = document.getElementById('photo');
+            const cameraContainer = $('#cameraContainer');
+            const photoContainer = $('#photoContainer');
+            const cameraSelect = $('#cameraSelect');
+            let stream = null;
+
+            $(document).on('click', '#startCamera', function () {
+                cameraContainer.show();
+                $('#startCamera').hide();
+                navigator.mediaDevices.enumerateDevices()
+                    .then(devices => {
+                        devices.forEach(device => {
+                            if (device.kind === 'videoinput') {
+                                const option = document.createElement('option');
+                                option.value = device.deviceId;
+                                option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                                cameraSelect.append(option);
+                            }
+                        });
+                        return startCamera(cameraSelect.val());
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+            });
+
+            $(document).on('change', '#cameraSelect', function () {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                startCamera(cameraSelect.val());
+            });
+
+            function startCamera(deviceId) {
+                navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: deviceId ? { exact: deviceId } : undefined }
+                })
+                    .then(function (mediaStream) {
+                        stream = mediaStream;
+                        video.srcObject = stream;
+                        video.play();
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+            }
+
+            $(document).on('click', '#takePhoto', function () {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                photo.src = canvas.toDataURL('image/jpeg');
+                dataFile.push(photo.src);
+                console.log(dataFile);
+                setTimeout(() => {
+                    renderListImage();
+                    const contentImage = $('.content-image');
+                    contentImage.empty();
+
+                    dataFile.forEach(function(image, index) {
+                        const row = `
+                    <tr>
+                        <th>
+                            ${index + 1}
+                        </th>
+                        <td class="text-center">
+                            <img src="${image}" alt="Foto Barang ${index + 1}" title="Foto Barang ${index + 1}" class="img-thumbnail" style="height:100px;cursor:pointer;"  data-magnify="gallery" data-caption="Foto Barang ${index + 1}" data-src="${image}">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeImage(${index})">Hapus foto</button>
+                        </td>
+                    </tr>
+                `;
+                        contentImage.append(row);
+                    });
+                }, 0);
+                setTimeout(function () {
+                    $('#retakePhoto').trigger('click');
+                }, 0)
+                photoContainer.show();
+                cameraContainer.hide();
+                canvas.show();
+            });
+
+            $(document).on('click', '#closeCamera', function () {
+                if (stream) {
+                    stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
+                cameraContainer.hide();
+                $('#startCamera').show();
+                cameraSelect.empty();
+            });
+
+            $(document).on('click', '#retakePhoto', function () {
+                photoContainer.hide();
+                cameraContainer.show();
+            });
+
+            $(document).on('click', '#cancelPhoto', function () {
+                photo.src = "";
+                canvas.hide();
+                photoContainer.hide();
+                $('#startCamera').show();
+                if (stream) {
+                    stream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                }
+                cameraContainer.hide();
+                cameraSelect.empty();
+            });
+        }
+
         function getTypeById(nameKey, myArray) {
             for (let i = 0; i < myArray.length; i++) {
                 if (myArray[i].id === parseFloat(nameKey, 10)) {
                     return myArray[i];
                 }
             }
+        }
+
+        $('#payment_method').on('change', function() {
+            getPaymentMerchant();
+        });
+
+        function getPaymentMerchant() {
+            $.ajax({
+                url: '{{ route("order-products.merchant_by_payment") }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    payment_method: $('#payment_method').val()
+                },
+                success: function(response) {
+                    $('#payment_merchant').empty();
+                    $.each(response, function(index, paymentMerchant) {
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
         }
 
         function uuid() {
@@ -542,6 +820,9 @@
                 }
             }, 500);
 
+            if($('#closeCamera').length > 0) {
+                $('#closeCamera').trigger('click');
+            }
         }
 
         function handleEditImageUpload(element) {
@@ -586,6 +867,10 @@
                     contentImage.append(row);
                 });
             }, 500);
+
+            if($('#closeCamera').length > 0) {
+                $('#closeCamera').trigger('click');
+            }
         }
 
         function renderListImage(itemIndex=null) {
@@ -753,8 +1038,7 @@
                 customerId, // Asumsi endpoint mendukung query parameter 'id'
                 success: function(data) {
                     if (data && data.length > 0) {
-                        let item = data[data.length -
-                        1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
+                        let item = data[data.length - 1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
                         let newOption = new Option(item.name, item.id, true, true);
 
                         $(newOption).data('address', item.address);
@@ -825,6 +1109,60 @@
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
+                }
+            });
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $('#form-add-product').attr('action'),
+                method: 'POST',
+                data: $('#form-add-product').serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Handle response
+                    // console.log(response);
+                    const productId = response.id;
+                    const type = 'success';
+                    const message = 'Reparasi berhasil disimpan!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Sukses!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup alert setelah 3 detik
+                    setTimeout(() => {
+                        $('.alert').alert('close');
+                    }, 3000);
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-product').modal('hide');
+
+                    $('#type').val(productId).trigger('change');
+
+                    $('#form-add-product').trigger("reset");
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors
+                    console.error(error);
+                    const type = 'danger';
+                    const message = 'Reparasi tidak bisa disimpan!'
+                    const alert = `
+                        <div class="alert alert-${type} alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Oops!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+
+                    // Tutup modal setelah selesai menyimpan data
+                    $('#modal-add-product').modal('hide');
                 }
             });
         }
@@ -1016,7 +1354,10 @@
             const total = $('#sub_total').text().replace(/\./g, '');
             const kekurangan = $('#kekurangan-final').val();
             const estimate_service_done = $('#estimate_service_done').val();
-            const estimate_take_item = $('#estimate_take_item').text();
+            const estimate_take_item = $('#estimate_take_item').val();
+            const payment_method = $('#payment_method').val();
+            const payment_merchant = $('#payment_merchant').val();
+            const payment_type = $('#payment_type').val();
 
             // console.log('FINAL RESULT');
             // console.table([{items}, {customer_id}, {site_id}, {dp}, {total}, {kekurangan}]);
@@ -1045,6 +1386,9 @@
                     kekurangan,
                     estimate_service_done,
                     estimate_take_item,
+                    payment_method,
+                    payment_merchant,
+                    payment_type,
                 },
                 method: 'POST',
                 headers: {
@@ -1108,13 +1452,29 @@
             });
             $('#modal-add-item').on('hidden.bs.modal', function() {
                 resetFormAddItem();
+                if ($('.webcam-container').length > 0) {
+                    $('#closeCamera').trigger('click');
+                }
+                $('.webcam-container').empty();
+            });
+            $('#modal-add-item').on('shown.bs.modal', function () {
+                dataFile = [];
+                $('.webcam-container').append(cameraContent);
+                initializeCamera();
+            });
+            $('#modal-edit-item').on('shown.bs.modal', function () {
+                $('.webcam-edit-container').append(cameraContent);
+                initializeCamera();
             });
             $('#modal-edit-item').on('hidden.bs.modal', function() {
                 $('#item_element').val('');
                 // $(`#type_edit option[value='1']`).attr("selected");
                 $('#keterangan_edit').val('');
                 $('#biaya_edit').val('');
-                dataFile = [];
+                if ($('.webcam-edit-container').length > 0) {
+                    $('#closeCamera').trigger('click');
+                }
+                $('.webcam-edit-container').empty();
                 $('#edit-item-form').trigger('reset');
                 resetFormAddItem();
             });
@@ -1129,7 +1489,7 @@
                         $.each(data, function(index, item) {
                             options.push({
                                 id: item.id,
-                                text: item.name,
+                                text: `${item.name} (${item.phone_number})`,
                                 data: {
                                     address: item.address,
                                     phone: item.phone_number
@@ -1181,6 +1541,36 @@
                 `);
 
                 $('#customer_id').val(customerId);
+            });
+
+            $('#type').select2({
+                dropdownAutoWidth: true,
+                width: 'resolve',
+                dropdownParent: $("#modal-add-item .modal-body"),
+                placeholder: '-- Jenis Service --',
+                ajax: {
+                    url: '{{ route('products.search', ['type' => 1]) }}',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        const options = [];
+                        $.each(data, function(index, item) {
+                            options.push({
+                                id: item.id,
+                                text: `${item.name}`,
+                                data: {
+                                    id: item.id,
+                                    name: item.name,
+                                    price: item.price
+                                }
+                            });
+                        });
+                        return {
+                            results: options
+                        };
+                    },
+                    cache: true
+                }
             });
 
             $('#dp, #discount').on('input', function(e) {
@@ -1341,14 +1731,21 @@
                 datesDisabled: '+30d',
                 autoclose: true,
                 format: 'yyyy-mm-dd'
-            }).datepicker("setDate",'now').on('changeDate', function(e) {
+            }).datepicker("setDate",'+4d').on('changeDate', function(e) {
                 // Dapatkan nilai dari datepicker
                 const selectedDate = $('#estimate_service_done').datepicker('getDate');
                 if (selectedDate) {
-                    let newDate = moment(selectedDate).add(3, 'days');
-                    $('#estimate_take_item').text(newDate.format('YYYY-MM-DD'));
+                    let newDate = moment(selectedDate).add(1, 'days');
+                    $('#estimate_take_item').val(newDate.format('YYYY-MM-DD')).trigger('changeDate');
                 }
             }).trigger('changeDate');
+            $('#estimate_take_item').datepicker({
+                todayHighlight: true,
+                endDate: '+30d',
+                datesDisabled: '+30d',
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            });
             // $('#city_id').select2();
             // $('.select2').select2({
             //     "language": {
@@ -1358,7 +1755,7 @@
             //     }
             // });
 
-            var defaultSite = '{{ session('user.default_site.0') }}';
+            let defaultSite = '{{ session('user.default_site.0') }}';
             if (defaultSite) {
                 $('#site_id').val(defaultSite).trigger('change');
             }

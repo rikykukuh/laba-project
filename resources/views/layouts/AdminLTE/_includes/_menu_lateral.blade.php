@@ -47,6 +47,7 @@
 			@endif
 			<li class="treeview
 				{{ Request::segment(1) === 'config' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'order-logs' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'user' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'role' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'cities' ? 'active menu-open' : null }}
@@ -70,6 +71,11 @@
 								<i class="fa fa-gear"></i> <span> Settings App</span>
 							</a>
 						</li>
+                        <li class="{{ Request::segment(1) === 'order-logs' ? 'active' : null }}">
+                            <a href="{{ route('order.logs') }}" title="App Config">
+                                <i class="fa fa-file"></i> <span> Order Log</span>
+                            </a>
+                        </li>
 					@endif
 					<li class="
 						{{ Request::segment(1) === 'user' ? 'active' : null }}

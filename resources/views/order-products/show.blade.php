@@ -15,7 +15,7 @@
 @endsection
 
 @section('layout_css')
-    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -372,7 +372,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').show();
         $('.total-items').show();
@@ -840,7 +840,7 @@
                             $.each(data, function(index, item) {
                                 options.push({
                                     id: item.id,
-                                    text: item.name,
+                                    text: `${item.name} (${item.phone_number})`,
                                     data: {
                                         address: item.address,
                                         phone: item.phone_number

@@ -12,25 +12,28 @@ use Yajra\DataTables\Services\DataTable;
 
 class OrderProductsDataTable extends DataTable
 {
-    public $model, $total_bruto, $total_discount, $total_netto, $total_vat, $total_total;
+    public $model, $total_bruto, $total_discount, $total_netto, $total_vat, $total_total, $total_dp;
 
     public function __construct()
     {
-        $this->model = Order::query();
+        $this->model = Order::query(); // Inisialisasi model tanpa kondisi query
 
-        $totals = $this->model->where('transaction_type', '=', 1)->selectRaw('
-        SUM(bruto) as total_bruto,
-        SUM(discount) as total_discount,
-        SUM(netto) as total_netto,
-        SUM(vat) as total_vat,
-        SUM(total) as total_total
-    ')->first();
+        // Hitung total untuk footer
+        $totals = Order::where('transaction_type', '=', 1)->selectRaw('
+            SUM(bruto) as total_bruto,
+            SUM(discount) as total_discount,
+            SUM(netto) as total_netto,
+            SUM(vat) as total_vat,
+            SUM(total) as total_total,
+            SUM(uang_muka) as total_dp
+        ')->first();
 
         $this->total_bruto = $totals->total_bruto;
         $this->total_discount = $totals->total_discount;
         $this->total_netto = $totals->total_netto;
         $this->total_vat = $totals->total_vat;
         $this->total_total = $totals->total_total;
+        $this->total_dp = $totals->total_dp;
     }
 
     /**
@@ -47,6 +50,15 @@ class OrderProductsDataTable extends DataTable
         $datatables = datatables()->of($query)
             ->addIndexColumn()
             ->filter(function ($query) {
+                // Global Search
+                if (request()->has('search') && request()->get('search')['value'] != '') {
+                    $search = request()->get('search')['value'];
+                    $query->where('number_ticket', 'like', '%' . $search . '%');
+                    $query->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")->orWhere('phone_number', 'like', "%{$search}%");
+                    });
+                }
+
                 if (request()->has('id')) {
                     $query->where('id', 'like', "%" . request('id') . "%");
                 }
@@ -66,7 +78,7 @@ class OrderProductsDataTable extends DataTable
                     $query->where('created_at', '>=', Carbon::parse(request('date_start'))->startOfDay()->format('Y-m-d'))
                         ->where('created_at', '<', Carbon::parse(request('date_end'))->addDay(1)->format('Y-m-d'));
                 }
-            }, true)
+            }, false)
             ->addColumn('created_at', function($row) {
                 return Carbon::parse($row->created_at)->timezone('Asia/Jakarta')->toDateTimeString();
             })->addColumn('netto', function($row) {
@@ -74,17 +86,41 @@ class OrderProductsDataTable extends DataTable
             });
 
         // if ($segment) {
-            $datatables->addColumn('bruto', function($row) {
-                return 'Rp. '.number_format($row->bruto, 2, ",", ".");
+            $datatables->addColumn('name', function($row) {
+                $customer = $row->customer;
+                return $customer->name . " (" . $customer->phone_number . ")";
             });
 
-            $datatables->addColumn('discount', function($row) {
-                return $row->discount > 100 ? 'Rp. '.number_format($row->discount, 2, ",", ".") : "$row->discount%";
+            $datatables->addColumn('product', function ($row) {
+                $products = $row->orderItems->map(function ($orderItem) {
+                    return $orderItem->products->map(function ($product) {
+                        return $product->name;
+                    })->implode(', ');
+                });
+
+                $table = '<table class="table table-xs table-striped table-bordered" style="margin:5px auto;">';
+                // $table .= '<thead><tr><th>Product</th></tr></thead>';
+                $table .= '<tbody>';
+                foreach ($products as $product) {
+                    $table .= '<tr><td>' . $product . '</td></tr>';
+                }
+                $table .= '</tbody>';
+                $table .= '</table>';
+
+                return $table;
             });
 
-            $datatables->addColumn('vat', function($row) {
-                return 'Rp. '.number_format($row->vat, 2, ",", ".");
-            });
+            // $datatables->addColumn('bruto', function($row) {
+            //     return 'Rp. '.number_format($row->bruto, 2, ",", ".");
+            // });
+            //
+            // $datatables->addColumn('discount', function($row) {
+            //     return $row->discount > 100 ? 'Rp. '.number_format($row->discount, 2, ",", ".") : "$row->discount%";
+            // });
+            //
+            // $datatables->addColumn('vat', function($row) {
+            //     return 'Rp. '.number_format($row->vat, 2, ",", ".");
+            // });
 
             $datatables->addColumn('total', function($row) {
                 return 'Rp. '.number_format($row->total, 2, ",", ".");
@@ -101,18 +137,15 @@ class OrderProductsDataTable extends DataTable
 
         // if (!$segment) {
             $datatables->addColumn('action', function ($order) {
-                $btn = '<a href="'.route('order-products.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->name.'" style="margin-right: 15px;">
+                $btn = '<a href="'.route('order-products.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->customer->name.'" style="margin-right: 15px;">
                     <i class="fa fa-fw fa-print"></i>
                 </a>';
-                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->name.'"><i class="fa fa-eye"></i></a>';
-                $btn .= '<form onsubmit="return confirm(\'Apakah Anda benar-benar ingin MENGHAPUS?\');" action="'.route('order-products.destroy', $order->id).'" method="post" style="display: inline-block">';
-                $btn .= csrf_field();
-                $btn .= method_field('DELETE');
-                $btn .= '<button class="btn btn-danger btn-sm" type="submit" title="Delete '.$order->name.'" data-toggle="modal" data-target="#modal-delete-'.$order->id.'"><i class="fa fa-trash"></i></button>';
-                $btn .= '</form>';
+                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->customer->name.'"><i class="fa fa-eye"></i></a>';
+                $btn .= '<button class="btn btn-danger btn-sm btn-delete" title="Delete '.$order->customer->name.'" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'" data-order-name="'.$order->customer->name.'"><i class="fa fa-trash"></i></button>';
                 return $btn;
             });
 
+            $columns[] = 'product';
             $columns[] = 'action';
         // }
 
@@ -149,7 +182,7 @@ class OrderProductsDataTable extends DataTable
      */
     public function query(): \Illuminate\Database\Eloquent\Builder
     {
-        return $this->model->newQuery()->where('transaction_type', '=', 1)->with(['customer', 'site', 'orderItems.orderItemPhotos'])->select('*');
+        return $this->model->newQuery()->where('transaction_type', '=', 1)->with(['customer', 'site', 'orderItems.orderItemPhotos', 'orderItems.products'])->select('*');
         // return Order::with('orderItems.orderItemPhotos')->select('*');
     }
 
@@ -165,7 +198,7 @@ class OrderProductsDataTable extends DataTable
             ->addTableClass('table-striped table-bordered table-hover')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(7, 'asc')
+            ->orderBy(0, 'asc')
             ->parameters([
                 'dom'          => 'Bfrtip',
                 'buttons'      => [
@@ -219,33 +252,16 @@ class OrderProductsDataTable extends DataTable
     {
         // $segment = request()->segment(1) == 'laporan';
         $columns = [
-            Column::make('customer.name')->title('Nama Pelanggan')->addClass( 'text-center' ),
-            Column::make('customer.phone_number')->title('Nomor Telepon')->addClass( 'text-center' ),
-            Column::make('customer.address')->title('Alamat')->addClass( 'text-center' ),
-            Column::make('site.name')->title('Cabang')->addClass( 'text-center' ),
-            Column::make('number_ticket')->title('ID Pesanan')->addClass( 'text-center' ),
-        ];
-
-        // if ($segment) {
-            $columns[] = Column::make('bruto')->exportFormat('0.00')->addClass( 'text-center' );
-            $columns[] = Column::make('discount')->addClass( 'text-center' );
-            $columns[] = Column::make('netto')->exportFormat('0.00')->addClass( 'text-center' );
-            $columns[] = Column::make('vat')->exportFormat('0.00')->addClass( 'text-center' );
-            $columns[] = Column::make('total')->exportFormat('0.00')->addClass( 'text-center' );
-            // $columns[] = Column::make('picked_by')->title('Diambil')->addClass( 'text-center' );
-            // $columns[] = Column::make('picked_at')->title('Tanggal Diambil')->addClass( 'text-center' );
-        // } else {
-        //     $columns[] = Column::make('netto')->exportFormat('0.00')->addClass( 'text-center' );
-        // }
-
-        $columns[] = Column::make('status')->addClass( 'text-center' );
-        $columns[] = Column::make('created_at')->title('Tanggal Dibuat')->addClass( 'text-center' );
-
-        // if (!$segment) {
-            $columns[] = Column::computed( 'action' )->addClass( 'text-center' )
+            Column::make('created_at')->title('Tanggal Dibuat')->addClass( 'text-center' ),
+            Column::make('name')->title('Nama Pelanggan')->addClass( 'text-center' ),
+            Column::make('product')->title('Products')->addClass( 'text-center' ),
+            Column::make('total')->title('Total')->exportFormat('0.00')->addClass( 'text-center' ),
+            // Column::make('uang_muka')->title('DP')->exportFormat('0.00')->addClass( 'text-center' ),
+            // Column::make('status')->addClass( 'text-center' ),
+            Column::computed( 'action' )->addClass( 'text-center' )
                 ->exportable( FALSE )
-                ->printable( FALSE );
-        // }
+                ->printable( FALSE ),
+        ];
 
         return $columns;
     }

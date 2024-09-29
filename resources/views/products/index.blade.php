@@ -22,10 +22,11 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="table-responsive">
-						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover">
+						<table id="tabelapadrao" class="table table-condensed table-bordered table-hover table-striped">
 							<thead>
 								<tr>
-									<th>Nama</th>
+									<th class="text-center">Nama</th>
+									<th class="text-center">Harga</th>
 									<th class="text-center">Tanggal Dibuat</th>
 									<th class="text-center">Aksi</th>
 								</tr>
@@ -34,7 +35,8 @@
 								@foreach($products as $product)
 									@if($product->id)
 										<tr>
-                                            <td>{{$product->name}}</td>
+                                            <td class="text-center">{{$product->name}}</td>
+                                            <td class="text-center">{{ 'Rp. '.number_format($product->price, 2, ",", ".") }}</td>
                                             <td class="text-center">{{ Carbon\Carbon::parse($product->created_at)->timezone('Asia/Jakarta')->toDateTimeString() }}</td>
                                             <td class="text-center">
                                                 <a class="btn btn-default  btn-xs" href="{{ route('products.show', $product->id) }}" title="Detail {{ $product->name }}"><i class="fa fa-eye">   </i></a>
@@ -52,9 +54,10 @@
 							</tbody>
 							<tfoot>
 								<tr>
-									<th>Nama</th>
-									<th class="text-center">Tanggal Dibuat</th>
-									<th class="text-center">Aksi</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Harga</th>
+                                    <th class="text-center">Tanggal Dibuat</th>
+                                    <th class="text-center">Aksi</th>
 								</tr>
 							</tfoot>
 						</table>
