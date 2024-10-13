@@ -30,15 +30,38 @@
  <body>
 <div class="wrapper">
     <!-- Main content -->
-    <section class="invoice">
+    <div class="invoice">
         @yield('content')
-    </section>
+    </div>
     <!-- /.content -->
 </div>
 <!-- ./wrapper -->
 <script type="text/javascript">
+    const printContents = document.querySelector('.invoice').innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+
     window.print();
-    window.onafterprint = window.close;
+
+    if (navigator.userAgent.match(/Mobi/)) {
+        // Ini buat cek kalo lagi di mobile browser
+        var interval = setInterval(function() {
+            // Cek apakah window udah ketutup (print selesai)
+            if (document.hidden) {
+                clearInterval(interval);
+                window.close();
+            }
+        }, 500); // Cek setiap 500ms
+    } else {
+        // Buat desktop bisa pake onafterprint
+        window.onafterprint = function() {
+            window.close();
+        };
+    }
+
+    document.body.innerHTML = originalContents;
+
     document.title = @yield('title');
 </script>
 @yield('script')
