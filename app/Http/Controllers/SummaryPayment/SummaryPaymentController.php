@@ -31,7 +31,7 @@ class SummaryPaymentController extends Controller
                 SUM(value) as total_value,
                 payment_merchants.name as merchant_name,
                 payment_methods.name as method_name,
-                CONCAT(payment_methods.name, " - ", REPLACE(payment_merchants.name, "-", "")) as merchant_method
+                CONCAT(payment_methods.name, (IF(payment_methods.name = "Cash", "", " - ")), REPLACE(payment_merchants.name, "-", "")) as merchant_method
             ')
             ->join('payment_merchants', 'payments.payment_merchant_id', '=', 'payment_merchants.id')
             ->join('payment_methods', 'payments.payment_method_id', '=', 'payment_methods.id')
