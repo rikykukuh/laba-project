@@ -200,6 +200,8 @@
                     <tr>
                         <th colspan="3">Total</th>
                         <th class="text-center" id="total_total"></th>
+                        <th class="text-center" id="total_discount"></th>
+                        <th class="text-center" id="total_netto"></th>
                         <th></th>
                     </tr>`);
                 // $(`#table-order tfoot`).html(`<tr><th colspan="5">Total</th><th id="total_bruto"></th><th id="total_discount"></th><th id="total_netto"></th><th id="total_vat"></th><th id="total_total"></th><th colspan="5"></th></tr>`);

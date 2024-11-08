@@ -46,19 +46,23 @@ class OrderProductsDataTable extends DataTable
     public function dataTable($query): DataTableAbstract
     {
         // $segment = request()->segment(1) == 'laporan';
-        $columns = ['created_at', 'total'];
+        $columns = ['created_at', 'bruto', 'discount', 'netto'];
         $datatables = datatables()->of($query)
             ->addIndexColumn()
             ->filter(function ($query) {
                 // Global Search
-                if (request()->has('search') && request()->get('search')['value'] != '') {
-                    $search = request()->get('search')['value'];
-                    $query->where('number_ticket', 'like', '%' . $search . '%');
-                    $query->orWhereHas('customer', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%")->orWhere('phone_number', 'like', "%{$search}%");
-                    });
-                }
-
+                $query->where('transaction_type', '=', 1)
+                    ->where(function ($query) {
+                        if (request()->has('search') && request()->get('search')['value'] != '') {
+                            $search = request()->get('search')['value'];
+                            $query->where('number_ticket', 'like', '%' . $search . '%')
+                                ->orWhere('note', 'like', '%' . $search . '%')
+                                ->orWhereHas('customer', function ($q) use ($search) {
+                                    $q->where('name', 'like', "%{$search}%")
+                                        ->orWhere('phone_number', 'like', "%{$search}%");
+                                });
+                        }
+                });
                 if (request()->has('id')) {
                     $query->where('id', 'like', "%" . request('id') . "%");
                 }
@@ -122,8 +126,14 @@ class OrderProductsDataTable extends DataTable
             //     return 'Rp. '.number_format($row->vat, 2, ",", ".");
             // });
 
-            $datatables->addColumn('total', function($row) {
-                return 'Rp. '.number_format($row->total, 2, ",", ".");
+            $datatables->addColumn('bruto', function($row) {
+                return 'Rp. '.number_format($row->bruto, 2, ",", ".");
+            });
+            $datatables->addColumn('discount', function($row) {
+                return 'Rp. '.number_format($row->discount, 2, ",", ".");
+            });
+            $datatables->addColumn('netto', function($row) {
+                return 'Rp. '.number_format($row->netto, 2, ",", ".");
             });
 
             // $datatables->addColumn('picked_by', function($row) {
@@ -136,16 +146,41 @@ class OrderProductsDataTable extends DataTable
         // }
 
         // if (!$segment) {
-            $datatables->addColumn('action', function ($order) {
-                $btn = '<a href="'.route('order-products.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->customer->name.'" style="margin-right: 15px;">
+        //     $datatables->addColumn('action', function ($order) {
+        //         $btn = '<a href="'.route('order-products.print', $order->id).'" target="_blank" class="btn bg-navy btn-sm" title="Cetak '.$order->customer->name.'" style="margin-right: 15px;">
+        //             <i class="fa fa-fw fa-print"></i>
+        //         </a>';
+        //         $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->customer->name.'"><i class="fa fa-eye"></i></a>';
+        //         $btn .= '<button class="btn btn-danger btn-sm btn-delete" title="Delete '.$order->customer->name.'" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'" data-order-name="'.$order->customer->name.'"><i class="fa fa-trash"></i></button>';
+        //         return $btn;
+        //     });
+        $datatables->addColumn('action', function ($order) {
+            // Buat dropdown button dengan link untuk setiap aksi
+            $btn = '
+            <div class="btn-group btn-sm">
+                <button type="button" class="btn btn-sm bg-navy dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-fw fa-print"></i>
-                </a>';
-                $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:15px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->customer->name.'"><i class="fa fa-eye"></i></a>';
-                $btn .= '<button class="btn btn-danger btn-sm btn-delete" title="Delete '.$order->customer->name.'" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'" data-order-name="'.$order->customer->name.'"><i class="fa fa-trash"></i></button>';
-                return $btn;
-            });
+                    <!-- <span class="caret"></span> -->
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">';
+            $btn .= '<li><a href="' . route('order-products.print', $order->id) . '?type=customer" target="_blank">
+                    Customer
+                  </a></li>';
+            $btn .= '<li><a href="' . route('order-products.print', $order->id) . '?type=cashier" target="_blank">
+                    Cashier
+                  </a></li>';
+            $btn .= '<li><a href="' . route('order-products.print', $order->id) . '?type=reparation" target="_blank">
+                   Reparation
+                  </a></li>';
+            $btn .= '</ul></div>';
 
-            $columns[] = 'product';
+            $btn .= '<a class="btn btn-primary btn-sm" style="margin-right:10px;" href="'.route('order-products.show', $order->id).'" title="Detail '.$order->customer->name.'"><i class="fa fa-eye"></i></a>';
+            $btn .= '<button class="btn btn-danger btn-sm btn-delete" title="Delete '.$order->customer->name.'" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'" data-order-name="'.$order->customer->name.'"><i class="fa fa-trash"></i></button>';
+            return $btn;
+        });
+
+        $columns[] = 'product';
             $columns[] = 'action';
         // }
 
@@ -231,13 +266,13 @@ class OrderProductsDataTable extends DataTable
                             let totalDiscount = intVal('.$this->total_discount.');
                             let totalNetto = intVal('.$this->total_netto.');
                             let totalVat = intVal('.$this->total_vat.');
-                            let totalTotal = intVal('.$this->total_total.');
+                            // let totalTotal = intVal('.$this->total_total.');
 
-                            $("#total_bruto").html("Rp. " + totalBruto.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                            $("#total_total").html("Rp. " + totalBruto.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                             $("#total_discount").html("Rp. " + totalDiscount.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                             $("#total_netto").html("Rp. " + totalNetto.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                             $("#total_vat").html("Rp. " + totalVat.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-                            $("#total_total").html("Rp. " + totalTotal.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                            // $("#total_total").html("Rp. " + totalTotal.toLocaleString("id-ID", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                         }, 1000);
                 }',
             ]);
@@ -253,9 +288,11 @@ class OrderProductsDataTable extends DataTable
         // $segment = request()->segment(1) == 'laporan';
         $columns = [
             Column::make('created_at')->title('Tanggal Dibuat')->addClass( 'text-center' ),
-            Column::make('name')->title('Nama Pelanggan')->addClass( 'text-center' ),
-            Column::make('product')->title('Products')->addClass( 'text-center' ),
-            Column::make('total')->title('Total')->exportFormat('0.00')->addClass( 'text-center' ),
+            Column::make('name')->title('Nama Pelanggan')->addClass( 'text-center' )->width(50),
+            Column::make('product')->title('Products')->addClass( 'text-center' )->width(50),
+            Column::make('bruto')->title('Total')->exportFormat('0.00')->addClass( 'text-center' ),
+            Column::make('discount')->title('Discount')->exportFormat('0.00')->addClass( 'text-center' ),
+            Column::make('netto')->title('(Total - Discount)')->exportFormat('0.00')->addClass( 'text-center' ),
             // Column::make('uang_muka')->title('DP')->exportFormat('0.00')->addClass( 'text-center' ),
             // Column::make('status')->addClass( 'text-center' ),
             Column::computed( 'action' )->addClass( 'text-center' )

@@ -24,6 +24,7 @@ class CreateOrdersTable extends Migration
             $table->string('number_ticket')->nullable();
             $table->decimal('uang_muka', 10, 2)->nullable();
             $table->string('picked_by')->nullable();
+            $table->text('note')->nullable();
             $table->date('estimate_service_done')->nullable();
             $table->date('estimate_take_item')->nullable();
             $table->datetime('picked_at')->nullable();

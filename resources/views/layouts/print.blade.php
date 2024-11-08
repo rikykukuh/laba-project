@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,47 +24,85 @@
     <![endif]-->
 
     <!-- Google Font -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
     @yield('style')
 </head>
- <body>
-<div class="wrapper">
-    <!-- Main content -->
-    <div class="invoice">
-        @yield('content')
+
+<body>
+    <div class="wrapper">
+        <!-- Main content -->
+        <div class="invoice">
+            @yield('content')
+        </div>
+        <!-- /.content -->
     </div>
-    <!-- /.content -->
-</div>
-<!-- ./wrapper -->
-<script type="text/javascript">
-    const printContents = document.querySelector('.invoice').innerHTML;
-    const originalContents = document.body.innerHTML;
+    <!-- ./wrapper -->
+    {{-- <script type="text/javascript"> --}}
+    {{--     const printContents = document.querySelector('.invoice').innerHTML; --}}
+    {{--     const originalContents = document.body.innerHTML; --}}
 
-    document.body.innerHTML = printContents;
+    {{--     document.body.innerHTML = printContents; --}}
 
-    window.print();
+    {{--     window.print(); --}}
 
-    if (navigator.userAgent.match(/Mobi/)) {
-        // Ini buat cek kalo lagi di mobile browser
-        var interval = setInterval(function() {
-            // Cek apakah window udah ketutup (print selesai)
-            if (document.hidden) {
-                clearInterval(interval);
-                window.close();
+    {{--     if (navigator.userAgent.match(/Tablet|Android|iPad/)) { --}}
+    {{--         // Ini buat cek kalo lagi di mobile browser --}}
+    {{--         var interval = setInterval(function() { --}}
+    {{--             // Cek apakah window udah ketutup (print selesai) --}}
+    {{--             if (document.hidden) { --}}
+    {{--                 clearInterval(interval); --}}
+    {{--                 window.close(); --}}
+    {{--             } --}}
+    {{--         }, 500); // Cek setiap 500ms --}}
+    {{--     } else { --}}
+    {{--         // Buat desktop bisa pake onafterprint --}}
+    {{--         window.onafterprint = function() { --}}
+    {{--             window.close(); --}}
+    {{--         }; --}}
+    {{--     } --}}
+
+    {{--     document.body.innerHTML = originalContents; --}}
+
+    {{--     document.title = @yield('title'); --}}
+    {{-- </script> --}}
+    <script type="text/javascript">
+        function printInvoice() {
+            const printContents = document.querySelector('.invoice').innerHTML;
+            const originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            // Periksa apakah perangkat adalah tablet atau ponsel
+            if (/Tablet|Android|iPad|iPhone/i.test(navigator.userAgent)) {
+                // Menggunakan interval untuk mengecek jika proses print sudah selesai
+                const interval = setInterval(function() {
+                    if (document.hidden || window.matchMedia('(display-mode: standalone)').matches) {
+                        clearInterval(interval);
+                        window.close();
+                    }
+                }, 500); // Cek setiap 500ms
+            } else {
+                // Untuk desktop, gunakan event onafterprint
+                window.onafterprint = function() {
+                    window.close();
+                };
             }
-        }, 500); // Cek setiap 500ms
-    } else {
-        // Buat desktop bisa pake onafterprint
-        window.onafterprint = function() {
-            window.close();
+
+            document.body.innerHTML = originalContents;
+
+            // Mengatur ulang judul halaman jika diperlukan
+            document.title = "@yield('title')";
+        }
+
+        // Memanggil fungsi print setelah halaman dimuat
+        window.onload = function() {
+            printInvoice();
         };
-    }
-
-    document.body.innerHTML = originalContents;
-
-    document.title = @yield('title');
-</script>
-@yield('script')
+    </script>
+    @yield('script')
 </body>
+
 </html>

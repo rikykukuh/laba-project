@@ -97,6 +97,8 @@
                 </div>
                 <div class="box-body" id="detail-user">
                     <p class="text-muted well well-sm no-shadow margin-b-10">
+                        <strong>No:</strong> {{ $order->number_ticket ?? '-' }}
+                        <br>
                         <strong>Nama:</strong> {{ $order->customer->name ?? '-' }}
                         <br>
                         <strong>Alamat:</strong> {{ $order->customer->address ?? '-' }}
@@ -276,6 +278,26 @@
     </div>
 
     <div class="row">
+        <div class="col-md-12 value-items">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Catatan</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        {{-- <label for="note">Keterangan:</label> --}}
+                        <textarea name="note" id="note" class="form-control">{{ $order->note }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border-product">
@@ -361,9 +383,17 @@
             </button>
             <div class="vl" style="display:inline-block; border-product-left: 1px solid black; height: 30px; margin: auto 15px;"></div>
             &nbsp;
-            <a href="{{ route('order-products.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+            <a href="{{ route('order-products.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
                 <i class="fa fa-fw fa-print"></i>
-                <span>Cetak</span>
+                <span>Customer</span>
+            </a>
+            <a href="{{ route('order-products.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                <i class="fa fa-fw fa-print"></i>
+                <span>Cashier</span>
+            </a>
+            <a href="{{ route('order-products.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                <i class="fa fa-fw fa-print"></i>
+                <span>Reparation</span>
             </a>
             <a href="{{ route('order-products.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
         </div>
@@ -562,6 +592,7 @@
             const site_id = $('#site_id').val();
             const payment_method = $('#payment_method').val();
             const payment_merchant = $('#payment_merchant').val();
+            const note = $('#note').val();
             const picked_by = $('#diambil').val();
             const discount = $('#discount').val().replace(/\./g, '');
             const picked_at = dateInYyyyMmDdHhMmSs(new Date());
@@ -571,7 +602,7 @@
             // $('#pembayaran').val(picked_by.length > 0 ? pembayaran.toLocaleString('id-ID') : '');
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, site_id, bruto, discount: discount === '' ? 0 : discount, total, netto: total, picked_by, picked_at, payment_method, payment_merchant, items, status };
+            let data = { customer_id, site_id, bruto, discount: discount === '' ? 0 : discount, total, netto: total, picked_by, picked_at, payment_method, payment_merchant, note, items, status };
             console.log(data);
 
             $.ajax({

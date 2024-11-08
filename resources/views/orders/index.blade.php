@@ -199,8 +199,10 @@
                 $(`#table-service tfoot`).html(`
                     <tr>
                         <th colspan="4">Total</th>
-                        <th id="total_total"></th>
-                        <th id="total_dp"></th>
+                        <th class="text-center" id="total_total"></th>
+                        <th class="text-center" id="total_discount"></th>
+                        <th class="text-center" id="total_netto"></th>
+                        <th class="text-center" id="total_dp"></th>
                         <th></th>
                         <th></th>
                     </tr>`);

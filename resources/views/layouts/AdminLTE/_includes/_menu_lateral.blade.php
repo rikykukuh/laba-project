@@ -35,6 +35,10 @@
                     <li class="{{Request::segment(2) === 'reparasi' ? 'active' : null}}">
                         <a href="{{ route('laporan.reparasi') }}" title="Reparasi"><i class="fa fa-shopping-cart"></i> <span> Reparasi</span></a>
                     </li>
+
+                    <li class="{{Request::segment(2) === 'ringkasan-pembayaran' ? 'active' : null}}">
+                        <a href="{{ route('laporan.ringkasan-pembayaran') }}" title="Report Payment"><i class="fa fa-money"></i> <span> Report Payment</span></a>
+                    </li>
                 </ul>
             </li>
 

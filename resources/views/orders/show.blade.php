@@ -173,6 +173,7 @@
                 </div>
                 <div class="box-body" id="status-customer">
                     <p class="text-center margin-b-10"><b id="status">{{ $order->status }}</b></p>
+                    <p class="text-center margin-b-2"><b>No: </b> <span id="oleh">{{ $order->number_ticket ?? '-' }}</span></p>
                     <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">{{ $order->picked_by ?? '-' }}</span></p>
                     <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">{{ $order->picked_at ?? '-' }}</span></p>
                     <p class="text-center margin-b-2"><b>Tanggal Transaksi: </b> <span id="oleh">{{ $order->created_at ?? '-' }}</span></p>
@@ -287,9 +288,9 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
-                                            <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" multiple onchange="handleEditImageUpload(this)">
+                                            <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment" multiple onchange="handleEditImageUpload(this)">
                                         </div>
-                                        <p>OR</p>
+                                        <!-- <p>OR</p> -->
                                         <div class="webcam-container"></div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover list-image">
@@ -378,7 +379,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
-                                    <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)" required>
+                                    <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" capture="environment" multiple onchange="handleImageUpload(this)" required>
                                 </div>
                                 <hr>
                                 <table role="presentation" class="table table-striped table-bordered table-hover list-image">
@@ -436,6 +437,23 @@
             </div>
         </div>
         <div class="col-md-12 total-items">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Catatan</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        {{-- <label for="note">Keterangan:</label> --}}
+                        <textarea name="note" id="note" class="form-control">{{ $order->note }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
@@ -452,7 +470,7 @@
                         <p class="margin-b-2"><b>Discount: </b><input type="text" readonly id="discount" name="discount" value="{{ $order->discount == 0 ? '' : number_format($order->discount,null,",",".")  }}" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
                         <p class="margin-b-2"><b>Total: </b><span id="pembayaran">{{ $order->status == 'DIAMBIL' ? number_format($order->sisa_pembayaran, null, ',', '.') : null }}</span></p>
-                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">{{ number_format($order->sisa_pembayaran, null, ',', '.') }}</span></p>
                     </form>
                 </div>
@@ -536,9 +554,17 @@
                 <i class="glyphicon glyphicon-save-file"></i>
                 <span>Ready</span>
             </button>
-            <a href="{{ route('orders.print', $order->id) }}" target="_blank" class="btn bg-navy" style="margin-left: 15px;margin-top: -20px;">
+            <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
                 <i class="fa fa-fw fa-print"></i>
-                <span>Cetak</span>
+                <span>Customer</span>
+            </a>
+            <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                <i class="fa fa-fw fa-print"></i>
+                <span>Cashier</span>
+            </a>
+            <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                <i class="fa fa-fw fa-print"></i>
+                <span>Reparation</span>
             </a>
             <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
         </div>
@@ -563,7 +589,7 @@
         const orderItems = <?= $order->orderItems->toJson(); ?>;
 
         const cameraContent = `
-            <div class="form-group" style="margin-top: 15px;">
+           <div class="form-group" style="margin-top: 15px;display:none;">
                 <a href="javascript:void(0)" id="startCamera" class="btn btn-primary"><i class="fa fa-camera fa-fw"></i> Access Camera</a>
             </div>
             <div id="cameraContainer" class="form-group" style="margin-top: 15px;">
@@ -1175,12 +1201,13 @@
             const status = picked_by.length > 0 ? 'DIAMBIL' : 'DIPROSES';
             const estimate_service_done = $('#estimate_service_done').val();
             const estimate_take_item = $('#estimate_take_item').val();
+            const note = $('#note').val();
             // $('#pembayaran').text(picked_by.length > 0 ? pembayaran.toLocaleString('id-ID') : '');
             // $('#kekurangan').text(picked_by.length > 0 ? parseInt(kekurangan, 10) - parseInt(kekuranganSisa, 10) - parseInt(discount, 10) : $('#kekurangan').text() - parseInt(discount, 10));
             $('#status').text(status);
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, site_id, picked_by, picked_at, status, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item };
+            let data = { customer_id, site_id, picked_by, picked_at, status, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item, note };
 
             $.ajax({
                 url: $('#pickup-item-form').attr('action'),
@@ -1449,8 +1476,8 @@
                     resetFormAddItem();
                 });
                 $('#modal-edit-item').on('shown.bs.modal', function () {
-                    $('.webcam-container').append(cameraContent);
-                    initializeCamera();
+                    // $('.webcam-container').append(cameraContent);
+                    // initializeCamera();
                 });
                 $('#modal-edit-item').on('hidden.bs.modal', function () {
                     $('#item_element').val('');

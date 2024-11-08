@@ -48,6 +48,7 @@
                     <div class="form-group">
                         <label for="customer">Pelanggan: <small class="text-danger">*</small></label>
                         <select class="form-control" id="customer" name="customer" required></select>
+                        <small class="text-danger error-customer"></small>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -236,7 +237,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-1" style="margin-bottom: 15px;">
+        <div class="col-md-1" style="margin-bottom: 10px;margin-right: 10px;">
             <span class="btn btn-success" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-add-item">
                 <i class="glyphicon glyphicon-plus"></i>
                 <span>Tambah</span>
@@ -373,11 +374,25 @@
                     <div class="form-group">
                         <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
                         <select class="form-control" id="payment_merchant" name="payment_merchant" required>
-                            <option value="">-</option>
-{{--                            @foreach($payment_merchants as $payment_merchant)--}}
-{{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>--}}
-{{--                            @endforeach--}}
+                            <option value="1">-</option>
                         </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 value-items">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Catatan</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        {{-- <label for="note">Keterangan:</label> --}}
+                        <textarea name="note" id="note" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
@@ -881,6 +896,22 @@
             const total = $('#total').text().replace(/\./g, '');
             const payment_method = $('#payment_method').val();
             const payment_merchant = $('#payment_merchant').val();
+            const note = $('#note').val();
+            console.log(note);
+
+            if (customer_id === '') {
+                $('html, body').animate({
+                    scrollTop: $("#customer").offset().top - 125
+                }, 1000);
+
+                $('#customer').focus();
+                $('#customer').next('.select2-container').find('.select2-selection').css('border-color', 'red');
+                $('.error-customer').text('Pelanggan harus dipilih.');
+                return;
+            } else {
+                $('#customer').next('.select2-container').find('.select2-selection').css('border-color', '#dcdcdc');
+                $('.error-customer').text('');
+            }
 
             // console.log('FINAL RESULT');
             // console.table([{items}, {customer_id}, {site_id}, {bruto}]);
@@ -910,6 +941,7 @@
                     total,
                     payment_method,
                     payment_merchant,
+                    note
                 },
                 method: 'POST',
                 headers: {
@@ -932,9 +964,14 @@
                     alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
+                    let url = "{{ route('order-products.show', ':id') }}";
+                    let id = response.id ?? 0;
+                    url = url.replace(':id', id);
+
+                    // Redirect menggunakan JavaScript
                     setTimeout(() => {
                         $('.alert').alert('close');
-                        window.location.reload();
+                        window.location.href = url;
                     }, 3000);
                 },
                 error: function(xhr, status, error) {

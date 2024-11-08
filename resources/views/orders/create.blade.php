@@ -59,6 +59,7 @@
                     <div class="form-group">
                         <label for="customer">Pelanggan: <small class="text-danger">*</small></label>
                         <select class="form-control" id="customer" name="customer" required></select>
+                        <small class="text-danger error-customer"></small>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -243,10 +244,10 @@
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit"
-                                                name="gambar_edit" accept=".jpg,.jpeg,.png" multiple
+                                                name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment" multiple
                                                 onchange="handleEditImageUpload(this)">
                                         </div>
-                                        <p>OR</p>
+                                        <!-- <p>OR</p> -->
                                         <div class="webcam-edit-container"></div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover">
@@ -353,9 +354,9 @@
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
                                     <input type="file" class="form-control-file" id="gambar" name="gambar"
-                                        accept=".jpg, .jpeg, .png" multiple onchange="handleImageUpload(this)">
+                                        accept=".jpg, .jpeg, .png" capture="environment" multiple onchange="handleImageUpload(this)">
                                 </div>
-                                <p>OR</p>
+                                <!-- <p>OR</p> -->
                                 <div class="webcam-container"></div>
                                 <hr>
                                 <table role="presentation"
@@ -453,7 +454,7 @@
                     <div class="form-group">
                         <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
                         <select class="form-control" id="payment_merchant" name="payment_merchant" required>
-                            <option value="">-</option>
+                            <option value="1">-</option>
                             {{--                            @foreach($payment_merchants as $payment_merchant)--}}
                             {{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>--}}
                             {{--                            @endforeach--}}
@@ -502,6 +503,23 @@
             </div>
         </div>
         <div class="col-md-12 total-items">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Catatan</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        {{-- <label for="note">Keterangan:</label> --}}
+                        <textarea name="note" id="note" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
@@ -520,7 +538,7 @@
                         <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount" name="discount" value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Uang muka: </b><input type="text" id="dp" name="dp"
+                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp" name="dp"
                                 value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
                         <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control"
@@ -608,7 +626,7 @@
         let dataFile = [];
 
         const cameraContent = `
-            <div class="form-group" style="margin-top: 15px;">
+            <div class="form-group" style="margin-top: 15px;display:none;">
                 <a href="javascript:void(0)" id="startCamera" class="btn btn-primary"><i class="fa fa-camera fa-fw"></i> Access Camera</a>
             </div>
             <div id="cameraContainer" class="form-group" style="margin-top: 15px;">
@@ -1358,6 +1376,21 @@
             const payment_method = $('#payment_method').val();
             const payment_merchant = $('#payment_merchant').val();
             const payment_type = $('#payment_type').val();
+            const note = $('#note').val();
+
+            if (customer_id === '') {
+                $('html, body').animate({
+                    scrollTop: $("#customer").offset().top - 125
+                }, 1000);
+
+                $('#customer').focus();
+                $('#customer').next('.select2-container').find('.select2-selection').css('border-color', 'red');
+                $('.error-customer').text('Pelanggan harus dipilih.');
+                return;
+            } else {
+                $('#customer').next('.select2-container').find('.select2-selection').css('border-color', '#dcdcdc');
+                $('.error-customer').text('');
+            }
 
             // console.log('FINAL RESULT');
             // console.table([{items}, {customer_id}, {site_id}, {dp}, {total}, {kekurangan}]);
@@ -1389,6 +1422,7 @@
                     payment_method,
                     payment_merchant,
                     payment_type,
+                    note
                 },
                 method: 'POST',
                 headers: {
@@ -1411,9 +1445,14 @@
                     alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
+                    let url = "{{ route('orders.show', ':id') }}";
+                    let id = response.id ?? 0;
+                    url = url.replace(':id', id);
+
+                    // Redirect menggunakan JavaScript
                     setTimeout(() => {
                         $('.alert').alert('close');
-                        window.location.reload();
+                        window.location.href = url;
                     }, 3000);
                 },
                 error: function(xhr, status, error) {
@@ -1459,12 +1498,12 @@
             });
             $('#modal-add-item').on('shown.bs.modal', function () {
                 dataFile = [];
-                $('.webcam-container').append(cameraContent);
-                initializeCamera();
+                // $('.webcam-container').append(cameraContent);
+                // initializeCamera();
             });
             $('#modal-edit-item').on('shown.bs.modal', function () {
-                $('.webcam-edit-container').append(cameraContent);
-                initializeCamera();
+                // $('.webcam-edit-container').append(cameraContent);
+                // initializeCamera();
             });
             $('#modal-edit-item').on('hidden.bs.modal', function() {
                 $('#item_element').val('');

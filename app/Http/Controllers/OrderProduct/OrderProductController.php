@@ -97,6 +97,7 @@ class OrderProductController extends Controller
         $bruto = $request->bruto;
         $discount = $request->discount;
         $netto = $request->netto;
+        $note = $request->note;
         // $vat = (int) $request->vat;
         $vat = calculate_included_vat($netto, 11);
 
@@ -112,6 +113,7 @@ class OrderProductController extends Controller
             'discount' => $discount,
             'netto' => $netto,
             'vat' => $vat,
+            'note' => $note,
 
             // 'name' => $random_string,
             // 'payment' => rand(1000, 100000),
@@ -284,6 +286,7 @@ class OrderProductController extends Controller
         $bruto = $request->bruto;
         $discount = $request->discount;
         $netto = $request->netto;
+        $note = $request->note;
         // $vat = (int) $request->vat;
         $vat = calculate_included_vat($netto, 11);
 
@@ -300,6 +303,7 @@ class OrderProductController extends Controller
             'customer_id' => $customer_id,
             'site_id' => $site_id,
             'picked_by' => $picked_by,
+            'note' => $note,
             'picked_at' => date('Y-m-d H:i:s', strtotime($picked_at)),
         ]);
 

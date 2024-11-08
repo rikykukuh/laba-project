@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
 Route::group(['prefix'=>'laporan'], function(){
     Route::get('/penjualan', '\App\Http\Controllers\OrderProduct\OrderProductController@index')->name('laporan.penjualan');
     Route::get('/reparasi', '\App\Http\Controllers\Order\OrderController@index')->name('laporan.reparasi');
+    Route::get('/ringkasan-pembayaran', '\App\Http\Controllers\SummaryPayment\SummaryPaymentController@getPayments')->name('laporan.ringkasan-pembayaran');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){

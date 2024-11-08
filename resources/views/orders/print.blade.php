@@ -23,9 +23,9 @@
      <!-- baris judul -->
      <div class="row">
          <div class="col-xs-12">
-             <h2 class="page-header">
-                 <i class="fa fa-calendar-check-o"></i> Tanggal Dicetak: <strong>{{ date('d-m-Y') }}</strong>
-             </h2>
+             {{-- <h2 class="page-header"> --}}
+             {{--     <i class="fa fa-calendar-check-o"></i> Tanggal Dicetak: <strong>{{ date('d-m-Y') }}</strong> --}}
+             {{-- </h2> --}}
          </div>
          <!-- /.col -->
      </div>
@@ -46,7 +46,8 @@
                  <address>
                      Status: {{ $order->status }}<br>
                      Diambil Oleh: {{ $order->status == 'DIAMBIL' ? $order->picked_by : '-' }}<br>
-                     Estimasi Pengambilan: {{ $order->estimate_take_item }}<br>
+                     Estimasi: {{ $order->estimate_take_item }}<br>
+                     Tanggal Dicetak: <strong>{{ date('d-m-Y') }}</strong><br>
                  </address>
              </div>
 
@@ -104,7 +105,13 @@
                      @endif
                  </strong>
                  <p style="margin-top: 20px;font-size: 12px;">
-                    <b>Disclaimer:</b> {{ $config->disclaimer }}
+                    <b>Catatan:</b> {{ $order->note ?? '-' }}
+                 </p>
+                 <p style="margin-top: 20px;font-size: 12px;">
+                     <b>Disclaimer:</b> {{ $config->disclaimer }}
+                 </p>
+                 <p style="margin-top: 20px;font-size: 12px;">
+                     <b>For:</b> {{ ucwords(request()->get('type')) }}
                  </p>
              </h4>
          </div>
