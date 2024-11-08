@@ -202,7 +202,7 @@
                             $.each(response.data, function(index, payment) {
                                 $('#table-summary-payment-body').append(`
                                     <tr>
-                                        <td class="text-center">${index + 1}</td>
+                                        <th class="text-center">${index + 1}</th>
                                         <td class="text-center">${payment.method_name}</td>
                                         <td class="text-center">${payment.merchant_name}</td>
                                         <td class="text-center">Rp. ${parseFloat(payment.total_value).toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
