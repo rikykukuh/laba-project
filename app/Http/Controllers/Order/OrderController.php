@@ -196,7 +196,7 @@ class OrderController extends Controller
         Payment::create([
             'order_id' => $order->id,
             'payment_type' => $request->payment_type,
-            'value' => (int) $netto - $vat,
+            'value' => (int) $dp,
             'payment_method_id' => (int) $request->payment_method,
             'payment_merchant_id' => (int) $request->payment_merchant,
         ]);

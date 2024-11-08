@@ -122,6 +122,14 @@ class OrderProductController extends Controller
             // 'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
         ]);
 
+        Payment::create([
+            'order_id' => $order->id,
+            'payment_type' => 1,
+            'value' => (int) $netto,
+            'payment_method_id' => (int) $request->payment_method,
+            'payment_merchant_id' => (int) $request->payment_merchant,
+        ]);
+
         $ticket_format = sprintf('%06d', $order->id);
         $code_site = Site::findOrFail($site_id);
         $number_ticket = $code_site->code.'-'. $ticket_format;
@@ -155,14 +163,6 @@ class OrderProductController extends Controller
                 'total' => $amount - $vatItem,
             ]);
         }
-
-        Payment::create([
-            'order_id' => $order->id,
-            'payment_type' => 1,
-            'value' => (int) $netto - $vat,
-            'payment_method_id' => (int) $request->payment_method,
-            'payment_merchant_id' => (int) $request->payment_merchant,
-        ]);
 
         if ($request->ajax()) {
             return response()->json($order);
