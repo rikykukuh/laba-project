@@ -359,7 +359,7 @@ class OrderController extends Controller
             $payment = Payment::create([
                 'order_id' => $order->id,
                 'payment_type' => 1,
-                'value' => (int) ($nettoItem - $vatItem),
+                'value' => (int) ($sisa_pembayaran),
                 'payment_method_id' => (int) $request->payment_method,
                 'payment_merchant_id' => (int) $request->payment_merchant,
             ]);
@@ -717,7 +717,7 @@ class OrderController extends Controller
         return Payment::create([
             'order_id' => $orderId,
             'payment_type' => $paymentType,
-            'value' => $netto - $vat,
+            'value' => $netto,
             'payment_method_id' => $paymentMethod,
             'payment_merchant_id' => $paymentMerchant,
         ]);

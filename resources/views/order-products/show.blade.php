@@ -440,7 +440,7 @@
 
         const status ="{{ $order->status }}";
         if(status.toLowerCase() === 'diambil') {
-            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove').attr("disabled", true);
+            $('#btn-add-customer, #btn-add-item, #customer, #note, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove').attr("disabled", true);
         }
 
         function getPaymentMethodById(nameKey, myArray){

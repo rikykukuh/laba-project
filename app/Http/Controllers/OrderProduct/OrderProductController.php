@@ -104,7 +104,7 @@ class OrderProductController extends Controller
         $order = Order::create([
             'total' => $netto - $vat,
             'uang_muka' => $dp,
-            'status' => 'DIBAYAR',
+            'status' => 'DIAMBIL',
             'sisa_pembayaran' => $kekurangan,
             'customer_id' => $customer_id,
             'transaction_type' => 1,
@@ -310,13 +310,14 @@ class OrderProductController extends Controller
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
 
         if (!is_null($picked_by)) {
-            $payment = Payment::create([
-                'order_id' => $order->id,
-                'payment_type' => 1,
-                'value' => (int) $netto - $vat,
-                'payment_method_id' => (int) $request->payment_method,
-                'payment_merchant_id' => (int) $request->payment_merchant,
-            ]);
+            // $payment = Payment::create([
+            //     'order_id' => $order->id,
+            //     'payment_type' => 1,
+            //     'value' => (int) $netto,
+            //     'payment_method_id' => (int) $request->payment_method,
+            //     'payment_merchant_id' => (int) $request->payment_merchant,
+            // ]);
+            $payment = Payment::where('order_id', '=', $order->id)->first();
 
             $data->put('payment_id', $payment->id);
         } else {
@@ -554,7 +555,7 @@ class OrderProductController extends Controller
         Payment::create([
             'order_id' => $orderId,
             'payment_type' => 1,
-            'value' => $netto - $vat,
+            'value' => $netto,
             'payment_method_id' => $paymentMethod,
             'payment_merchant_id' => $paymentMerchant,
         ]);
