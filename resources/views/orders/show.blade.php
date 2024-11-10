@@ -1,3 +1,6 @@
+@php
+    $userAgent = request()->header('User-Agent');
+@endphp
 @extends('layouts.AdminLTE.index')
 
 @section('icon_page', 'shopping-basket')
@@ -478,7 +481,102 @@
         </div>
     </div>
 
-    <div class="row">
+    @if((strpos($userAgent, 'Android') !== false || strpos($userAgent, 'iPad') !== false))
+        <div class="row">
+            <div class="col-md-12 total-items">
+                <!-- Pickup Button and Modal -->
+                <button type="button" class="btn bg-purple" id="btn-pickup" data-toggle="modal" data-target="#modal-pickup-item">
+                    <i class="fa fa-fw fa-save"></i>
+                    <span>Ambil</span>
+                </button>
+
+                <!-- Modal -->
+                <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div class="modal-dialog modal-sm">
+                        <!-- Modal content-->
+                        <form id="pickup-item-form" action="{{ route('orders.update', $order->id) }}" method="post" onsubmit="pickUpItemForm(event)" autocomplete="off">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Form Ambil Barang</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
+                                        <select class="form-control" id="payment_method" name="payment_method" required>
+                                            @foreach($payment_methods as $payment_method)
+                                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
+                                        <select class="form-control" id="payment_merchant" name="payment_merchant" required>
+                                            @foreach($payment_merchants as $payment_merchant)
+                                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label>
+                                        <input type="text" class="form-control" id="kekurangan-sisa" name="kekurangan" value="{{ number_format($order->orderItems->sum('netto') - $order->uang_muka, null, ',', '.') }}" readonly required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="diambil">Diambil oleh: <small class="text-danger">*</small></label>
+                                        <input type="text" class="form-control" id="diambil" name="diambil" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Batalkan</button>
+                                    <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <button type="button" class="btn bg-olive" id="btn-simpan" style="margin-right: 15px;" onclick="pickUpItemForm(event)">
+                    <i class="glyphicon glyphicon-file"></i>
+                    <span>Simpan</span>
+                </button>
+
+                <!-- Status Buttons with Spacing -->
+                <div class="btn-group" style="margin-right: 15px;margin-top: 10px;margin-bottom: 10px;">
+                    <button type="button" class="btn bg-orange" id="btn-cancel" onclick="setStatus('cancel')" style="margin-right: 5px;">
+                        <i class="glyphicon glyphicon-remove"></i> Cancel
+                    </button>
+                    <button type="button" class="btn bg-maroon" id="btn-failed" onclick="setStatus('gagal')" style="margin-right: 5px;">
+                        <i class="glyphicon glyphicon-ban-circle"></i> Gagal
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btn-ready" {{ $order->status == 'READY' ? 'disabled' : '' }} onclick="setStatus('ready')">
+                        <i class="glyphicon glyphicon-save-file"></i> Ready
+                    </button>
+                </div>
+
+                <!-- Print Button Group with Spacing -->
+                <div class="btn-group" role="group">
+                    <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy" style="margin-right: 5px;">
+                        <i class="fa fa-fw fa-print"></i> Customer
+                    </a>
+                    <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy" style="margin-right: 5px;">
+                        <i class="fa fa-fw fa-print"></i> Cashier
+                    </a>
+                    <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy">
+                        <i class="fa fa-fw fa-print"></i> Reparation
+                    </a>
+                </div>
+
+                <!-- Back Button -->
+                <div class="text-right" style="margin-top: 15px;">
+                    <a href="{{ route('orders.index') }}" class="btn btn-default">
+                        <i class="fa fa-fw fa-arrow-left"></i> Back to Page Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    @else
+        <div class="row">
         <div class="col-md-12 total-items">
               <button type="button" class="btn bg-purple pull-left" id="btn-pickup" data-toggle="modal" data-target="#modal-pickup-item" style="margin-right: 15px;">
                   <i class="fa fa-fw fa-save"></i>
@@ -521,9 +619,9 @@
                                  </div>
                              </div>
                              <div class="modal-footer">
-                                   {{-- <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button> --}}
-                                   {{-- <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Simpan Form</button> --}}
-                                   {{-- <button type="submit" class="btn btn-primary">Submit Form</button> --}}
+                                    <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Simpan Form</button>
+                                    <button type="submit" class="btn btn-primary">Submit Form</button>
                                  <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
                                  <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
                              </div>
@@ -531,10 +629,10 @@
                      </form>
                  </div>
              </div>
-            {{-- <button type="submit" class="btn bg-purple pull-left" style="margin-right: 15px;"> --}}
-            {{--     <i class="fa fa-fw fa-save"></i> --}}
-            {{--     <span>Simpan</span> --}}
-            {{-- </button> --}}
+             {{-- <button type="submit" class="btn bg-purple pull-left" style="margin-right: 15px;"> --}}
+             {{--     <i class="fa fa-fw fa-save"></i> --}}
+             {{--     <span>Simpan</span> --}}
+             {{-- </button> --}}
             <button type="button" class="btn bg-olive pull-left" id="btn-simpan" style="margin-right: 15px;" onclick="pickUpItemForm(event)">
                 <i class="glyphicon glyphicon-file"></i>
                 <span>Simpan</span>
@@ -569,6 +667,7 @@
             <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
         </div>
     </div>
+    @endif
 
 @endsection
 

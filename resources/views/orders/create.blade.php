@@ -247,7 +247,7 @@
                                                 name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment" multiple
                                                 onchange="handleEditImageUpload(this)">
                                         </div>
-                                        <!-- <p>OR</p> -->
+                                        <p>OR</p>
                                         <div class="webcam-edit-container"></div>
                                         <hr>
                                         <table role="presentation" class="table table-striped table-bordered table-hover">
@@ -322,7 +322,7 @@
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 <h4 class="modal-title">Tambah Barang</h4>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body" style="overflow-y: scroll; max-height: 500px;">
                                 <div class="form-group">
                                     <label for="type">Jenis Service: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
@@ -356,7 +356,7 @@
                                     <input type="file" class="form-control-file" id="gambar" name="gambar"
                                         accept=".jpg, .jpeg, .png" capture="environment" multiple onchange="handleImageUpload(this)">
                                 </div>
-                                <!-- <p>OR</p> -->
+                                <p>OR</p>
                                 <div class="webcam-container"></div>
                                 <hr>
                                 <table role="presentation"
@@ -626,7 +626,7 @@
         let dataFile = [];
 
         const cameraContent = `
-            <div class="form-group" style="margin-top: 15px;display:none;">
+            <div class="form-group" style="margin-top: 15px;">
                 <a href="javascript:void(0)" id="startCamera" class="btn btn-primary"><i class="fa fa-camera fa-fw"></i> Access Camera</a>
             </div>
             <div id="cameraContainer" class="form-group" style="margin-top: 15px;">
@@ -1498,12 +1498,12 @@
             });
             $('#modal-add-item').on('shown.bs.modal', function () {
                 dataFile = [];
-                // $('.webcam-container').append(cameraContent);
-                // initializeCamera();
+                $('.webcam-container').append(cameraContent);
+                initializeCamera();
             });
             $('#modal-edit-item').on('shown.bs.modal', function () {
-                // $('.webcam-edit-container').append(cameraContent);
-                // initializeCamera();
+                $('.webcam-edit-container').append(cameraContent);
+                initializeCamera();
             });
             $('#modal-edit-item').on('hidden.bs.modal', function() {
                 $('#item_element').val('');
