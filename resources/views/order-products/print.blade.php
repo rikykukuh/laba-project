@@ -104,7 +104,7 @@
              <h4>
                  <strong>
                      @if($order->status == 'DIAMBIL')
-                         {{ $order->payment->paymentMethod->name }} - {{ $order->payment->paymentMerchant->name }}
+                         {{ $order->payment->paymentMethod->name }} - {{ $order->payment->paymentMerchant->name == '-' ? null : $order->payment->paymentMerchant->name }}
                      @else
                          -
                      @endif

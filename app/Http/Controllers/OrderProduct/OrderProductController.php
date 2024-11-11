@@ -122,7 +122,7 @@ class OrderProductController extends Controller
             // 'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
         ]);
 
-        Payment::create([
+        $payment = Payment::create([
             'order_id' => $order->id,
             'payment_type' => 1,
             'value' => (int) $netto,
@@ -133,7 +133,7 @@ class OrderProductController extends Controller
         $ticket_format = sprintf('%06d', $order->id);
         $code_site = Site::findOrFail($site_id);
         $number_ticket = $code_site->code.'-'. $ticket_format;
-        $order->update(['number_ticket' => $number_ticket]);
+        $order->update(['number_ticket' => $number_ticket, 'payment_id' => $payment->id]);
 
         for ($i = 0; $i < count($items); $i++) {
             $jumlah = (int) $items[$i]['jumlah'];
