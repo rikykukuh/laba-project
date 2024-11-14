@@ -4,24 +4,35 @@
 
 @section('title', 'Tambah Penjualan')
 @section('layout_css')
-    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
         .select2-container {
             width: 100% !important;
         }
+
         .glyphicon.spinning {
             animation: spin 1s infinite linear;
             -webkit-animation: spin2 1s infinite linear;
         }
 
         @keyframes spin {
-            from { transform: scale(1) rotate(0deg); }
-            to { transform: scale(1) rotate(360deg); }
+            from {
+                transform: scale(1) rotate(0deg);
+            }
+
+            to {
+                transform: scale(1) rotate(360deg);
+            }
         }
 
         @-webkit-keyframes spin2 {
-            from { -webkit-transform: rotate(0deg); }
-            to { -webkit-transform: rotate(360deg); }
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
         }
     </style>
 @endsection
@@ -83,7 +94,7 @@
                                             <label for="city_id">Kota: <small class="text-danger">*</small></label>
                                             <select class="form-control" id="city_id" name="city_id" required>
                                                 <option disabled selected> -- Pilih Kota -- </option>
-                                                @foreach($cities as $city)
+                                                @foreach ($cities as $city)
                                                     <option value="{{ $city->id }}"> {{ $city->name }} </option>
                                                 @endforeach
                                             </select>
@@ -152,7 +163,8 @@
 
                 <div class="box-body">
                     <div class="table-responsive no-padding">
-                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;" id="table-items">
+                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;"
+                            id="table-items">
                             <thead class="bg-navy">
                                 <tr>
                                     <th class="text-center">#</th>
@@ -205,21 +217,25 @@
                                                 name="harga_edit">
                                         </div>
                                         <div class="form-group">
-                                            <label for="kuantitas_item_edit">Quantity: <small class="text-danger">*</small></label>
+                                            <label for="kuantitas_item_edit">Quantity: <small
+                                                    class="text-danger">*</small></label>
                                             <input type="text" class="form-control" id="kuantitas_item_edit"
-                                                   name="kuantitas_item_edit">
+                                                name="kuantitas_item_edit">
                                         </div>
-                                         <div class="form-group">
-                                             <label for="discount_item_edit">Discount:</label>
-                                             <input type="text" class="form-control" id="discount_item_edit" name="discount_item_edit">
-                                         </div>
+                                        <div class="form-group">
+                                            <label for="discount_item_edit">Discount:</label>
+                                            <input type="text" class="form-control" id="discount_item_edit"
+                                                name="discount_item_edit">
+                                        </div>
                                         <div class="form-group" style="display: none;">
                                             <label for="total_after_discount_edit">Discount Amount: </label>
                                             <span id="total_after_discount_edit"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label for="total_item_edit">Total: <small class="text-danger">*</small></label>
-                                            <input readonly type="text" class="form-control" id="total_item_edit" name="total_item_edit">
+                                            <label for="total_item_edit">Total: <small
+                                                    class="text-danger">*</small></label>
+                                            <input readonly type="text" class="form-control" id="total_item_edit"
+                                                name="total_item_edit">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -259,7 +275,8 @@
                                     <select id="type_item" class="form-control" name="type_item" required>
                                         <option value="" disabled selected>-- Pilih Jenis Produk --</option>
                                         @foreach ($products as $product)
-                                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->name }}</option>
+                                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">
+                                                {{ $product->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -269,23 +286,26 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="harga_item">Harga: <small class="text-danger">*</small></label>
-                                    <input type="text" readonly class="form-control" id="harga_item" name="harga_item" required>
+                                    <input type="text" readonly class="form-control" id="harga_item"
+                                        name="harga_item" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="kuantitas_item">Quantity: <small class="text-danger">*</small></label>
-                                    <input type="text" class="form-control" id="kuantitas_item" name="kuantitas_item" value="1" required>
+                                    <input type="text" class="form-control" id="kuantitas_item" name="kuantitas_item"
+                                        value="1" required>
                                 </div>
-                                 <div class="form-group">
-                                     <label for="discount_item">Discount:</label>
-                                     <input type="text" class="form-control" id="discount_item" name="discount_item">
-                                 </div>
+                                <div class="form-group">
+                                    <label for="discount_item">Discount:</label>
+                                    <input type="text" class="form-control" id="discount_item" name="discount_item">
+                                </div>
                                 <div class="form-group" style="display: none;">
                                     <label for="total_after_discount">Discount Amount: </label>
                                     <span id="total_after_discount"></span>
                                 </div>
                                 <div class="form-group">
                                     <label for="total_item">Total: <small class="text-danger">*</small></label>
-                                    <input readonly type="text" class="form-control" id="total_item" name="total_item">
+                                    <input readonly type="text" class="form-control" id="total_item"
+                                        name="total_item">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -299,13 +319,13 @@
             </div>
         </div>
         <div class="col-md-1">
-            <button type="button" class="btn bg-blue" data-toggle="modal" data-target="#modal-add-product">Tambah Produk</button>
-            <div id="modal-add-product" class="modal fade" role="dialog" data-keyboard="false"
-                 data-backdrop="static">
+            <button type="button" class="btn bg-blue" data-toggle="modal" data-target="#modal-add-product">Tambah
+                Produk</button>
+            <div id="modal-add-product" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
                 <div class="modal-dialog modal-md">
                     <!-- Modal content-->
                     <form id="form-add-product" action="{{ route('products.store') }}" method="post"
-                          onsubmit="saveProduct(event)" autocomplete="off">
+                        onsubmit="saveProduct(event)" autocomplete="off">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -318,30 +338,33 @@
                                     <div class="col-lg-12">
                                         <div class="form-price form-group {{ $errors->has('price') ? 'has-error' : '' }}">
                                             <label for="price">Harga</label>
-                                            <input type="number" name="price" id="price" class="form-control" placeholder="Harga" value="{{ old('name') }}" autofocus>
-                                            @if($errors->has('price'))
+                                            <input type="number" name="price" id="price" class="form-control"
+                                                placeholder="Harga" value="{{ old('name') }}" autofocus>
+                                            @if ($errors->has('price'))
                                                 <span class="help-block">
-                                            <strong>{{ $errors->first('price') }}</strong>
-                                        </span>
+                                                    <strong>{{ $errors->first('price') }}</strong>
+                                                </span>
                                             @endif
                                         </div>
                                         <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                             <label for="name">Nama Produk</label>
-                                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus>
-                                            @if($errors->has('name'))
+                                            <input type="text" name="name" id="name" class="form-control"
+                                                placeholder="Name" required value="{{ old('name') }}" autofocus>
+                                            @if ($errors->has('name'))
                                                 <span class="help-block">
-                                            <strong>{{ $errors->first('name') }}</strong>
-                                        </span>
+                                                    <strong>{{ $errors->first('name') }}</strong>
+                                                </span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left" onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()">Reset</button>
+                                <button type="reset" id="btn-reset-add-customer" class="btn btn-danger pull-left"
+                                    onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()">Reset</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal"
-                                        onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()"
-                                        style="margin-right: 15px;">Batalkan</button>
+                                    onclick="document.getElementById('form-add-product').reset();document.querySelector('#form-add-product #price').focus()"
+                                    style="margin-right: 15px;">Batalkan</button>
                                 <button type="submit" class="btn bg-blue">Simpan</button>
                             </div>
                         </div>
@@ -358,7 +381,7 @@
                     <h3 class="box-title">Pembayaran</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                                title="" data-original-title="Collapse Form Pembayaran">
+                            title="" data-original-title="Collapse Form Pembayaran">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -366,7 +389,7 @@
                     <div class="form-group">
                         <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
                         <select class="form-control" id="payment_method" name="payment_method" required>
-                            @foreach($payment_methods as $payment_method)
+                            @foreach ($payment_methods as $payment_method)
                                 <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
                             @endforeach
                         </select>
@@ -385,7 +408,8 @@
                 <div class="box-header">
                     <h3 class="box-title">Catatan</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -414,7 +438,8 @@
                         {{ csrf_field() }}
                         <p class="margin-b-2" style="display: none;"><b>Bruto: </b><span id="bruto"></span></p>
                         <p class="margin-b-2"><b>Sub total: </b><span id="sub_total"></span></p>
-                        <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount" name="discount" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount"
+                                name="discount" value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2" style="display: none;"><b>Netto: </b><span id="netto"></span></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
@@ -484,7 +509,8 @@
                 <i class="fa fa-fw fa-save"></i>
                 <span>Simpan</span>
             </button>
-            <a href="{{ route('order-products.index') }}" class="btn btn-default pull-left"><i class="fa fa-fw fa-close"></i>
+            <a href="{{ route('order-products.index') }}" class="btn btn-default pull-left"><i
+                    class="fa fa-fw fa-close"></i>
                 Batalkan</a>
         </div>
     </div>
@@ -492,7 +518,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
         $('.value-items').hide();
@@ -513,7 +539,7 @@
 
         function getPaymentMerchant() {
             $.ajax({
-                url: '{{ route("order-products.merchant_by_payment") }}',
+                url: '{{ route('order-products.merchant_by_payment') }}',
                 type: 'GET',
                 dataType: 'json',
                 data: {
@@ -522,7 +548,8 @@
                 success: function(response) {
                     $('#payment_merchant').empty();
                     $.each(response, function(index, paymentMerchant) {
-                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' +
+                            paymentMerchant.name + '</option>');
                     });
                 },
                 error: function(xhr, status, error) {
@@ -548,13 +575,15 @@
             // const type = $('#type_item_edit').val();
             const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
             const kuantitas = $('#kuantitas_item_edit').val(parseInt(dataItem.kuantitas, 10).toLocaleString('id-ID'));
-            const discount = $('#discount_item_edit').val(dataItem.discount_item === 0 ? '' : parseInt(dataItem.discount_item, 10).toLocaleString('id-ID'));
+            const discount = $('#discount_item_edit').val(dataItem.discount_item === 0 ? '' : parseInt(dataItem
+                .discount_item, 10).toLocaleString('id-ID'));
             const harga = $('#harga_item_edit').val(parseInt(dataItem.harga, 10).toLocaleString('id-ID'));
 
-            if(dataItem.discount_item > 100) {
+            if (dataItem.discount_item > 100) {
                 $('#total_after_discount_edit').text('').parent().css('display', 'none');
             } else {
-                $('#total_after_discount_edit').text((dataItem.harga * dataItem.kuantitas * (dataItem.discount_item / 100)).toLocaleString('id-ID')).parent().css('display', 'inline');
+                $('#total_after_discount_edit').text((dataItem.harga * dataItem.kuantitas * (dataItem.discount_item / 100))
+                    .toLocaleString('id-ID')).parent().css('display', 'inline');
             }
             $('#kuantitas_item_edit, #discount_item_edit').trigger('input');
         }
@@ -584,11 +613,11 @@
             $.ajax({
                 type: 'GET',
                 url: '{{ route('customer.search') }}' + '?term=' + customerId + '&_type=query&q=' +
-                customerId, // Asumsi endpoint mendukung query parameter 'id'
+                    customerId, // Asumsi endpoint mendukung query parameter 'id'
                 success: function(data) {
                     if (data && data.length > 0) {
                         let item = data[data.length -
-                        1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
+                            1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
                         let newOption = new Option(item.name, item.id, true, true);
 
                         $(newOption).data('address', item.address);
@@ -629,7 +658,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -655,7 +685,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
@@ -684,7 +715,8 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -709,7 +741,8 @@
                           <strong>Oops!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-product').modal('hide');
@@ -729,7 +762,8 @@
             // Loop melalui setiap item dan tambahkan baris HTML untuk masing-masing item
             items.forEach(function(item, index) {
                 let type = getTypeById(item.type, products);
-                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.jumlah * (parseInt(item.discount_item, 10) / 100);
+                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.jumlah * (
+                    parseInt(item.discount_item, 10) / 100);
 
                 const row = `
                     <tr>
@@ -775,7 +809,8 @@
             const harga = $('#harga_item').val().replace(/\./g, '');
             const kuantitas = $('#kuantitas_item').val().replace(/\./g, '');
             const jumlah = parseInt(harga, 10) * parseInt(kuantitas, 10);
-            const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''), 10) : 0;
+            const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''),
+                10) : 0;
             const total_after_discount = $('total_after_discount').text().replace(/\./g, '');
 
             // Buat objek item
@@ -830,7 +865,8 @@
             const harga = $('#harga_item_edit').val().replace(/\./g, '');
             const kuantitas = $('#kuantitas_item_edit').val().replace(/\./g, '');
             const jumlah = parseInt(harga, 10) * parseInt(kuantitas, 10);
-            const discount_item = $('#discount_item_edit').val() !== '' ? parseInt($('#discount_item_edit').val().replace(/\./g, ''), 10) : 0;
+            const discount_item = $('#discount_item_edit').val() !== '' ? parseInt($('#discount_item_edit').val().replace(
+                /\./g, ''), 10) : 0;
 
             // Buat objek item
             const newItem = {
@@ -878,7 +914,8 @@
             for (let i = 0; i < items.length; i++) {
                 // let info_discount = parseInt(items[i].discount_items, 10) > 100 ? items[i].discount_items : items[i].jumlah * (parseInt(items[i].discount_item, 10) / 100);
                 bruto += parseInt(items[i].jumlah, 10);
-                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].jumlah * (parseInt(items[i].discount_item, 10) / 100);
+                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].jumlah *
+                    (parseInt(items[i].discount_item, 10) / 100);
             }
 
             $('#bruto').text(bruto.toLocaleString('id-ID'));
@@ -961,7 +998,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     let url = "{{ route('order-products.show', ':id') }}";
@@ -989,7 +1027,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
                 }
             });
 
@@ -1143,17 +1182,20 @@
 
                 const discount_item = $('#discount_item').val().replace(/\D/g, '');
                 const total_item = $('#total_item');
-                if(discount_item === '') {
+                if (discount_item === '') {
                     total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                     $('#total_after_discount').text('').parent().css('display', 'none');
                 } else {
-                    if(Number(discount_item) > 100) {
-                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(discount_item)).toLocaleString('id-ID'));
+                    if (Number(discount_item) > 100) {
+                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(discount_item))
+                            .toLocaleString('id-ID'));
                         $('#total_after_discount').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount = total_harga * (Number(discount_item) / 100);
-                        $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID')).parent().css('display', 'inline');
-                        total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount).toLocaleString('id-ID'));
+                        $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID'))
+                            .parent().css('display', 'inline');
+                        total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount)
+                            .toLocaleString('id-ID'));
                     }
                 }
             });
@@ -1173,21 +1215,24 @@
                 const total_harga = (Number(harga) * Number(kuantitas_item));
 
                 const total_item = $('#total_item');
-                if(discount_item === '') {
+                if (discount_item === '') {
                     total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                     $('#total_after_discount_edit').text('').parent().css('display', 'none');
                 } else {
-                    if(Number(digitsOnly) > 100) {
-                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly)).toLocaleString('id-ID'));
+                    if (Number(digitsOnly) > 100) {
+                        total_item.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly))
+                            .toLocaleString('id-ID'));
                         $('#total_after_discount').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount = total_harga * (Number(digitsOnly) / 100);
-                        if(Number(digitsOnly) === 100) {
+                        if (Number(digitsOnly) === 100) {
                             total_item.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                             $('#total_after_discount').text('').parent().css('display', 'none');
                         } else {
-                            $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount).toLocaleString('id-ID'));
+                            $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID'))
+                                .parent().css('display', 'inline');
+                            total_item.val(total_harga === 0 ? '' : (total_harga - total_after_discount)
+                                .toLocaleString('id-ID'));
                         }
                     }
                 }
@@ -1207,17 +1252,20 @@
 
                 const discount_item_edit = $('#discount_item_edit').val().replace(/\D/g, '');
                 const total_item_edit = $('#total_item_edit');
-                if(discount_item_edit === '') {
+                if (discount_item_edit === '') {
                     total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                     $('#total_after_discount_edit').text('').parent().css('display', 'none');
                 } else {
-                    if(Number(discount_item_edit) > 100) {
-                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(discount_item_edit)).toLocaleString('id-ID'));
+                    if (Number(discount_item_edit) > 100) {
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(
+                            discount_item_edit)).toLocaleString('id-ID'));
                         $('#total_after_discount_edit').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount_edit = total_harga * (Number(discount_item_edit) / 100);
-                        $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
-                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - total_after_discount_edit).toLocaleString('id-ID'));
+                        $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString(
+                            'id-ID')).parent().css('display', 'inline');
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga -
+                            total_after_discount_edit).toLocaleString('id-ID'));
                     }
                 }
             });
@@ -1237,20 +1285,24 @@
                 const total_harga = (Number(harga) * Number(kuantitas_item_edit));
 
                 const total_item_edit = $('#total_item_edit');
-                if(discount_item_edit === '') {
+                if (discount_item_edit === '') {
                     total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
                 } else {
-                    if(Number(digitsOnly) > 100) {
-                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly)).toLocaleString('id-ID'));
+                    if (Number(digitsOnly) > 100) {
+                        total_item_edit.val(total_harga === 0 ? '' : (total_harga - Number(digitsOnly))
+                            .toLocaleString('id-ID'));
                         $('#total_after_discount_edit_edit').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount_edit = total_harga * (Number(digitsOnly) / 100);
-                        if(Number(digitsOnly) === 100) {
-                            total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString('id-ID'));
+                        if (Number(digitsOnly) === 100) {
+                            total_item_edit.val(total_harga === 0 ? '' : total_harga.toLocaleString(
+                                'id-ID'));
                             $('#total_after_discount_edit').text('').parent().css('display', 'none');
                         } else {
-                            $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item_edit.val(total_harga === 0 ? '' : (total_harga - total_after_discount_edit).toLocaleString('id-ID'));
+                            $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString(
+                                'id-ID')).parent().css('display', 'inline');
+                            total_item_edit.val(total_harga === 0 ? '' : (total_harga -
+                                total_after_discount_edit).toLocaleString('id-ID'));
                         }
                     }
                 }
@@ -1268,14 +1320,15 @@
 
                 let formattedNumber = '';
                 // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                if($(this).val() !== '') {
+                if ($(this).val() !== '') {
                     formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 }
 
                 // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
 
-                const totalValue = $(this).val() === '' ? bruto.toLocaleString('id-ID') :  netto.toLocaleString('id-ID');
+                const totalValue = $(this).val() === '' ? bruto.toLocaleString('id-ID') : netto
+                    .toLocaleString('id-ID');
                 $('#netto').text(totalValue);
                 // console.log(totalValue);
                 $('#total').text(totalValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));

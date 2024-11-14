@@ -18,57 +18,60 @@
 @endsection
 
 
-{{--@section('content')--}}
+{{-- @section('content') --}}
 
-{{--    <div class="col-md-6 col-md-offset-3">--}}
+{{--    <div class="col-md-6 col-md-offset-3"> --}}
 
-{{--        <div class="box box-primary">--}}
-{{--            <div class="box-header with-border">--}}
-{{--                <h3 class="box-title">Detail Order</h3>--}}
-{{--            </div>--}}
+{{--        <div class="box box-primary"> --}}
+{{--            <div class="box-header with-border"> --}}
+{{--                <h3 class="box-title">Detail Order</h3> --}}
+{{--            </div> --}}
 
-{{--            <div class="box-body">--}}
-{{--                <strong><i class="fa fa-book margin-r-5"></i> Name</strong>--}}
-{{--                <p>{{ $order->name }}</p>--}}
-{{--                <hr>--}}
-{{--                <strong><i class="fa fa-user-circle-o margin-r-5"></i> Customer Name</strong>--}}
-{{--                <p>{{ $order->customer->name }}</p>--}}
-{{--                <hr>--}}
-{{--                <strong><i class="fa fa-file-text-o margin-r-5"></i> Status</strong>--}}
-{{--                <p>{{ $statuses[$order->status] }}</p>--}}
-{{--                <hr>--}}
-{{--                <strong><i class="fa fa-calendar-o margin-r-5"></i> Status</strong>--}}
-{{--                <p>{{ $order->due_date }}</p>--}}
-{{--                <hr>--}}
-{{--                <img src="{{ $order }}" alt="">--}}
-{{--            </div>--}}
+{{--            <div class="box-body"> --}}
+{{--                <strong><i class="fa fa-book margin-r-5"></i> Name</strong> --}}
+{{--                <p>{{ $order->name }}</p> --}}
+{{--                <hr> --}}
+{{--                <strong><i class="fa fa-user-circle-o margin-r-5"></i> Customer Name</strong> --}}
+{{--                <p>{{ $order->customer->name }}</p> --}}
+{{--                <hr> --}}
+{{--                <strong><i class="fa fa-file-text-o margin-r-5"></i> Status</strong> --}}
+{{--                <p>{{ $statuses[$order->status] }}</p> --}}
+{{--                <hr> --}}
+{{--                <strong><i class="fa fa-calendar-o margin-r-5"></i> Status</strong> --}}
+{{--                <p>{{ $order->due_date }}</p> --}}
+{{--                <hr> --}}
+{{--                <img src="{{ $order }}" alt=""> --}}
+{{--            </div> --}}
 
-{{--            <div class="box-footer with-border">--}}
-{{--                <a href="{{ route('orders.index') }}" class="btn btn-default pull-left" style="margin-right: 10px;">Back to Orders</a>--}}
-{{--                <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning pull-left" style="margin-right: 10px;">Edit Order</a>--}}
-{{--                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block">--}}
-{{--                    @csrf--}}
-{{--                    @method('DELETE')--}}
-{{--                    <button type="submit" class="btn btn-danger pull-left" style="margin-right: 10px;">Delete Order</button>--}}
-{{--                </form>--}}
-{{--            </div>--}}
+{{--            <div class="box-footer with-border"> --}}
+{{--                <a href="{{ route('orders.index') }}" class="btn btn-default pull-left" style="margin-right: 10px;">Back to Orders</a> --}}
+{{--                <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning pull-left" style="margin-right: 10px;">Edit Order</a> --}}
+{{--                <form onsubmit="return confirm('Apakah Anda benar-benar ingin MENGHAPUS?');" action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline-block"> --}}
+{{--                    @csrf --}}
+{{--                    @method('DELETE') --}}
+{{--                    <button type="submit" class="btn btn-danger pull-left" style="margin-right: 10px;">Delete Order</button> --}}
+{{--                </form> --}}
+{{--            </div> --}}
 
-{{--        </div>--}}
+{{--        </div> --}}
 
-{{--    </div>--}}
+{{--    </div> --}}
 
-{{--@endsection--}}
+{{-- @endsection --}}
 
 @section('layout_css')
-    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
-        #cameraContainer, #photoContainer {
+        #cameraContainer,
+        #photoContainer {
             display: none;
         }
+
         #video {
             width: 100%;
             height: auto;
         }
+
         #canvas {
             display: none;
         }
@@ -91,12 +94,16 @@
                 </div>
                 <div class="col-md-4">
                     <!-- Trigger the modal with a button -->
-                    <button type="button" class="btn btn-info" id="btn-add-customer" data-toggle="modal" data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah Pelanggan</button>
+                    <button type="button" class="btn btn-info" id="btn-add-customer" data-toggle="modal"
+                        data-target="#modal-add-customer" style="margin: 25px auto;border-left: 1px solid #ccc;">Tambah
+                        Pelanggan</button>
                     <!-- Modal -->
-                    <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div id="modal-add-customer" class="modal fade" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog modal-md">
                             <!-- Modal content-->
-                            <form id="add-customer-form" action="{{ route('customers.store') }}" method="post" onsubmit="saveCustomer(event)" autocomplete="off">
+                            <form id="add-customer-form" action="{{ route('customers.store') }}" method="post"
+                                onsubmit="saveCustomer(event)" autocomplete="off">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -105,11 +112,13 @@
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="name">Name: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="name" name="name" required>
+                                            <input type="text" class="form-control" id="name" name="name"
+                                                required>
                                         </div>
                                         <div class="form-group">
                                             <label for="phone">Phone: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="phone" name="phone" required>
+                                            <input type="text" class="form-control" id="phone" name="phone"
+                                                required>
                                         </div>
                                         <div class="form-group">
                                             <label for="address">Address:</label>
@@ -117,8 +126,11 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Batalkan</button>
+                                        <button type="reset" class="btn btn-danger pull-left"
+                                            onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                                            onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()"
+                                            style="margin-right: 15px;">Batalkan</button>
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </div>
@@ -133,8 +145,9 @@
             <div class="form-group">
                 <label for="site_id">Cabang: <small class="text-danger">*</small></label>
                 <select class="form-control" id="site_id" name="site_id" required>
-                    @foreach($sites as $site)
-                        <option value="{{ $site->id }}" {{ $order->site_id === $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                    @foreach ($sites as $site)
+                        <option value="{{ $site->id }}" {{ $order->site_id === $site->id ? 'selected' : '' }}>
+                            {{ $site->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -170,16 +183,21 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Status</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
                         </button>
                     </div>
                 </div>
                 <div class="box-body" id="status-customer">
                     <p class="text-center margin-b-10"><b id="status">{{ $order->status }}</b></p>
-                    <p class="text-center margin-b-2"><b>No: </b> <span id="oleh">{{ $order->number_ticket ?? '-' }}</span></p>
-                    <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">{{ $order->picked_by ?? '-' }}</span></p>
-                    <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">{{ $order->picked_at ?? '-' }}</span></p>
-                    <p class="text-center margin-b-2"><b>Tanggal Transaksi: </b> <span id="oleh">{{ $order->created_at ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>No: </b> <span
+                            id="oleh">{{ $order->number_ticket ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>Oleh: </b> <span
+                            id="oleh">{{ $order->picked_by ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>Pada: </b> <span
+                            id="pada">{{ $order->picked_at ?? '-' }}</span></p>
+                    <p class="text-center margin-b-2"><b>Tanggal Transaksi: </b> <span
+                            id="oleh">{{ $order->created_at ?? '-' }}</span></p>
                 </div>
             </div>
         </div>
@@ -191,14 +209,16 @@
                 <div class="box-header">
                     <h3 class="box-title">Barang:</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="box-body">
                     <div class="table-responsive no-padding">
-                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;" id="table-items">
+                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;"
+                            id="table-items">
                             <thead class="bg-navy">
                                 <tr>
                                     <th class="text-center">#</th>
@@ -212,9 +232,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($order->orderItems as $orderItem)
+                                @foreach ($order->orderItems as $orderItem)
                                     @php
-                                        $infoDiscount = (int) $orderItem->discount > 100 ? (int) $orderItem->discount : (int) $orderItem->bruto * ((int) $orderItem->discount / 100)
+                                        $infoDiscount =
+                                            (int) $orderItem->discount > 100
+                                                ? (int) $orderItem->discount
+                                                : (int) $orderItem->bruto * ((int) $orderItem->discount / 100);
                                     @endphp
                                     <tr>
                                         <th class="text-center">{{ $loop->iteration }}</th>
@@ -222,24 +245,29 @@
                                         <td class="text-center">{{ $orderItem->note }}</td>
                                         <td class="text-center">
                                             <!--
-                                            <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
-                                            -->
-                                            <span class="btn btn-info btn-xs" style="margin-right: 15px;" data-toggle="modal" data-target="#modal-show-image-item" onclick="showImageAsTable({{ $loop->iteration - 1 }})">
+                                                        <img src="${imageSource}" alt="Foto Barang" class="img-thumbnail" style="height:50px">
+                                                        -->
+                                            <span class="btn btn-info btn-xs" style="margin-right: 15px;"
+                                                data-toggle="modal" data-target="#modal-show-image-item"
+                                                onclick="showImageAsTable({{ $loop->iteration - 1 }})">
                                                 <i class="fa fa-image margin-r-5"></i>
                                                 <span>Tampilkan Foto</span>
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <b>{{ number_format($orderItem->bruto,null,",",".") }}</b>
+                                            <b>{{ number_format($orderItem->bruto, null, ',', '.') }}</b>
                                         </td>
                                         <td class="text-center">
-                                            <b>{{ number_format($orderItem->discount,null,",",".")  }}{{ $orderItem->discount > 100 ? '' : '%' }} {{ $orderItem->discount > 100 ? '' : "(" . number_format($orderItem->bruto * ((int)$orderItem->discount / 100),null,",",".") . ")" }}</b>
+                                            <b>{{ number_format($orderItem->discount, null, ',', '.') }}{{ $orderItem->discount > 100 ? '' : '%' }}
+                                                {{ $orderItem->discount > 100 ? '' : '(' . number_format($orderItem->bruto * ((int) $orderItem->discount / 100), null, ',', '.') . ')' }}</b>
                                         </td>
                                         <td class="text-center">
-                                            <b>{{ number_format($orderItem->bruto - $infoDiscount,null,",",".") }}</b>
+                                            <b>{{ number_format($orderItem->bruto - $infoDiscount, null, ',', '.') }}</b>
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-warning btn-xs margin-r-5 btn-edit" data-toggle="modal" data-target="#modal-edit-item" onclick="showEditItemForm({{ $loop->iteration - 1 }})">Edit</button>
+                                            <button type="button" class="btn btn-warning btn-xs margin-r-5 btn-edit"
+                                                data-toggle="modal" data-target="#modal-edit-item"
+                                                onclick="showEditItemForm({{ $loop->iteration - 1 }})">Edit</button>
                                             {{-- <button type="button" class="btn btn-danger btn-xs margin-r-5 btn-remove" onclick="removeItem(event, this, {{ $loop->iteration - 1 }})">Remove</button> --}}
                                         </td>
                                     </tr>
@@ -249,10 +277,12 @@
                     </div>
 
                     <!-- Modal Edit Item -->
-                    <div class="modal fade" id="modal-edit-item" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div class="modal fade" id="modal-edit-item" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog">
                             <!-- Modal content-->
-                            <form id="edit-item-form" action="" method="get" onsubmit="editItem(event)" enctype="multipart/form-data" autocomplete="off">
+                            <form id="edit-item-form" action="" method="get" onsubmit="editItem(event)"
+                                enctype="multipart/form-data" autocomplete="off">
                                 <input type="hidden" name="item_element" id="item_element" value="">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -261,53 +291,62 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
-                                            <label for="type_edit">Jenis Produk: <small class="text-danger">*</small></label>
+                                            <label for="type_edit">Jenis Produk: <small
+                                                    class="text-danger">*</small></label>
                                             <select id="type_edit" class="form-control" name="type_edit" required>
-                                                @foreach($products as $product)
+                                                @foreach ($products as $product)
                                                     <option value="{{ $product->id }}">{{ $product->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="keterangan_edit">Keterangan: <small class="text-danger">*</small></label>
+                                            <label for="keterangan_edit">Keterangan: <small
+                                                    class="text-danger">*</small></label>
                                             <textarea class="form-control" id="keterangan_edit" name="keterangan_edit"></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label for="biaya_edit">Biaya: <small class="text-danger">*</small></label>
-                                            <input type="text" class="form-control" id="biaya_edit" name="biaya_edit">
+                                            <input type="text" class="form-control" id="biaya_edit"
+                                                name="biaya_edit">
                                         </div>
                                         <div class="form-group">
                                             <label for="discount_item_edit">Discount:</label>
                                             <input type="text" class="form-control" id="discount_item_edit"
-                                                   name="discount_item_edit">
+                                                name="discount_item_edit">
                                         </div>
                                         <div class="form-group" style="display: none;">
                                             <label for="total_after_discount_edit">Discount Amount: </label>
                                             <span id="total_after_discount_edit"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label for="total_item_edit">Total: <small class="text-danger">*</small></label>
-                                            <input readonly type="text" class="form-control" id="total_item_edit" name="total_item_edit">
+                                            <label for="total_item_edit">Total: <small
+                                                    class="text-danger">*</small></label>
+                                            <input readonly type="text" class="form-control" id="total_item_edit"
+                                                name="total_item_edit">
                                         </div>
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
-                                            <input type="file" class="form-control-file" id="gambar_edit" name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment" multiple onchange="handleEditImageUpload(this)">
+                                            <input type="file" class="form-control-file" id="gambar_edit"
+                                                name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment"
+                                                multiple onchange="handleEditImageUpload(this)">
                                         </div>
                                         <!-- <p>OR</p> -->
                                         <div class="webcam-container"></div>
                                         <hr>
-                                        <table role="presentation" class="table table-striped table-bordered table-hover list-image">
+                                        <table role="presentation"
+                                            class="table table-striped table-bordered table-hover list-image">
                                             <thead>
-                                            <tr>
-                                                <th class="text-center" width="300">#</th>
-                                                <th class="text-center" width="300">Foto</th>
-                                            </tr>
+                                                <tr>
+                                                    <th class="text-center" width="300">#</th>
+                                                    <th class="text-center" width="300">Foto</th>
+                                                </tr>
                                             </thead>
                                             <tbody class="content-image"></tbody>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                                        <button type="button" class="btn btn-default margin-r-5"
+                                            data-dismiss="modal">Batalkan</button>
                                         <button type="submit" class="btn btn-warning">Simpan</button>
                                     </div>
                                 </div>
@@ -316,7 +355,8 @@
                     </div>
 
                     <!-- Modal Show Image Item -->
-                    <div class="modal fade" id="modal-show-image-item" role="dialog" data-keyboard="false" data-backdrop="static">
+                    <div class="modal fade" id="modal-show-image-item" role="dialog" data-keyboard="false"
+                        data-backdrop="static">
                         <div class="modal-dialog">
                             <!-- Modal content-->
                             <div class="modal-content">
@@ -325,19 +365,21 @@
                                     <h4 class="modal-title">Item Foto</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <table role="presentation" class="table table-striped table-bordered table-hover list-image">
+                                    <table role="presentation"
+                                        class="table table-striped table-bordered table-hover list-image">
                                         <thead>
-                                        <tr>
-                                            <th class="text-center" width="300">#</th>
-                                            <th class="text-center" width="300">Foto</th>
-                                            <th class="text-center" width="300">Aksi</th>
-                                        </tr>
+                                            <tr>
+                                                <th class="text-center" width="300">#</th>
+                                                <th class="text-center" width="300">Foto</th>
+                                                <th class="text-center" width="300">Aksi</th>
+                                            </tr>
                                         </thead>
                                         <tbody class="content-image"></tbody>
                                     </table>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
+                                    <button type="button" class="btn btn-default margin-r-5"
+                                        data-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -349,7 +391,8 @@
 
     <div class="row">
         <div class="col-md-12" style="margin-bottom: 15px;">
-            <button type="button" class="btn btn-success" id="btn-add-item" style="margin-right: 15px;display: none;" data-toggle="modal" data-target="#modal-add-item">
+            <button type="button" class="btn btn-success" id="btn-add-item" style="margin-right: 15px;display: none;"
+                data-toggle="modal" data-target="#modal-add-item">
                 <i class="glyphicon glyphicon-plus"></i>
                 <span>Add item</span>
             </button>
@@ -357,7 +400,8 @@
             <div class="modal fade" id="modal-add-item" role="dialog" data-keyboard="false" data-backdrop="static">
                 <div class="modal-dialog">
                     <!-- Modal content-->
-                    <form id="add-item-form" action="" method="get" onsubmit="saveItem(event)" enctype="multipart/form-data" autocomplete="off">
+                    <form id="add-item-form" action="" method="get" onsubmit="saveItem(event)"
+                        enctype="multipart/form-data" autocomplete="off">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -367,7 +411,7 @@
                                 <div class="form-group">
                                     <label for="type">Jenis Produk: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
-                                        @foreach($products as $product)
+                                        @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
@@ -382,21 +426,25 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
-                                    <input type="file" class="form-control-file" id="gambar" name="gambar" accept=".jpg, .jpeg, .png" capture="environment" multiple onchange="handleImageUpload(this)" required>
+                                    <input type="file" class="form-control-file" id="gambar" name="gambar"
+                                        accept=".jpg, .jpeg, .png" capture="environment" multiple
+                                        onchange="handleImageUpload(this)" required>
                                 </div>
                                 <hr>
-                                <table role="presentation" class="table table-striped table-bordered table-hover list-image">
+                                <table role="presentation"
+                                    class="table table-striped table-bordered table-hover list-image">
                                     <thead>
-                                    <tr>
-                                        <th class="text-center" width="300">#</th>
-                                        <th class="text-center" width="300">Image</th>
-                                    </tr>
+                                        <tr>
+                                            <th class="text-center" width="300">#</th>
+                                            <th class="text-center" width="300">Image</th>
+                                        </tr>
                                     </thead>
                                     <tbody id="list-image"></tbody>
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Tutup</button>
+                                <button type="button" class="btn btn-default margin-r-5"
+                                    data-dismiss="modal">Tutup</button>
                                 <button type="submit" class="btn btn-success">Submit</button>
                             </div>
                         </div>
@@ -413,7 +461,7 @@
                     <h3 class="box-title">Estimasi</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                                title="" data-original-title="Collapse Form Order">
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -424,7 +472,8 @@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
-                            <input type="text" class="form-control pull-right" id="estimate_service_done" value="{{ $order->estimate_service_done }}">
+                            <input type="text" class="form-control pull-right" id="estimate_service_done"
+                                value="{{ $order->estimate_service_done }}">
                         </div>
                     </div>
                     <div class="form-group">
@@ -444,7 +493,8 @@
                 <div class="box-header">
                     <h3 class="box-title">Catatan</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -461,40 +511,53 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <form id="fileupload" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <form id="fileupload" action="{{ route('orders.store') }}" method="post"
+                        enctype="multipart/form-data" autocomplete="off">
                         <input type="hidden" name="customer_id" id="customer_id" value="{{ $order->customer->id }}">
                         {{ csrf_field() }}
                         <p class="margin-b-2"><b>Sub total: </b><span id="sub_total"></span></p>
-                        <p class="margin-b-2"><b>Discount: </b><input type="text" readonly id="discount" name="discount" value="{{ $order->discount == 0 ? '' : number_format($order->discount,null,",",".")  }}" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Discount: </b><input type="text" readonly id="discount"
+                                name="discount"
+                                value="{{ $order->discount == 0 ? '' : number_format($order->discount, null, ',', '.') }}"
+                                class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
-                        <p class="margin-b-2"><b>Total: </b><span id="pembayaran">{{ $order->status == 'DIAMBIL' ? number_format($order->sisa_pembayaran, null, ',', '.') : null }}</span></p>
-                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp" name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}" class="form-control" style="display: inline"></p>
-                        <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">{{ number_format($order->sisa_pembayaran, null, ',', '.') }}</span></p>
+                        <p class="margin-b-2"><b>Total: </b><span
+                                id="pembayaran">{{ $order->status == 'DIAMBIL' ? number_format($order->sisa_pembayaran, null, ',', '.') : null }}</span>
+                        </p>
+                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp"
+                                name="dp" readonly value="{{ number_format($order->uang_muka, null, ',', '.') }}"
+                                class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Kekurangan: </b><span
+                                id="kekurangan">{{ number_format($order->sisa_pembayaran, null, ',', '.') }}</span></p>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    @if((strpos($userAgent, 'Android') !== false || strpos($userAgent, 'iPad') !== false))
+    @if (strpos($userAgent, 'Android') !== false || strpos($userAgent, 'iPad') !== false)
         <div class="row">
             <div class="col-md-12 total-items">
                 <!-- Pickup Button and Modal -->
-                <button type="button" class="btn bg-purple" id="btn-pickup" data-toggle="modal" data-target="#modal-pickup-item">
+                <button type="button" class="btn bg-purple" id="btn-pickup" data-toggle="modal"
+                    data-target="#modal-pickup-item">
                     <i class="fa fa-fw fa-save"></i>
                     <span>Ambil</span>
                 </button>
 
                 <!-- Modal -->
-                <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+                <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false"
+                    data-backdrop="static">
                     <div class="modal-dialog modal-sm">
                         <!-- Modal content-->
-                        <form id="pickup-item-form" action="{{ route('orders.update', $order->id) }}" method="post" onsubmit="pickUpItemForm(event)" autocomplete="off">
+                        <form id="pickup-item-form" action="{{ route('orders.update', $order->id) }}" method="post"
+                            onsubmit="pickUpItemForm(event)" autocomplete="off">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -502,28 +565,37 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
+                                        <label for="payment_method">Metode Pembayaran: <small
+                                                class="text-danger">*</small></label>
                                         <select class="form-control" id="payment_method" name="payment_method" required>
-                                            @foreach($payment_methods as $payment_method)
-                                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                                            @foreach ($payment_methods as $payment_method)
+                                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
-                                        <select class="form-control" id="payment_merchant" name="payment_merchant" required>
-                                            @foreach($payment_merchants as $payment_merchant)
-                                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>
+                                        <label for="payment_merchant">Penyedia Pembayaran: <small
+                                                class="text-danger">*</small></label>
+                                        <select class="form-control" id="payment_merchant" name="payment_merchant"
+                                            required>
+                                            @foreach ($payment_merchants as $payment_merchant)
+                                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label>
-                                        <input type="text" class="form-control" id="kekurangan-sisa" name="kekurangan" value="{{ number_format($order->orderItems->sum('netto') - $order->uang_muka, null, ',', '.') }}" readonly required>
+                                        <input type="text" class="form-control" id="kekurangan-sisa"
+                                            name="kekurangan"
+                                            value="{{ number_format($order->orderItems->sum('netto') - $order->uang_muka, null, ',', '.') }}"
+                                            readonly required>
                                     </div>
                                     <div class="form-group">
                                         <label for="diambil">Diambil oleh: <small class="text-danger">*</small></label>
-                                        <input type="text" class="form-control" id="diambil" name="diambil" required>
+                                        <input type="text" class="form-control" id="diambil" name="diambil"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -536,33 +608,40 @@
                 </div>
 
                 <!-- Save Button -->
-                <button type="button" class="btn bg-olive" id="btn-simpan" style="margin-right: 15px;" onclick="pickUpItemForm(event)">
+                <button type="button" class="btn bg-olive" id="btn-simpan" style="margin-right: 15px;"
+                    onclick="pickUpItemForm(event)">
                     <i class="glyphicon glyphicon-file"></i>
                     <span>Simpan</span>
                 </button>
 
                 <!-- Status Buttons with Spacing -->
                 <div class="btn-group" style="margin-right: 15px;margin-top: 10px;margin-bottom: 10px;">
-                    <button type="button" class="btn bg-orange" id="btn-cancel" onclick="setStatus('cancel')" style="margin-right: 5px;">
+                    <button type="button" class="btn bg-orange" id="btn-cancel" onclick="setStatus('cancel')"
+                        style="margin-right: 5px;">
                         <i class="glyphicon glyphicon-remove"></i> Cancel
                     </button>
-                    <button type="button" class="btn bg-maroon" id="btn-failed" onclick="setStatus('gagal')" style="margin-right: 5px;">
+                    <button type="button" class="btn bg-maroon" id="btn-failed" onclick="setStatus('gagal')"
+                        style="margin-right: 5px;">
                         <i class="glyphicon glyphicon-ban-circle"></i> Gagal
                     </button>
-                    <button type="button" class="btn btn-primary" id="btn-ready" {{ $order->status == 'READY' ? 'disabled' : '' }} onclick="setStatus('ready')">
+                    <button type="button" class="btn btn-primary" id="btn-ready"
+                        {{ $order->status == 'READY' ? 'disabled' : '' }} onclick="setStatus('ready')">
                         <i class="glyphicon glyphicon-save-file"></i> Ready
                     </button>
                 </div>
 
                 <!-- Print Button Group with Spacing -->
                 <div class="btn-group" role="group">
-                    <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy" style="margin-right: 5px;">
+                    <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy"
+                        style="margin-right: 5px;">
                         <i class="fa fa-fw fa-print"></i> Customer
                     </a>
-                    <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy" style="margin-right: 5px;">
+                    <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy"
+                        style="margin-right: 5px;">
                         <i class="fa fa-fw fa-print"></i> Cashier
                     </a>
-                    <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy">
+                    <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank"
+                        class="btn bg-navy">
                         <i class="fa fa-fw fa-print"></i> Reparation
                     </a>
                 </div>
@@ -577,102 +656,129 @@
         </div>
     @else
         <div class="row">
-        <div class="col-md-12 total-items">
-              <button type="button" class="btn bg-purple pull-left" id="btn-pickup" data-toggle="modal" data-target="#modal-pickup-item" style="margin-right: 15px;">
-                  <i class="fa fa-fw fa-save"></i>
-                  <span>Ambil</span>
-              </button>
-             <!-- Modal -->
-             <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
-                 <div class="modal-dialog modal-sm">
-                     <!-- Modal content-->
-                     <form id="pickup-item-form" action="{{ route('orders.update', $order->id) }}" method="post" onsubmit="pickUpItemForm(event)" autocomplete="off">
-                         <div class="modal-content">
-                             <div class="modal-header">
-                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                 <h4 class="modal-title">Form Ambil Barang</h4>
-                             </div>
-                             <div class="modal-body">
-                                 <div class="form-group">
-                                     <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
-                                     <select class="form-control" id="payment_method" name="payment_method" required>
-                                         @foreach($payment_methods as $payment_method)
-                                             <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
-                                         @endforeach
-                                     </select>
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
-                                     <select class="form-control" id="payment_merchant" name="payment_merchant" required>
-                                         @foreach($payment_merchants as $payment_merchant)
-                                             <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>
-                                         @endforeach
-                                     </select>
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label>
-                                     <input type="text" class="form-control" id="kekurangan-sisa" name="kekurangan" value="{{ number_format($order->orderItems->sum('netto') - $order->uang_muka, null, ',', '.') }}" readonly required>
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="diambil">Diambil oleh: <small class="text-danger">*</small></label>
-                                     <input type="text" class="form-control" id="diambil" name="diambil" required>
-                                 </div>
-                             </div>
-                             <div class="modal-footer">
-                                    <button type="reset" class="btn btn-danger pull-left" onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset Form</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal"  onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" style="margin-right: 15px;">Simpan Form</button>
+            <div class="col-md-12 total-items">
+                <button type="button" class="btn bg-purple pull-left" id="btn-pickup" data-toggle="modal"
+                    data-target="#modal-pickup-item" style="margin-right: 15px;">
+                    <i class="fa fa-fw fa-save"></i>
+                    <span>Ambil</span>
+                </button>
+                <!-- Modal -->
+                <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false"
+                    data-backdrop="static">
+                    <div class="modal-dialog modal-sm">
+                        <!-- Modal content-->
+                        <form id="pickup-item-form" action="{{ route('orders.update', $order->id) }}" method="post"
+                            onsubmit="pickUpItemForm(event)" autocomplete="off">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Form Ambil Barang</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="payment_method">Metode Pembayaran: <small
+                                                class="text-danger">*</small></label>
+                                        <select class="form-control" id="payment_method" name="payment_method" required>
+                                            @foreach ($payment_methods as $payment_method)
+                                                <option value="{{ $payment_method->id }}">{{ $payment_method->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="payment_merchant">Penyedia Pembayaran: <small
+                                                class="text-danger">*</small></label>
+                                        <select class="form-control" id="payment_merchant" name="payment_merchant"
+                                            required>
+                                            @foreach ($payment_merchants as $payment_merchant)
+                                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="kekurangan">Kekurangan: <small class="text-danger">*</small></label>
+                                        <input type="text" class="form-control" id="kekurangan-sisa"
+                                            name="kekurangan"
+                                            value="{{ number_format($order->orderItems->sum('netto') - $order->uang_muka, null, ',', '.') }}"
+                                            readonly required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="diambil">Diambil oleh: <small class="text-danger">*</small></label>
+                                        <input type="text" class="form-control" id="diambil" name="diambil"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="reset" class="btn btn-danger pull-left"
+                                        onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset
+                                        Form</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"
+                                        onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()"
+                                        style="margin-right: 15px;">Simpan Form</button>
                                     <button type="submit" class="btn btn-primary">Submit Form</button>
-                                 <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
-                                 <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
-                             </div>
-                         </div>
-                     </form>
-                 </div>
-             </div>
-             {{-- <button type="submit" class="btn bg-purple pull-left" style="margin-right: 15px;"> --}}
-             {{--     <i class="fa fa-fw fa-save"></i> --}}
-             {{--     <span>Simpan</span> --}}
-             {{-- </button> --}}
-            <button type="button" class="btn bg-olive pull-left" id="btn-simpan" style="margin-right: 15px;" onclick="pickUpItemForm(event)">
-                <i class="glyphicon glyphicon-file"></i>
-                <span>Simpan</span>
-            </button>
-            <div class="vl" style="display:inline-block; border-left: 1px solid black; height: 30px; margin: auto 15px;"></div>
-            &nbsp;
+                                    <button type="button" class="btn btn-default margin-r-5"
+                                        data-dismiss="modal">Batalkan</button>
+                                    <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {{-- <button type="submit" class="btn bg-purple pull-left" style="margin-right: 15px;"> --}}
+                {{--     <i class="fa fa-fw fa-save"></i> --}}
+                {{--     <span>Simpan</span> --}}
+                {{-- </button> --}}
+                <button type="button" class="btn bg-olive pull-left" id="btn-simpan" style="margin-right: 15px;"
+                    onclick="pickUpItemForm(event)">
+                    <i class="glyphicon glyphicon-file"></i>
+                    <span>Simpan</span>
+                </button>
+                <div class="vl"
+                    style="display:inline-block; border-left: 1px solid black; height: 30px; margin: auto 15px;"></div>
+                &nbsp;
 
-            <button type="button" class="btn bg-orange" id="btn-cancel" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('cancel')">
-                <i class="glyphicon glyphicon-remove"></i>
-                <span>Cancel</span>
-            </button>
-            <button type="button" class="btn bg-maroon" id="btn-failed" style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('gagal')">
-                <i class="glyphicon glyphicon-ban-circle"></i>
-                <span>Gagal</span>
-            </button>
-            <button type="button" class="btn btn-primary" id="btn-ready" style="margin-left: 15px;margin-top: -20px;" {{ $order->status == 'READY' ? 'disabled' : '' }} onclick="setStatus('ready')">
-                <i class="glyphicon glyphicon-save-file"></i>
-                <span>Ready</span>
-            </button>
-            <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                <i class="fa fa-fw fa-print"></i>
-                <span>Customer</span>
-            </a>
-            <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                <i class="fa fa-fw fa-print"></i>
-                <span>Cashier</span>
-            </a>
-            <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy" style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                <i class="fa fa-fw fa-print"></i>
-                <span>Reparation</span>
-            </a>
-            <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
+                <button type="button" class="btn bg-orange" id="btn-cancel"
+                    style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('cancel')">
+                    <i class="glyphicon glyphicon-remove"></i>
+                    <span>Cancel</span>
+                </button>
+                <button type="button" class="btn bg-maroon" id="btn-failed"
+                    style="margin-left: 15px;margin-top: -20px;" onclick="setStatus('gagal')">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Gagal</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-ready"
+                    style="margin-left: 15px;margin-top: -20px;" {{ $order->status == 'READY' ? 'disabled' : '' }}
+                    onclick="setStatus('ready')">
+                    <i class="glyphicon glyphicon-save-file"></i>
+                    <span>Ready</span>
+                </button>
+                <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy"
+                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                    <i class="fa fa-fw fa-print"></i>
+                    <span>Customer</span>
+                </a>
+                <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy"
+                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                    <i class="fa fa-fw fa-print"></i>
+                    <span>Cashier</span>
+                </a>
+                <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy"
+                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
+                    <i class="fa fa-fw fa-print"></i>
+                    <span>Reparation</span>
+                </a>
+                <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i
+                        class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
+            </div>
         </div>
-    </div>
     @endif
 
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').show();
         $('.total-items').show();
@@ -683,9 +789,15 @@
         let dataFile = [];
         let items = [];
         let editItemSelected = null;
-        let allItem = { id: null, type: '', keterangan: '', biaya: 0, gambar: [] };
+        let allItem = {
+            id: null,
+            type: '',
+            keterangan: '',
+            biaya: 0,
+            gambar: []
+        };
 
-        const orderItems = <?= $order->orderItems->toJson(); ?>;
+        const orderItems = <?= $order->orderItems->toJson() ?>;
 
         const cameraContent = `
            <div class="form-group" style="margin-top: 15px;display:none;">
@@ -722,7 +834,7 @@
             const cameraSelect = $('#cameraSelect');
             let stream = null;
 
-            $(document).on('click', '#startCamera', function () {
+            $(document).on('click', '#startCamera', function() {
                 cameraContainer.show();
                 $('#startCamera').hide();
                 navigator.mediaDevices.enumerateDevices()
@@ -737,12 +849,12 @@
                         });
                         return startCamera(cameraSelect.val());
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.log("An error occurred: " + err);
                     });
             });
 
-            $(document).on('change', '#cameraSelect', function () {
+            $(document).on('change', '#cameraSelect', function() {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
                 }
@@ -751,19 +863,23 @@
 
             function startCamera(deviceId) {
                 navigator.mediaDevices.getUserMedia({
-                    video: { deviceId: deviceId ? { exact: deviceId } : undefined }
-                })
-                    .then(function (mediaStream) {
+                        video: {
+                            deviceId: deviceId ? {
+                                exact: deviceId
+                            } : undefined
+                        }
+                    })
+                    .then(function(mediaStream) {
                         stream = mediaStream;
                         video.srcObject = stream;
                         video.play();
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.log("An error occurred: " + err);
                     });
             }
 
-            $(document).on('click', '#takePhoto', function () {
+            $(document).on('click', '#takePhoto', function() {
                 const context = canvas.getContext('2d');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -791,7 +907,7 @@
                         contentImage.append(row);
                     });
                 }, 0);
-                setTimeout(function () {
+                setTimeout(function() {
                     $('#retakePhoto').trigger('click');
                 }, 0)
                 photoContainer.show();
@@ -799,9 +915,9 @@
                 canvas.show();
             });
 
-            $(document).on('click', '#closeCamera', function () {
+            $(document).on('click', '#closeCamera', function() {
                 if (stream) {
-                    stream.getTracks().forEach(function (track) {
+                    stream.getTracks().forEach(function(track) {
                         track.stop();
                     });
                 }
@@ -810,18 +926,18 @@
                 cameraSelect.empty();
             });
 
-            $(document).on('click', '#retakePhoto', function () {
+            $(document).on('click', '#retakePhoto', function() {
                 photoContainer.hide();
                 cameraContainer.show();
             });
 
-            $(document).on('click', '#cancelPhoto', function () {
+            $(document).on('click', '#cancelPhoto', function() {
                 photo.src = "";
                 canvas.hide();
                 photoContainer.hide();
                 $('#startCamera').show();
                 if (stream) {
-                    stream.getTracks().forEach(function (track) {
+                    stream.getTracks().forEach(function(track) {
                         track.stop();
                     });
                 }
@@ -830,7 +946,7 @@
             });
         }
 
-        for (let i=0; i < orderItems.length; i++) {
+        for (let i = 0; i < orderItems.length; i++) {
             const orderItemPhotos = orderItems[i].order_item_photos;
 
 
@@ -843,13 +959,25 @@
             allItem.vat = orderItems[i].vat.toLocaleString('id-ID');
             allItem.total = orderItems[i].total.toLocaleString('id-ID');
 
-            for (let j=0; j < orderItemPhotos.length; j++) {
-                allItem.gambar.push(`${window.location.origin}${window.location.protocol !== 'https:' ? '' : '/public' }/storage/${orderItemPhotos[j].thumbnail_url}`);
+            for (let j = 0; j < orderItemPhotos.length; j++) {
+                allItem.gambar.push(
+                    `${window.location.origin}/storage/${orderItemPhotos[j].thumbnail_url}`
+                );
             }
 
             items.push(allItem);
 
-            allItem = {id: null, type: '', keterangan: '', bruto: 0, discount: 0, nett: 0, vat: 0, total: 0, gambar: [] };
+            allItem = {
+                id: null,
+                type: '',
+                keterangan: '',
+                bruto: 0,
+                discount: 0,
+                nett: 0,
+                vat: 0,
+                total: 0,
+                gambar: []
+            };
         }
 
         console.log('items', items);
@@ -858,21 +986,22 @@
 
         sumTotalItem();
 
-        const status ="{{ $order->status }}";
-        if(status.toLowerCase() === 'diambil') {
-            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove').attr("disabled", true);
+        const status = "{{ $order->status }}";
+        if (status.toLowerCase() === 'diambil') {
+            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove')
+                .attr("disabled", true);
         }
 
-        function getPaymentMethodById(nameKey, myArray){
-            for (let i=0; i < myArray.length; i++) {
+        function getPaymentMethodById(nameKey, myArray) {
+            for (let i = 0; i < myArray.length; i++) {
                 if (myArray[i].id === parseFloat(nameKey, 10)) {
                     return myArray[i];
                 }
             }
         }
 
-        function getTypeById(nameKey, myArray){
-            for (let i=0; i < myArray.length; i++) {
+        function getTypeById(nameKey, myArray) {
+            for (let i = 0; i < myArray.length; i++) {
                 if (myArray[i].id === parseFloat(nameKey, 10)) {
                     return myArray[i];
                 }
@@ -885,7 +1014,7 @@
 
         function getPaymentMerchant() {
             $.ajax({
-                url: '{{ route("order.merchant_by_payment") }}',
+                url: '{{ route('order.merchant_by_payment') }}',
                 type: 'GET',
                 dataType: 'json',
                 data: {
@@ -894,7 +1023,8 @@
                 success: function(response) {
                     $('#payment_merchant').empty();
                     $.each(response, function(index, paymentMerchant) {
-                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' +
+                            paymentMerchant.name + '</option>');
                     });
                 },
                 error: function(xhr, status, error) {
@@ -905,14 +1035,15 @@
 
         function uuid() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                let r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
         }
 
         function handleImageUpload(element) {
             const files = $(element)[0].files;
-            if(files.length === 0) return;
+            if (files.length === 0) return;
 
             console.log(files);
             for (let i = 0; i < files.length; i++) {
@@ -920,7 +1051,7 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         // Mengakses data URL base64 dari file
                         const base64Data = e.target.result;
                         // Memasukkan data URL base64 ke dalam array
@@ -938,7 +1069,7 @@
 
         function handleEditImageUpload(element) {
             const files = $(element)[0].files;
-            if(files.length === 0) return;
+            if (files.length === 0) return;
 
             // console.log(files);
             for (let i = 0; i < files.length; i++) {
@@ -946,7 +1077,7 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 if ($.inArray(ext, ['png', 'jpg', 'jpeg']) !== -1) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         // Mengakses data URL base64 dari file
                         const base64Data = e.target.result;
                         // Memasukkan data URL base64 ke dalam array
@@ -979,7 +1110,7 @@
                 });
             }, 500);
 
-            if($('#closeCamera').length > 0) {
+            if ($('#closeCamera').length > 0) {
                 $('#closeCamera').trigger('click');
             }
         }
@@ -990,7 +1121,7 @@
             $('.list-image').hide();
             $('.list-image').show();
             listImage.empty();
-            for(let i = 0; i < dataFile.length; i++) {
+            for (let i = 0; i < dataFile.length; i++) {
                 listImage.append(`
                     <tr>
                         <th>
@@ -1004,7 +1135,7 @@
             }
         }
 
-        function removeImage(itemIndex, imageIndex, imageUrl=null) {
+        function removeImage(itemIndex, imageIndex, imageUrl = null) {
             if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
 
                 dataFile.splice(imageIndex, 1);
@@ -1065,7 +1196,7 @@
             // }
         }
 
-        function removeEditImage(e, el, itemIndex, imageIndex, imageId=null) {
+        function removeEditImage(e, el, itemIndex, imageIndex, imageId = null) {
             if (confirm("Apakah Anda yakin ingin MENGHAPUS foto ini?") === true) {
                 items[itemIndex]['gambar'].splice(imageIndex, 1);
 
@@ -1103,15 +1234,19 @@
                     console.log(result);
                     const message = 'Foto Pesanan Reparasi berhasil dihapus!';
                     $('.top-right').notify({
-                        message: { text: `Sukses! ${message}` }
+                        message: {
+                            text: `Sukses! ${message}`
+                        }
                     }).show();
                 },
                 error: function(xhr, status, error) {
                     // Tindakan jika terjadi kesalahan
                     const message = 'Foto Pesanan Reparasi tidak berhasil dihapus!';
                     $('.top-right').notify({
-                        message: { text: `Sukses! ${message}` },
-                        type:'danger'
+                        message: {
+                            text: `Sukses! ${message}`
+                        },
+                        type: 'danger'
                     }).show();
                     console.log(error);
                 }
@@ -1171,7 +1306,9 @@
 
                 const message = 'Barang berhasil dihapus!';
                 $('.top-right').notify({
-                    message: { text: `Sukses! ${message}` }
+                    message: {
+                        text: `Sukses! ${message}`
+                    }
                 }).show();
 
             }
@@ -1198,7 +1335,9 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                        alert
+                    ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -1224,7 +1363,9 @@
                           <strong>Oops!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                        alert
+                    ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
@@ -1237,7 +1378,11 @@
             if (confirm("Apakah Anda yakin ingin merubah status menjadi " + newStatus + "?") === true) {
                 const estimate_service_done = $('#estimate_service_done').val();
                 const estimate_take_item = $('#estimate_take_item').val();
-                const data = { status: newStatus, estimate_service_done, estimate_take_item };
+                const data = {
+                    status: newStatus,
+                    estimate_service_done,
+                    estimate_take_item
+                };
                 $.ajax({
                     url: "{{ route('orders.status', $order->id) }}",
                     method: 'PUT',
@@ -1245,7 +1390,7 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    success: function (response) {
+                    success: function(response) {
                         console.log(response);
                         const type = 'success';
                         const message = `Status berubah menjadi ${newStatus}!`
@@ -1262,7 +1407,7 @@
                             window.location.reload();
                         }, 3000);
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error(error);
                         const type = 'danger';
                         const message = 'Status tidak berubah!'
@@ -1306,7 +1451,23 @@
             $('#status').text(status);
             $('#oleh').text(picked_by);
             $('#pada').text(picked_at);
-            let data = { customer_id, site_id, picked_by, picked_at, status, payment_method, payment_merchant, bruto, discount, items, sisa_pembayaran: picked_by.length > 0 ? pembayaran : null, uang_muka: dp, estimate_service_done, estimate_take_item, note };
+            let data = {
+                customer_id,
+                site_id,
+                picked_by,
+                picked_at,
+                status,
+                payment_method,
+                payment_merchant,
+                bruto,
+                discount,
+                items,
+                sisa_pembayaran: picked_by.length > 0 ? pembayaran : null,
+                uang_muka: dp,
+                estimate_service_done,
+                estimate_take_item,
+                note
+            };
 
             $.ajax({
                 url: $('#pickup-item-form').attr('action'),
@@ -1327,7 +1488,9 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                        alert
+                    ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -1340,8 +1503,9 @@
 
                     // Reset form
                     $('#pickup-item-form').trigger("reset");
-                    if(picked_by.length > 0) {
-                        $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove').attr("disabled", true);
+                    if (picked_by.length > 0) {
+                        $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove')
+                            .attr("disabled", true);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -1355,7 +1519,9 @@
                           <strong>Oops!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                        alert
+                    ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-pickup-item').modal('hide');
@@ -1378,7 +1544,8 @@
                 console.log('Jenis Produk', item.type);
                 let type = getTypeById(item.type, products);
                 const imageSource = ''; // Tentukan sumber gambar, misalnya dari properti gambar item
-                let info_discount = parseInt(item.discount, 10) > 100 ? item.discount : item.bruto * (parseInt(item.discount, 10) / 100);
+                let info_discount = parseInt(item.discount, 10) > 100 ? item.discount : item.bruto * (parseInt(item
+                    .discount, 10) / 100);
 
                 const row = `
                     <tr>
@@ -1413,221 +1580,240 @@
             });
         }
 
-            function saveItem(event) {
-                $('#items').show();
-                $('.total-items').show();
-                event.preventDefault(); // Menghentikan aksi default dari submit form
+        function saveItem(event) {
+            $('#items').show();
+            $('.total-items').show();
+            event.preventDefault(); // Menghentikan aksi default dari submit form
 
-                // Ambil nilai dari form
-                const type = $('#type').val();
-                console.log('id type', type);
-                const keterangan = $('#keterangan').val();
-                const biaya = $('#biaya').val().replace(/\./g, '');
-                const gambar = dataFile;
+            // Ambil nilai dari form
+            const type = $('#type').val();
+            console.log('id type', type);
+            const keterangan = $('#keterangan').val();
+            const biaya = $('#biaya').val().replace(/\./g, '');
+            const gambar = dataFile;
 
-                // Buat objek item
-                const newItem = { type, keterangan, biaya, gambar };
+            // Buat objek item
+            const newItem = {
+                type,
+                keterangan,
+                biaya,
+                gambar
+            };
 
-                console.log(newItem);
+            console.log(newItem);
 
-                // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
+            // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
 
-                // Contoh operasi CRUD sederhana (tambahkan item ke array)
-                items.push(newItem); // items adalah variabel yang berisi array item
+            // Contoh operasi CRUD sederhana (tambahkan item ke array)
+            items.push(newItem); // items adalah variabel yang berisi array item
 
-                renderItems();
+            renderItems();
 
-                // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-                const message = 'Barangh berhasil ditambahkan!';
-                $('.top-right').notify({
-                    message: { text: `Sukses! ${message}` }
-                }).show();
-
-                // Tutup modal setelah selesai menyimpan data
-                $('#modal-add-item').modal('hide');
-
-                // Reset form
-                $('#add-item-form').trigger("reset");
-                // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
-
-                sumTotalItem();
-
-                dataFile = [];
-            }
-
-            function editItem(event) {
-                $('#items').show();
-                $('.total-items').show();
-                event.preventDefault(); // Menghentikan aksi default dari submit form
-
-                const element = $('#item_element').val();
-
-                // Ambil nilai dari form
-                const type = $('#type_edit').val();
-                const keterangan = $('#keterangan_edit').val();
-                const bruto = $('#biaya_edit').val().replace(/\./g, '');
-                const discount = $('#discount_item_edit').val().replace(/\./g, '');
-                const netto = Number(items[element].netto);
-                const vat = Number(items[element].vat);
-                const total = Number(items[element].total);
-
-                // Buat objek item
-                const newItem = { id: items[element].id, type, keterangan, bruto, discount, netto, vat, total, gambar: dataFile};
-
-                console.log(newItem);
-
-                // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
-
-                // Contoh operasi CRUD sederhana (tambahkan item ke array)
-                items[element] = newItem; // items adalah variabel yang berisi array item
-
-                renderItems();
-
-                // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-                const message = 'Barang berhasil diedit!';
-                $('.top-right').notify({
-                    message: { text: `Success! ${message}` }
-                }).show();
-
-                // Tutup modal setelah selesai menyimpan data
-                $('#modal-edit-item').modal('hide');
-
-                // Reset form
-                $('#edit-item-form').trigger("reset");
-                // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
-
-                sumTotalItem();
-
-                dataFile = [];
-            }
-
-            function resetFormAddItem() {
-                const listImage = $('#list-image');
-                listImage.empty();
-                $('.list-image').hide();
-                // Reset form
-                $('#add-item-form').trigger("reset");
-                // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
-
-                dataFile = [];
-            }
-
-            function sumTotalItem() {
-                let total = 0;
-                let discount = 0;
-
-                for(let i = 0; i < items.length; i++) {
-                    total += parseInt(items[i].bruto, 10);
-                    discount += parseInt(items[i].discount, 10) > 100 ? Number(items[i].discount) : items[i].bruto * (parseInt(items[i].discount, 10) / 100);
-
+            // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
+            const message = 'Barangh berhasil ditambahkan!';
+            $('.top-right').notify({
+                message: {
+                    text: `Sukses! ${message}`
                 }
-                $('#sub_total').text(total.toLocaleString('id-ID'));
-                const total_expense = parseInt(total, 10);
-                $('#discount').val(discount.toLocaleString('id-ID'));
-                const dp = $('#dp').val().replace(/\./g, '');
-                $('#pembayaran').text(parseInt(total - discount).toLocaleString('id-ID'));
+            }).show();
 
-                // Hapus semua karakter selain digit
-                let digitsOnly = dp.replace(/\D/g, '');
+            // Tutup modal setelah selesai menyimpan data
+            $('#modal-add-item').modal('hide');
 
-                total = (total_expense - parseInt(digitsOnly, 10) - parseInt(discount, 10));
+            // Reset form
+            $('#add-item-form').trigger("reset");
+            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
 
-                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            sumTotalItem();
 
-                // Update nilai input dengan angka yang diformat
-                $('#dp').val(formattedNumber);
+            dataFile = [];
+        }
 
-                const kekurangan = !isNaN(total) ? total.toLocaleString('id-ID') : '-';
-                $('#kekurangan').text(kekurangan);
-                $('#kekurangan-sisa').val(kekurangan);
+        function editItem(event) {
+            $('#items').show();
+            $('.total-items').show();
+            event.preventDefault(); // Menghentikan aksi default dari submit form
+
+            const element = $('#item_element').val();
+
+            // Ambil nilai dari form
+            const type = $('#type_edit').val();
+            const keterangan = $('#keterangan_edit').val();
+            const bruto = $('#biaya_edit').val().replace(/\./g, '');
+            const discount = $('#discount_item_edit').val().replace(/\./g, '');
+            const netto = Number(items[element].netto);
+            const vat = Number(items[element].vat);
+            const total = Number(items[element].total);
+
+            // Buat objek item
+            const newItem = {
+                id: items[element].id,
+                type,
+                keterangan,
+                bruto,
+                discount,
+                netto,
+                vat,
+                total,
+                gambar: dataFile
+            };
+
+            console.log(newItem);
+
+            // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
+
+            // Contoh operasi CRUD sederhana (tambahkan item ke array)
+            items[element] = newItem; // items adalah variabel yang berisi array item
+
+            renderItems();
+
+            // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
+            const message = 'Barang berhasil diedit!';
+            $('.top-right').notify({
+                message: {
+                    text: `Success! ${message}`
+                }
+            }).show();
+
+            // Tutup modal setelah selesai menyimpan data
+            $('#modal-edit-item').modal('hide');
+
+            // Reset form
+            $('#edit-item-form').trigger("reset");
+            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
+
+            sumTotalItem();
+
+            dataFile = [];
+        }
+
+        function resetFormAddItem() {
+            const listImage = $('#list-image');
+            listImage.empty();
+            $('.list-image').hide();
+            // Reset form
+            $('#add-item-form').trigger("reset");
+            // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
+
+            dataFile = [];
+        }
+
+        function sumTotalItem() {
+            let total = 0;
+            let discount = 0;
+
+            for (let i = 0; i < items.length; i++) {
+                total += parseInt(items[i].bruto, 10);
+                discount += parseInt(items[i].discount, 10) > 100 ? Number(items[i].discount) : items[i].bruto * (parseInt(
+                    items[i].discount, 10) / 100);
+
             }
+            $('#sub_total').text(total.toLocaleString('id-ID'));
+            const total_expense = parseInt(total, 10);
+            $('#discount').val(discount.toLocaleString('id-ID'));
+            const dp = $('#dp').val().replace(/\./g, '');
+            $('#pembayaran').text(parseInt(total - discount).toLocaleString('id-ID'));
 
-            function padTwoDigits(num) {
-                return num.toString().padStart(2, "0");
-            }
+            // Hapus semua karakter selain digit
+            let digitsOnly = dp.replace(/\D/g, '');
 
-            function dateInYyyyMmDdHhMmSs(date, dateDivider = "-") {
+            total = (total_expense - parseInt(digitsOnly, 10) - parseInt(discount, 10));
 
-                return (
-                    [
-                        date.getFullYear(),
-                        padTwoDigits(date.getMonth() + 1),
-                        padTwoDigits(date.getDate()),
-                    ].join(dateDivider) +
-                    " " +
-                    [
-                        padTwoDigits(date.getHours()),
-                        padTwoDigits(date.getMinutes()),
-                        padTwoDigits(date.getSeconds()),
-                    ].join(":")
-                );
-            }
+            // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
+            let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-            $(function() {
-                $('#modal-add-customer').on('shown.bs.modal', function () {
-                    $('#add-customer-form #name').focus();
-                });
-                $('#modal-show-image-item').on('hidden.bs.modal', function () {
-                    $('.content-image').empty();
-                });
-                $('#modal-add-item').on('hidden.bs.modal', function () {
-                    resetFormAddItem();
-                });
-                $('#modal-edit-item').on('shown.bs.modal', function () {
-                    // $('.webcam-container').append(cameraContent);
-                    // initializeCamera();
-                });
-                $('#modal-edit-item').on('hidden.bs.modal', function () {
-                    $('#item_element').val('');
-                    // $(`#type_edit option[value='1']`).attr("selected");
-                    $('#keterangan_edit').val('');
-                    $('#biaya_edit').val('');
-                    $('#discount_item_edit').val('');
-                    if ($('.webcam-container').length > 0) {
-                        $('#closeCamera').trigger('click');
-                    }
-                    $('.webcam-container').empty();
-                    dataFile = [];
-                });
+            // Update nilai input dengan angka yang diformat
+            $('#dp').val(formattedNumber);
 
-                $('#customer').select2({
-                    placeholder: '-- Customer --',
-                    ajax: {
-                        url: '{{ route("customer.search") }}', // Ganti dengan URL endpoint Anda
-                        dataType: 'json',
-                        delay: 250,
-                        processResults: function(data) {
-                            const options = [];
-                            $.each(data, function(index, item) {
-                                options.push({
-                                    id: item.id,
-                                    text: `${item.name} (${item.phone_number})`,
-                                    data: {
-                                        address: item.address,
-                                        phone: item.phone_number
-                                    }
-                                });
+            const kekurangan = !isNaN(total) ? total.toLocaleString('id-ID') : '-';
+            $('#kekurangan').text(kekurangan);
+            $('#kekurangan-sisa').val(kekurangan);
+        }
+
+        function padTwoDigits(num) {
+            return num.toString().padStart(2, "0");
+        }
+
+        function dateInYyyyMmDdHhMmSs(date, dateDivider = "-") {
+
+            return (
+                [
+                    date.getFullYear(),
+                    padTwoDigits(date.getMonth() + 1),
+                    padTwoDigits(date.getDate()),
+                ].join(dateDivider) +
+                " " + [
+                    padTwoDigits(date.getHours()),
+                    padTwoDigits(date.getMinutes()),
+                    padTwoDigits(date.getSeconds()),
+                ].join(":")
+            );
+        }
+
+        $(function() {
+            $('#modal-add-customer').on('shown.bs.modal', function() {
+                $('#add-customer-form #name').focus();
+            });
+            $('#modal-show-image-item').on('hidden.bs.modal', function() {
+                $('.content-image').empty();
+            });
+            $('#modal-add-item').on('hidden.bs.modal', function() {
+                resetFormAddItem();
+            });
+            $('#modal-edit-item').on('shown.bs.modal', function() {
+                // $('.webcam-container').append(cameraContent);
+                // initializeCamera();
+            });
+            $('#modal-edit-item').on('hidden.bs.modal', function() {
+                $('#item_element').val('');
+                // $(`#type_edit option[value='1']`).attr("selected");
+                $('#keterangan_edit').val('');
+                $('#biaya_edit').val('');
+                $('#discount_item_edit').val('');
+                if ($('.webcam-container').length > 0) {
+                    $('#closeCamera').trigger('click');
+                }
+                $('.webcam-container').empty();
+                dataFile = [];
+            });
+
+            $('#customer').select2({
+                placeholder: '-- Customer --',
+                ajax: {
+                    url: '{{ route('customer.search') }}', // Ganti dengan URL endpoint Anda
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        const options = [];
+                        $.each(data, function(index, item) {
+                            options.push({
+                                id: item.id,
+                                text: `${item.name} (${item.phone_number})`,
+                                data: {
+                                    address: item.address,
+                                    phone: item.phone_number
+                                }
                             });
-                            return {
-                                results: options
-                            };
-                        },
-                        cache: true
-                    }
-                });
+                        });
+                        return {
+                            results: options
+                        };
+                    },
+                    cache: true
+                }
+            });
 
-                $('#customer').on('select2:select', function(e) {
-                    const data = e.params.data;
-                    const dataAttribute = data.data;
+            $('#customer').on('select2:select', function(e) {
+                const data = e.params.data;
+                const dataAttribute = data.data;
 
-                    const customerId = data.id;
-                    const customerName = data.text;
-                    const address = dataAttribute.address;
-                    const phone = dataAttribute.phone;
+                const customerId = data.id;
+                const customerName = data.text;
+                const address = dataAttribute.address;
+                const phone = dataAttribute.phone;
 
-                    // detail-user
-                    $('#detail-user').html(`
+                // detail-user
+                $('#detail-user').html(`
                         <p class="text-muted well well-sm no-shadow margin-b-10">
                             <strong>Customer Name:</strong> ${customerName === null ? '-' : customerName}
                              <br>
@@ -1637,68 +1823,70 @@
                         </p>
                     `);
 
-                    // status-customer
-                    $('#status-customer').html(`
+                // status-customer
+                $('#status-customer').html(`
                         <p class="text-center margin-b-10"><b id="status">DIPROSES</b></p>
                         <p class="text-center margin-b-2"><b>Oleh: </b> <span id="oleh">-</span></p>
                         <p class="text-center margin-b-2"><b>Pada: </b> <span id="pada">-</span></p>
                     `);
 
-                    $('#customer_id').val(customerId);
-                });
+                $('#customer_id').val(customerId);
+            });
 
-                // $('#customer').select2('open');
-                // setTimeout(function() {
-                //     // $('#customer').val('12').trigger('change.select2');
-                //     $('#customer').on("select2:selecting", function(e) {
-                //         $(this).val('12').trigger('change.select2')
-                //     });
-                // }, 500)
-                $('#customer').val(6);
-                // $('#customer').select2('open').trigger('change');
+            // $('#customer').select2('open');
+            // setTimeout(function() {
+            //     // $('#customer').val('12').trigger('change.select2');
+            //     $('#customer').on("select2:selecting", function(e) {
+            //         $(this).val('12').trigger('change.select2')
+            //     });
+            // }, 500)
+            $('#customer').val(6);
+            // $('#customer').select2('open').trigger('change');
 
-                const $newOption = $(`<option selected="selected"></option>`).val("{{ $order->id }}").text("{{ $order->customer->name }}");
-                $("#customer").append($newOption).trigger('change');
+            const $newOption = $(`<option selected="selected"></option>`).val("{{ $order->id }}").text(
+                "{{ $order->customer->name }}");
+            $("#customer").append($newOption).trigger('change');
 
-                $('#dp').on('input', function (e) {
-                    let total = $('#sub_total').text().replace(/\./g, '');
-                    const total_expense = parseInt(total, 10);
-                    const dp = $(this).val();
+            $('#dp').on('input', function(e) {
+                let total = $('#sub_total').text().replace(/\./g, '');
+                const total_expense = parseInt(total, 10);
+                const dp = $(this).val();
 
-                    // Hapus semua karakter selain digit
-                    let digitsOnly = dp.replace(/\D/g, '');
+                // Hapus semua karakter selain digit
+                let digitsOnly = dp.replace(/\D/g, '');
 
-                    total = total_expense - parseInt(digitsOnly, 10);
+                total = total_expense - parseInt(digitsOnly, 10);
 
-                    // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                    let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
+                let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                    // Update nilai input dengan angka yang diformat
-                    $(this).val(formattedNumber);
+                // Update nilai input dengan angka yang diformat
+                $(this).val(formattedNumber);
 
-                    const kekurangan = !isNaN(total) ? total.toLocaleString('id-ID') : '-';
-                    $('#kekurangan').text(kekurangan);
-                });
+                const kekurangan = !isNaN(total) ? total.toLocaleString('id-ID') : '-';
+                $('#kekurangan').text(kekurangan);
+            });
 
-                $('#diambil').on('input', function (e) {
-                    const value = $('#kekurangan-sisa').val();
-                    console.log('test');
-                    // Hapus semua karakter selain digit
-                    let digitsOnly = value.replace(/\D/g, '');
+            $('#diambil').on('input', function(e) {
+                const value = $('#kekurangan-sisa').val();
+                console.log('test');
+                // Hapus semua karakter selain digit
+                let digitsOnly = value.replace(/\D/g, '');
 
-                    // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                    let kekuranganSisa = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
+                let kekuranganSisa = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                    const kekurangan = $('#kekurangan').text();
-                    console.log(kekurangan);
-                    console.log(kekuranganSisa);
-                    if (kekurangan === kekuranganSisa) {
-                        $('#btn-ambil').removeAttr('disabled');
-                    } else {
-                        $('#btn-ambil').attr('disabled', true);
-                    }
-                });
-                $('#biaya, #biaya_edit, #discount, #discount_item, #discount_item_edit, #kekurangan-sisa').on('input', function (e) {
+                const kekurangan = $('#kekurangan').text();
+                console.log(kekurangan);
+                console.log(kekuranganSisa);
+                if (kekurangan === kekuranganSisa) {
+                    $('#btn-ambil').removeAttr('disabled');
+                } else {
+                    $('#btn-ambil').attr('disabled', true);
+                }
+            });
+            $('#biaya, #biaya_edit, #discount, #discount_item, #discount_item_edit, #kekurangan-sisa').on('input',
+                function(e) {
                     const value = $(this).val();
 
                     // Hapus semua karakter selain digit
@@ -1711,76 +1899,79 @@
                     $(this).val(formattedNumber);
                 });
 
-                $('#discount_item_edit').on('input', function(e) {
-                    const discount_item_edit = $(this).val();
+            $('#discount_item_edit').on('input', function(e) {
+                const discount_item_edit = $(this).val();
 
-                    let digitsOnly = discount_item_edit.replace(/\D/g, '');
+                let digitsOnly = discount_item_edit.replace(/\D/g, '');
 
-                    let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                let formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                    $(this).val(formattedNumber);
+                $(this).val(formattedNumber);
 
 
-                    const biaya = $('#biaya_edit').val().replace(/\D/g, '');
-                    const total_biaya = (Number(biaya));
+                const biaya = $('#biaya_edit').val().replace(/\D/g, '');
+                const total_biaya = (Number(biaya));
 
-                    const total_item_edit = $('#total_item_edit');
-                    if(discount_item_edit === '') {
-                        total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                const total_item_edit = $('#total_item_edit');
+                if (discount_item_edit === '') {
+                    total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                } else {
+                    if (Number(digitsOnly) > 100) {
+                        total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly))
+                            .toLocaleString('id-ID'));
+                        $('#total_after_discount_edit').text('').parent().css('display', 'none');
                     } else {
-                        if(Number(digitsOnly) > 100) {
-                            total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly)).toLocaleString('id-ID'));
+                        const total_after_discount_edit = total_biaya * (Number(digitsOnly) / 100);
+                        if (Number(digitsOnly) === 100) {
+                            total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString(
+                                'id-ID'));
                             $('#total_after_discount_edit').text('').parent().css('display', 'none');
                         } else {
-                            const total_after_discount_edit = total_biaya * (Number(digitsOnly) / 100);
-                            if(Number(digitsOnly) === 100) {
-                                total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
-                                $('#total_after_discount_edit').text('').parent().css('display', 'none');
-                            } else {
-                                $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
-                                total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount_edit).toLocaleString('id-ID'));
-                            }
+                            $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString(
+                                'id-ID')).parent().css('display', 'inline');
+                            total_item_edit.val(total_biaya === 0 ? '' : (total_biaya -
+                                total_after_discount_edit).toLocaleString('id-ID'));
                         }
                     }
-                });
-
-                $('#site_id').select2();
-
-                let estimateServiceDone = moment("{{ $order->estimate_service_done }}").format('YYYY-MM-DD');
-                let estimateTakeItem = moment("{{ $order->estimate_take_item }}").format('YYYY-MM-DD');
-                $('#estimate_service_done').datepicker({
-                    todayHighlight: true,
-                    endDate: '+30d',
-                    datesDisabled: '+30d',
-                    autoclose: true,
-                    format: 'yyyy-mm-dd'
-                }).datepicker("setDate", estimateServiceDone).on('changeDate', function(e) {
-                    // Dapatkan nilai dari datepicker
-                    const selectedDate = $('#estimate_service_done').datepicker('getDate');
-                    if (selectedDate) {
-                        let newDate = moment(selectedDate).add(1, 'days');
-                        $('#estimate_take_item').val(newDate.format('YYYY-MM-DD')).trigger('changeDate');
-                    }
-                }).trigger('changeDate');
-                $('#estimate_take_item').datepicker({
-                    todayHighlight: true,
-                    endDate: '+30d',
-                    datesDisabled: '+30d',
-                    autoclose: true,
-                    format: 'yyyy-mm-dd'
-                }).datepicker('setDate', estimateTakeItem).trigger('changeDate');
-
-                // $('.select2').select2();
-                // $('.select2').select2({
-                //     "language": {
-                //         "noResults": function(){
-                //             return "Nenhum registro encontrado.";
-                //         }
-                //     }
-                // });
-
+                }
             });
 
+            $('#site_id').select2();
+
+            let estimateServiceDone = moment("{{ $order->estimate_service_done }}").format('YYYY-MM-DD');
+            let estimateTakeItem = moment("{{ $order->estimate_take_item }}").format('YYYY-MM-DD');
+            $('#estimate_service_done').datepicker({
+                todayHighlight: true,
+                endDate: '+30d',
+                datesDisabled: '+30d',
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            }).datepicker("setDate", estimateServiceDone).on('changeDate', function(e) {
+                // Dapatkan nilai dari datepicker
+                const selectedDate = $('#estimate_service_done').datepicker('getDate');
+                if (selectedDate) {
+                    let newDate = moment(selectedDate).add(1, 'days');
+                    $('#estimate_take_item').val(newDate.format('YYYY-MM-DD')).trigger('changeDate');
+                }
+            }).trigger('changeDate');
+            $('#estimate_take_item').datepicker({
+                todayHighlight: true,
+                endDate: '+30d',
+                datesDisabled: '+30d',
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            }).datepicker('setDate', estimateTakeItem).trigger('changeDate');
+
+            // $('.select2').select2();
+            // $('.select2').select2({
+            //     "language": {
+            //         "noResults": function(){
+            //             return "Nenhum registro encontrado.";
+            //         }
+            //     }
+            // });
+
+        });
     </script>
 
 @endsection

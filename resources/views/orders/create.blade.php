@@ -4,33 +4,47 @@
 
 @section('title', 'Tambah Reparasi')
 @section('layout_css')
-    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
     <style>
         .select2-container {
             width: 100% !important;
         }
+
         .glyphicon.spinning {
             animation: spin 1s infinite linear;
             -webkit-animation: spin2 1s infinite linear;
         }
 
         @keyframes spin {
-            from { transform: scale(1) rotate(0deg); }
-            to { transform: scale(1) rotate(360deg); }
+            from {
+                transform: scale(1) rotate(0deg);
+            }
+
+            to {
+                transform: scale(1) rotate(360deg);
+            }
         }
 
         @-webkit-keyframes spin2 {
-            from { -webkit-transform: rotate(0deg); }
-            to { -webkit-transform: rotate(360deg); }
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
         }
 
-        #cameraContainer, #photoContainer {
+        #cameraContainer,
+        #photoContainer {
             display: none;
         }
+
         #video {
             width: 100%;
             height: auto;
         }
+
         #canvas {
             display: none;
         }
@@ -94,7 +108,7 @@
                                             <label for="city_id">Kota: <small class="text-danger">*</small></label>
                                             <select class="form-control" id="city_id" name="city_id" required>
                                                 <option disabled selected> -- Pilih Kota -- </option>
-                                                @foreach($cities as $city)
+                                                @foreach ($cities as $city)
                                                     <option value="{{ $city->id }}"> {{ $city->name }} </option>
                                                 @endforeach
                                             </select>
@@ -154,7 +168,8 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Status</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
                         </button>
                     </div>
                 </div>
@@ -178,7 +193,8 @@
 
                 <div class="box-body">
                     <div class="table-responsive no-padding">
-                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;" id="table-items">
+                        <table class="table table-hover table-bordered" style="border: 1px solid #ddd !important;"
+                            id="table-items">
                             <thead class="bg-navy">
                                 <tr>
                                     <th class="text-center">#</th>
@@ -228,24 +244,26 @@
                                             <input type="text" class="form-control" id="biaya_edit"
                                                 name="biaya_edit">
                                         </div>
-                                         <div class="form-group">
-                                             <label for="discount_item_edit">Discount:</label>
-                                             <input type="text" class="form-control" id="discount_item_edit"
-                                                 name="discount_item_edit">
-                                         </div>
+                                        <div class="form-group">
+                                            <label for="discount_item_edit">Discount:</label>
+                                            <input type="text" class="form-control" id="discount_item_edit"
+                                                name="discount_item_edit">
+                                        </div>
                                         <div class="form-group" style="display: none;">
                                             <label for="total_after_discount_edit">Discount Amount: </label>
                                             <span id="total_after_discount_edit"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label for="total_item_edit">Total: <small class="text-danger">*</small></label>
-                                            <input readonly type="text" class="form-control" id="total_item_edit" name="total_item_edit">
+                                            <label for="total_item_edit">Total: <small
+                                                    class="text-danger">*</small></label>
+                                            <input readonly type="text" class="form-control" id="total_item_edit"
+                                                name="total_item_edit">
                                         </div>
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit"
-                                                name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment" multiple
-                                                onchange="handleEditImageUpload(this)">
+                                                name="gambar_edit" accept=".jpg,.jpeg,.png" capture="environment"
+                                                multiple onchange="handleEditImageUpload(this)">
                                         </div>
                                         <p>OR</p>
                                         <div class="webcam-edit-container"></div>
@@ -326,9 +344,9 @@
                                 <div class="form-group">
                                     <label for="type">Jenis Service: <small class="text-danger">*</small></label>
                                     <select id="type" class="form-control" name="type" required>
-{{--                                        @foreach ($products as $product)--}}
-{{--                                            <option value="{{ $product->id }}">{{ $product->name }}</option>--}}
-{{--                                        @endforeach--}}
+                                        {{--                                        @foreach ($products as $product) --}}
+                                        {{--                                            <option value="{{ $product->id }}">{{ $product->name }}</option> --}}
+                                        {{--                                        @endforeach --}}
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -339,22 +357,24 @@
                                     <label for="biaya">Biaya: <small class="text-danger">*</small></label>
                                     <input type="text" class="form-control" id="biaya" name="biaya" required>
                                 </div>
-                                 <div class="form-group">
-                                     <label for="discount_item">Discount:</label>
-                                     <input type="text" class="form-control" id="discount_item" name="discount_item">
-                                 </div>
+                                <div class="form-group">
+                                    <label for="discount_item">Discount:</label>
+                                    <input type="text" class="form-control" id="discount_item" name="discount_item">
+                                </div>
                                 <div class="form-group" style="display: none;">
                                     <label for="total_after_discount">Discount Amount: </label>
                                     <span id="total_after_discount"></span>
                                 </div>
                                 <div class="form-group">
                                     <label for="total_item">Total: <small class="text-danger">*</small></label>
-                                    <input readonly type="text" class="form-control" id="total_item" name="total_item">
+                                    <input readonly type="text" class="form-control" id="total_item"
+                                        name="total_item">
                                 </div>
                                 <div class="form-group">
                                     <label for="gambar">Foto: <small class="text-danger">*</small></label>
                                     <input type="file" class="form-control-file" id="gambar" name="gambar"
-                                        accept=".jpg, .jpeg, .png" capture="environment" multiple onchange="handleImageUpload(this)">
+                                        accept=".jpg, .jpeg, .png" capture="environment" multiple
+                                        onchange="handleImageUpload(this)">
                                 </div>
                                 <p>OR</p>
                                 <div class="webcam-container"></div>
@@ -402,7 +422,7 @@
         {{--                                 <div class="form-price form-group {{ $errors->has('price') ? 'has-error' : '' }}"> --}}
         {{--                                     <label for="price">Harga</label> --}}
         {{--                                     <input type="number" name="price" id="price" class="form-control" placeholder="Harga" value="{{ old('name') }}" autofocus> --}}
-        {{--                                     @if($errors->has('price')) --}}
+        {{--                                     @if ($errors->has('price')) --}}
         {{--                                         <span class="help-block"> --}}
         {{--                                     <strong>{{ $errors->first('price') }}</strong> --}}
         {{--                                 </span> --}}
@@ -411,7 +431,7 @@
         {{--                                 <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}"> --}}
         {{--                                     <label for="name">Nama Jenis Produk</label> --}}
         {{--                                     <input type="text" name="name" id="name" class="form-control" placeholder="Name" required value="{{ old('name') }}" autofocus> --}}
-        {{--                                     @if($errors->has('name')) --}}
+        {{--                                     @if ($errors->has('name')) --}}
         {{--                                         <span class="help-block"> --}}
         {{--                                     <strong>{{ $errors->first('name') }}</strong> --}}
         {{--                                 </span> --}}
@@ -438,7 +458,7 @@
                     <h3 class="box-title">Pembayaran</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                                title="" data-original-title="Collapse Form Pembayaran">
+                            title="" data-original-title="Collapse Form Pembayaran">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -446,7 +466,7 @@
                     <div class="form-group">
                         <label for="payment_method">Metode Pembayaran: <small class="text-danger">*</small></label>
                         <select class="form-control" id="payment_method" name="payment_method" required>
-                            @foreach($payment_methods as $payment_method)
+                            @foreach ($payment_methods as $payment_method)
                                 <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
                             @endforeach
                         </select>
@@ -455,9 +475,9 @@
                         <label for="payment_merchant">Penyedia Pembayaran: <small class="text-danger">*</small></label>
                         <select class="form-control" id="payment_merchant" name="payment_merchant" required>
                             <option value="1">-</option>
-                            {{--                            @foreach($payment_merchants as $payment_merchant)--}}
-                            {{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>--}}
-                            {{--                            @endforeach--}}
+                            {{--                            @foreach ($payment_merchants as $payment_merchant) --}}
+                            {{--                                <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option> --}}
+                            {{--                            @endforeach --}}
                         </select>
                     </div>
                     <div class="form-group">
@@ -507,7 +527,8 @@
                 <div class="box-header">
                     <h3 class="box-title">Catatan</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse Form Order">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
                             <i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -535,11 +556,12 @@
                         <input type="hidden" name="customer_id" id="customer_id" value="">
                         {{ csrf_field() }}
                         <p class="margin-b-2"><b>Sub total: </b><span id="sub_total"></span></p>
-                        <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount" name="discount" value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Discount: </b><input readonly type="text" id="discount"
+                                name="discount" value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><i>INCLUDED PPN: </i><span id="tax">11%</span></p>
                         <p class="margin-b-2"><b>Total: </b><span id="total"></span></p>
-                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp" name="dp"
-                                value="" class="form-control" style="display: inline"></p>
+                        <p class="margin-b-2"><b>Pembayaran diterima: </b><input type="text" id="dp"
+                                name="dp" value="" class="form-control" style="display: inline"></p>
                         <p class="margin-b-2"><b>Kekurangan: </b><span id="kekurangan">-</span></p>
                         <input type="hidden" id="kekurangan-final" name="kekurangan" class="form-control"
                             style="display: inline">
@@ -548,7 +570,7 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
     <div class="row">
         <div class="col-md-12 total-items">
@@ -616,7 +638,7 @@
 @endsection
 
 @section('layout_js')
-    <script type="text/javascript" src="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.js') }}"></script>
     <script>
         $('#items').hide();
         $('.total-items').hide();
@@ -660,7 +682,7 @@
             const cameraSelect = $('#cameraSelect');
             let stream = null;
 
-            $(document).on('click', '#startCamera', function () {
+            $(document).on('click', '#startCamera', function() {
                 cameraContainer.show();
                 $('#startCamera').hide();
                 navigator.mediaDevices.enumerateDevices()
@@ -675,12 +697,12 @@
                         });
                         return startCamera(cameraSelect.val());
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.log("An error occurred: " + err);
                     });
             });
 
-            $(document).on('change', '#cameraSelect', function () {
+            $(document).on('change', '#cameraSelect', function() {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
                 }
@@ -689,19 +711,23 @@
 
             function startCamera(deviceId) {
                 navigator.mediaDevices.getUserMedia({
-                    video: { deviceId: deviceId ? { exact: deviceId } : undefined }
-                })
-                    .then(function (mediaStream) {
+                        video: {
+                            deviceId: deviceId ? {
+                                exact: deviceId
+                            } : undefined
+                        }
+                    })
+                    .then(function(mediaStream) {
                         stream = mediaStream;
                         video.srcObject = stream;
                         video.play();
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.log("An error occurred: " + err);
                     });
             }
 
-            $(document).on('click', '#takePhoto', function () {
+            $(document).on('click', '#takePhoto', function() {
                 const context = canvas.getContext('2d');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -731,7 +757,7 @@
                         contentImage.append(row);
                     });
                 }, 0);
-                setTimeout(function () {
+                setTimeout(function() {
                     $('#retakePhoto').trigger('click');
                 }, 0)
                 photoContainer.show();
@@ -739,9 +765,9 @@
                 canvas.show();
             });
 
-            $(document).on('click', '#closeCamera', function () {
+            $(document).on('click', '#closeCamera', function() {
                 if (stream) {
-                    stream.getTracks().forEach(function (track) {
+                    stream.getTracks().forEach(function(track) {
                         track.stop();
                     });
                 }
@@ -750,18 +776,18 @@
                 cameraSelect.empty();
             });
 
-            $(document).on('click', '#retakePhoto', function () {
+            $(document).on('click', '#retakePhoto', function() {
                 photoContainer.hide();
                 cameraContainer.show();
             });
 
-            $(document).on('click', '#cancelPhoto', function () {
+            $(document).on('click', '#cancelPhoto', function() {
                 photo.src = "";
                 canvas.hide();
                 photoContainer.hide();
                 $('#startCamera').show();
                 if (stream) {
-                    stream.getTracks().forEach(function (track) {
+                    stream.getTracks().forEach(function(track) {
                         track.stop();
                     });
                 }
@@ -784,7 +810,7 @@
 
         function getPaymentMerchant() {
             $.ajax({
-                url: '{{ route("order-products.merchant_by_payment") }}',
+                url: '{{ route('order-products.merchant_by_payment') }}',
                 type: 'GET',
                 dataType: 'json',
                 data: {
@@ -793,7 +819,8 @@
                 success: function(response) {
                     $('#payment_merchant').empty();
                     $.each(response, function(index, paymentMerchant) {
-                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' + paymentMerchant.name + '</option>');
+                        $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' +
+                            paymentMerchant.name + '</option>');
                     });
                 },
                 error: function(xhr, status, error) {
@@ -838,7 +865,7 @@
                 }
             }, 500);
 
-            if($('#closeCamera').length > 0) {
+            if ($('#closeCamera').length > 0) {
                 $('#closeCamera').trigger('click');
             }
         }
@@ -886,19 +913,19 @@
                 });
             }, 500);
 
-            if($('#closeCamera').length > 0) {
+            if ($('#closeCamera').length > 0) {
                 $('#closeCamera').trigger('click');
             }
         }
 
-        function renderListImage(itemIndex=null) {
+        function renderListImage(itemIndex = null) {
             // console.log(dataFile);
             const listImage = $('#list-image');
             $('.list-image').hide();
             $('.list-image').show();
             listImage.empty();
             for (let i = 0; i < dataFile.length; i++) {
-                if(itemIndex === null) {
+                if (itemIndex === null) {
                     listImage.append(`
                         <tr>
                             <th>
@@ -992,15 +1019,18 @@
             $('#item_element').val(index);
 
             const dataItem = items[index];
-            let info_discount = parseInt(dataItem.discount_item, 10) > 100 ? dataItem.discount_item : dataItem.biaya * (parseInt(dataItem.discount_item, 10) / 100);
+            let info_discount = parseInt(dataItem.discount_item, 10) > 100 ? dataItem.discount_item : dataItem.biaya * (
+                parseInt(dataItem.discount_item, 10) / 100);
 
 
             $(`#type_edit option[value='${dataItem.type}']`).prop('selected', true);
             // const type = $('#type_edit').val();
             const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
             const biaya = $('#biaya_edit').val(parseInt(dataItem.biaya, 10).toLocaleString('id-ID'));
-            const discount_item = $('#discount_item_edit').val(parseInt(dataItem.discount_item, 10).toLocaleString('id-ID'));
-            const total_item_edit = $('#total_item_edit').val((parseInt(dataItem.biaya, 10) - parseInt(info_discount, 10)).toLocaleString('id-ID'));
+            const discount_item = $('#discount_item_edit').val(parseInt(dataItem.discount_item, 10).toLocaleString(
+            'id-ID'));
+            const total_item_edit = $('#total_item_edit').val((parseInt(dataItem.biaya, 10) - parseInt(info_discount, 10))
+                .toLocaleString('id-ID'));
             $('#discount_item_edit').trigger('input');
         }
 
@@ -1053,10 +1083,11 @@
             $.ajax({
                 type: 'GET',
                 url: '{{ route('customer.search') }}' + '?term=' + customerId + '&_type=query&q=' +
-                customerId, // Asumsi endpoint mendukung query parameter 'id'
+                    customerId, // Asumsi endpoint mendukung query parameter 'id'
                 success: function(data) {
                     if (data && data.length > 0) {
-                        let item = data[data.length - 1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
+                        let item = data[data.length -
+                        1]; // asumsi data kembali sebagai array dan pelanggan yang dicari selalu index 0
                         let newOption = new Option(item.name, item.id, true, true);
 
                         $(newOption).data('address', item.address);
@@ -1097,7 +1128,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -1123,7 +1155,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-customer').modal('hide');
@@ -1152,7 +1185,8 @@
                           <strong>Sukses!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     setTimeout(() => {
@@ -1177,7 +1211,8 @@
                           <strong>Oops!</strong> ${message}
                         </div>
                     `;
-                    $('#alert-container').html(alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                    $('#alert-container').html(
+                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup modal setelah selesai menyimpan data
                     $('#modal-add-product').modal('hide');
@@ -1205,7 +1240,8 @@
             items.forEach(function(item, index) {
                 let type = getTypeById(item.type, products);
                 const imageSource = ''; // Tentukan sumber gambar, misalnya dari properti gambar item
-                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.biaya * (parseInt(item.discount_item, 10) / 100);
+                let info_discount = parseInt(item.discount_item, 10) > 100 ? item.discount_item : item.biaya * (
+                    parseInt(item.discount_item, 10) / 100);
 
                 const row = `
                     <tr>
@@ -1249,7 +1285,8 @@
             const type = $('#type').val();
             const keterangan = $('#keterangan').val();
             const biaya = $('#biaya').val().replace(/\./g, '');
-            const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''), 10) : 0;
+            const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''),
+                10) : 0;
             const gambar = dataFile;
 
             // Buat objek item
@@ -1351,7 +1388,8 @@
 
             for (let i = 0; i < items.length; i++) {
                 total += parseInt(items[i].biaya, 10);
-                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].biaya * (parseInt(items[i].discount_item, 10) / 100);
+                discount += parseInt(items[i].discount_item, 10) > 100 ? Number(items[i].discount_item) : items[i].biaya * (
+                    parseInt(items[i].discount_item, 10) / 100);
             }
             console.log(total.toLocaleString('id-ID'))
 
@@ -1442,7 +1480,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
 
                     // Tutup alert setelah 3 detik
                     let url = "{{ route('orders.show', ':id') }}";
@@ -1470,7 +1509,8 @@
                         </div>
                     `;
                     $('#alert-container').html(
-                    alert); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
+                        alert
+                        ); // Ganti '#alert-container' dengan ID dari elemen tempat Anda ingin menampilkan alert
                 }
             });
 
@@ -1496,12 +1536,12 @@
                 }
                 $('.webcam-container').empty();
             });
-            $('#modal-add-item').on('shown.bs.modal', function () {
+            $('#modal-add-item').on('shown.bs.modal', function() {
                 dataFile = [];
                 $('.webcam-container').append(cameraContent);
                 initializeCamera();
             });
-            $('#modal-edit-item').on('shown.bs.modal', function () {
+            $('#modal-edit-item').on('shown.bs.modal', function() {
                 $('.webcam-edit-container').append(cameraContent);
                 initializeCamera();
             });
@@ -1680,21 +1720,24 @@
                 const total_biaya = (Number(biaya));
 
                 const total_item = $('#total_item');
-                if(discount_item === '') {
+                if (discount_item === '') {
                     total_item.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
                     $('#total_after_discount_edit').text('').parent().css('display', 'none');
                 } else {
-                    if(Number(digitsOnly) > 100) {
-                        total_item.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly)).toLocaleString('id-ID'));
+                    if (Number(digitsOnly) > 100) {
+                        total_item.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly))
+                            .toLocaleString('id-ID'));
                         $('#total_after_discount').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount = total_biaya * (Number(digitsOnly) / 100);
-                        if(Number(digitsOnly) === 100) {
+                        if (Number(digitsOnly) === 100) {
                             total_item.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
                             $('#total_after_discount').text('').parent().css('display', 'none');
                         } else {
-                            $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount).toLocaleString('id-ID'));
+                            $('#total_after_discount').text(total_after_discount.toLocaleString('id-ID'))
+                                .parent().css('display', 'inline');
+                            total_item.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount)
+                                .toLocaleString('id-ID'));
                         }
                     }
                 }
@@ -1714,20 +1757,24 @@
                 const total_biaya = (Number(biaya));
 
                 const total_item_edit = $('#total_item_edit');
-                if(discount_item_edit === '') {
+                if (discount_item_edit === '') {
                     total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
                 } else {
-                    if(Number(digitsOnly) > 100) {
-                        total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly)).toLocaleString('id-ID'));
+                    if (Number(digitsOnly) > 100) {
+                        total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - Number(digitsOnly))
+                            .toLocaleString('id-ID'));
                         $('#total_after_discount_edit_edit').text('').parent().css('display', 'none');
                     } else {
                         const total_after_discount_edit = total_biaya * (Number(digitsOnly) / 100);
-                        if(Number(digitsOnly) === 100) {
-                            total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString('id-ID'));
+                        if (Number(digitsOnly) === 100) {
+                            total_item_edit.val(total_biaya === 0 ? '' : total_biaya.toLocaleString(
+                                'id-ID'));
                             $('#total_after_discount_edit').text('').parent().css('display', 'none');
                         } else {
-                            $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString('id-ID')).parent().css('display', 'inline');
-                            total_item_edit.val(total_biaya === 0 ? '' : (total_biaya - total_after_discount_edit).toLocaleString('id-ID'));
+                            $('#total_after_discount_edit').text(total_after_discount_edit.toLocaleString(
+                                'id-ID')).parent().css('display', 'inline');
+                            total_item_edit.val(total_biaya === 0 ? '' : (total_biaya -
+                                total_after_discount_edit).toLocaleString('id-ID'));
                         }
                     }
                 }
@@ -1747,7 +1794,7 @@
                 // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
                 let formattedNumber = '';
                 // Format angka dengan menambahkan titik setiap 3 digit dari kanan ke kiri
-                if(value !== '') {
+                if (value !== '') {
                     formattedNumber = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 }
 
@@ -1757,7 +1804,8 @@
                 // Update nilai input dengan angka yang diformat
                 $(this).val(formattedNumber);
                 // $('#dp').trigger('input');
-                const totalValue = value === '' ? amount_value.toLocaleString('id-ID') :  parseInt(netto, 10).toLocaleString('id-ID');
+                const totalValue = value === '' ? amount_value.toLocaleString('id-ID') : parseInt(netto, 10)
+                    .toLocaleString('id-ID');
                 console.log(totalValue);
                 $('#total').text((totalValue));
             });
@@ -1770,7 +1818,7 @@
                 datesDisabled: '+30d',
                 autoclose: true,
                 format: 'yyyy-mm-dd'
-            }).datepicker("setDate",'+4d').on('changeDate', function(e) {
+            }).datepicker("setDate", '+4d').on('changeDate', function(e) {
                 // Dapatkan nilai dari datepicker
                 const selectedDate = $('#estimate_service_done').datepicker('getDate');
                 if (selectedDate) {

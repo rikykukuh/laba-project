@@ -15,7 +15,7 @@
 @endsection
 
 @section('layout_css')
-    <link href="{{ asset('public/plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/jquery-image-viewer/dist/jquery.magnify.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -37,22 +37,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach($logs as $log)
-                                <tr>
-                                    <th>{{ $loop->iteration }}</th>
-                                    <td>{{ $log['date'] ?? 'N/A' }}</td>
-                                    <td class="text-center">
-                                        <span class="btn btn-xs {{ $log['type'] === 'info' ? 'btn-info' : ($log['type'] === 'error' ? 'btn-danger' : ($log['type'] === 'warning' ? 'btn-warning' : ($log['type'] === 'success' ? 'btn-success' : 'btn-secondary'))) }}">
-                                            {{ ucwords($log['type']) ?? 'N/A' }}
-                                        </span>
-                                    </td>
-                                    <th>{{ $log['type_order'] ?? 'N/A' }}</th>
-                                    <td>{{ $log['message'] ?? 'N/A' }}</td>
-                                    <td>
-                                        <pre style="width: 500px;height: 150px;">{{ json_encode($log['context'] ?? [], JSON_PRETTY_PRINT) }}</pre>
-                                    </td>
-                                </tr>
-                            @endforeach
+                                @foreach ($logs as $log)
+                                    <tr>
+                                        <th>{{ $loop->iteration }}</th>
+                                        <td>{{ $log['date'] ?? 'N/A' }}</td>
+                                        <td class="text-center">
+                                            <span
+                                                class="btn btn-xs {{ $log['type'] === 'info' ? 'btn-info' : ($log['type'] === 'error' ? 'btn-danger' : ($log['type'] === 'warning' ? 'btn-warning' : ($log['type'] === 'success' ? 'btn-success' : 'btn-secondary'))) }}">
+                                                {{ ucwords($log['type']) ?? 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <th>{{ $log['type_order'] ?? 'N/A' }}</th>
+                                        <td>{{ $log['message'] ?? 'N/A' }}</td>
+                                        <td>
+                                            <pre style="width: 500px;height: 150px;">{{ json_encode($log['context'] ?? [], JSON_PRETTY_PRINT) }}</pre>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -66,8 +67,8 @@
 @include('layouts.AdminLTE._includes._data_tables')
 
 @section('scripts')
-    <script src="{{ asset('public/vendor/datatables/buttons.server-side.js') }}"></script>
-    <script src="{{ asset("plugins/jquery/jquery.min.js") }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 
     <script src="{{ asset('plugins/datatables.net/js/dataTables.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
