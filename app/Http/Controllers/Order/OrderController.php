@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 use Yajra\DataTables\DataTables;
 
 class OrderController extends Controller
@@ -119,6 +120,7 @@ class OrderController extends Controller
             'status' => 'DIPROSES',
             'sisa_pembayaran' => $kekurangan,
             'customer_id' => $customer_id,
+            'created_by' => auth()->user()->id,
             'transaction_type' => 0,
             'site_id' => $site_id,
             'estimate_service_done' => $estimate_service_done,
@@ -172,23 +174,33 @@ class OrderController extends Controller
                 $mime_split = explode('/', $mime_split_without_base64[0], 2);
                 $extension = $mime_split[1];
 
-                $filePathPreview = "previews/$randomFilename.$extension";
+                // $filePathPreview = "previews/$randomFilename.$extension";
                 $filePathThumbnail = "thumbnails/$randomFilename.$extension";
 
-                $image = explode('base64,',$base64Image);
+                // Extract and decode the image
+                $image = explode('base64,', $base64Image);
                 $image = end($image);
                 $image = str_replace(' ', '+', $image);
 
-                Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
-                Storage::disk('public')->put($filePathPreview,base64_decode($image));
+                $decodedImage = base64_decode($image);
 
-                // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
-                // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
+                // Resize image to ensure it is below or equal to 200KB
+                $resizedImage = Image::make($decodedImage)
+                    ->resize(800, null, function ($constraint) { // Adjust the width, maintain aspect ratio
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    })
+                    ->encode($extension, 75); // Reduce quality to ensure size is under 200KB
 
+                // Save resized image to storage
+                Storage::disk('public')->put($filePathThumbnail, $resizedImage);
+                // Storage::disk('public')->put($filePathPreview, $resizedImage);
+
+                // Save paths to database
                 OrderItemPhoto::create([
                     'order_item_id' => $order_item->id,
                     'thumbnail_url' => $filePathThumbnail,
-                    'preview_url' => $filePathPreview,
+                    'preview_url' => $filePathThumbnail,
                 ]);
             }
         }
@@ -410,7 +422,7 @@ class OrderController extends Controller
                 $mime_split = explode('/', $mime_split_without_base64[0], 2);
                 $extension = $mime_split[1];
 
-                $filePathPreview = "previews/$randomFilename.$extension";
+                // $filePathPreview = "previews/$randomFilename.$extension";
                 $filePathThumbnail = "thumbnails/$randomFilename.$extension";
 
                 $image = explode('base64,',$base64Image);
@@ -418,7 +430,7 @@ class OrderController extends Controller
                 $image = str_replace(' ', '+', $image);
 
                 Storage::disk('public')->put($filePathThumbnail,base64_decode($image));
-                Storage::disk('public')->put($filePathPreview,base64_decode($image));
+                // Storage::disk('public')->put($filePathPreview,base64_decode($image));
 
                 // Storage::disk('public')->put('public/'.$filePathThumbnail, $base64Image);
                 // Storage::disk('public')->put('public/'.$filePathPreview, $base64Image);
@@ -426,7 +438,7 @@ class OrderController extends Controller
                 OrderItemPhoto::create([
                     'order_item_id' => $order_item->id,
                     'thumbnail_url' => $filePathThumbnail,
-                    'preview_url' => $filePathPreview,
+                    'preview_url' => $filePathThumbnail,
                 ]);
             }
         }
@@ -534,7 +546,7 @@ class OrderController extends Controller
     public function orderPrint($id)
     {
         $config = Config::find(1);
-        $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
+        $order = Order::with('orderItems.orderItemPhotos', 'creator')->findOrFail($id);
         // dd($order);
         $customers = Customer::all();
         $statuses = $this->statuses;
@@ -666,18 +678,18 @@ class OrderController extends Controller
             $mime_split = explode('/', $mime_split_without_base64[0], 2);
             $extension = $mime_split[1];
 
-            $filePathPreview = "previews/$randomFilename.$extension";
+            // $filePathPreview = "previews/$randomFilename.$extension";
             $filePathThumbnail = "thumbnails/$randomFilename.$extension";
 
             $imageContent = base64_decode(explode('base64,', $image)[1]);
 
             Storage::disk('public')->put($filePathThumbnail, $imageContent);
-            Storage::disk('public')->put($filePathPreview, $imageContent);
+            // Storage::disk('public')->put($filePathPreview, $imageContent);
 
             OrderItemPhoto::create([
                 'order_item_id' => $orderItemId,
                 'thumbnail_url' => $filePathThumbnail,
-                'preview_url' => $filePathPreview,
+                'preview_url' => $filePathThumbnail,
             ]);
         }
     }
@@ -696,18 +708,18 @@ class OrderController extends Controller
             $mime_split = explode('/', $mime_split_without_base64[0], 2);
             $extension = $mime_split[1];
 
-            $filePathPreview = "previews/$randomFilename.$extension";
+            // $filePathPreview = "previews/$randomFilename.$extension";
             $filePathThumbnail = "thumbnails/$randomFilename.$extension";
 
             $imageContent = base64_decode(explode('base64,', $image)[1]);
 
             Storage::disk('public')->put($filePathThumbnail, $imageContent);
-            Storage::disk('public')->put($filePathPreview, $imageContent);
+            // Storage::disk('public')->put($filePathPreview, $imageContent);
 
             OrderItemPhoto::create([
                 'order_item_id' => $orderItemId,
                 'thumbnail_url' => $filePathThumbnail,
-                'preview_url' => $filePathPreview,
+                'preview_url' => $filePathThumbnail,
             ]);
         }
     }

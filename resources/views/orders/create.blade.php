@@ -840,6 +840,10 @@
         function handleImageUpload(element) {
             const files = $(element)[0].files;
             if (files.length === 0) return;
+            // const fileItems = 5;
+            // if (parseInt(files.length) > fileItems) {
+            //     alert(`You are only allowed to upload a maximum of ${fileItems} files`);
+            // }
 
             // console.log(files);
             for (let i = 0; i < files.length; i++) {

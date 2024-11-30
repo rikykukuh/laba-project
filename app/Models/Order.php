@@ -30,6 +30,7 @@ class Order extends Model
         'number_ticket',
         'uang_muka',
         'picked_by',
+        'created_by',
         'note',
         'estimate_service_done',
         'estimate_take_item',
@@ -39,6 +40,11 @@ class Order extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function customer(): BelongsTo
     {

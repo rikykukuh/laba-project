@@ -4,22 +4,124 @@
 
 @section('style')
     <style>
-        .table-total tr:first-child, .table-total tr:last-child {
-            border-product-top: 2px solid black;
-        }
-        .table-total tr:last-child {
-            border-product-bottom: 2px solid black;
+        /* General styles */
+        body {
+            font-size: 10px; /* Perkecil ukuran font */
+            line-height: 1.2; /* Kurangi jarak antar baris */
+            margin: 0;
+            padding: 0;
         }
 
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px; /* Kurangi jarak */
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left img {
+            width: 50px; /* Perkecil ukuran logo */
+            height: auto;
+            margin-right: 5px; /* Kurangi margin logo */
+        }
+
+        .header-left .header-details {
+            line-height: 1.2;
+            font-size: 10px; /* Sesuaikan ukuran font */
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 10px; /* Sesuaikan ukuran font */
+        }
+
+        .table {
+            width: 100%;
+            margin: 0 auto 5px;
+            border-collapse: collapse;
+            font-size: 9px; /* Perkecil ukuran font tabel */
+        }
+
+        .table th,
+        .table td {
+            padding: 3px; /* Kurangi padding */
+            text-align: left;
+        }
+
+        .table-total th,
+        .table-total td {
+            border: none;
+            padding: 3px; /* Kurangi padding */
+            text-align: left;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid black;
+            margin: 5px 0;
+        }
+
+        .content {
+            padding: 5px; /* Kurangi padding */
+        }
+
+        /* Print-specific styles */
         @media print {
             @page {
                 size: A5 landscape;
+                margin: 5mm; /* Kurangi margin */
+            }
+
+            body {
+                width: 210mm; /* Width of A5 landscape */
+                height: 148.5mm; /* Height of A5 landscape */
+                overflow: hidden; /* Prevent scrolling */
+            }
+
+            .content {
+                box-sizing: border-box;
+                height: 100%;
+                max-height: 100%; /* Prevent content overflow */
+                padding: 5mm; /* Ensure padding is uniform */
+            }
+
+            .table th,
+            .table td {
+                font-size: 8px; /* Sesuaikan font tabel untuk print */
+            }
+
+            .header-section {
+                font-size: 8px;
             }
         }
     </style>
 @endsection
 
 @section('content')
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-left">
+            <img src="https://pancalaba.rikykukuhsetiawan.com/img/config/luggage.png" alt="Logo">
+            <div class="header-details">
+                <strong>PANCALABA</strong><br>
+                Jl. Boulevard TB 2/11 Kelapa Gading<br>
+                Jakarta Utara, 14240<br>
+                Telp: 0812-1904-4164
+            </div>
+        </div>
+        <div class="header-right">
+            <p><strong>Buka:</strong> Senin - Jumat 09:00 - 17:00</p>
+            <p><strong>Sabtu:</strong> 09:00 - 16:00</p>
+            <p><strong>Tutup:</strong> Minggu / Hari Raya</p>
+        </div>
+    </div>
+    <hr>
+
      <!-- baris judul -->
      <div class="row">
          <div class="col-xs-12">
@@ -68,7 +170,7 @@
      <!-- Baris tabel -->
      <div class="row">
          <div class="col-xs-12 table-responsive">
-             <table class="table table-striped">
+             <table class="table table-sm table-striped table-bordered">
                  <thead>
                      <tr>
                          <th class="text-center" style="width: 5%;">No.</th>

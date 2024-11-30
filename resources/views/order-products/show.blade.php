@@ -512,13 +512,13 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="reset" class="btn btn-danger pull-left"
-                                        onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset
-                                        Form</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal"
-                                        onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()"
-                                        style="margin-right: 15px;">Simpan Form</button>
-                                    <button type="submit" class="btn btn-primary">Submit Form</button>
+                                    {{-- <button type="reset" class="btn btn-danger pull-left" --}}
+                                    {{--     onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()">Reset --}}
+                                    {{--     Form</button> --}}
+                                    {{-- <button type="button" class="btn btn-default" data-dismiss="modal" --}}
+                                    {{--     onclick="document.getElementById('add-customer-form').reset();document.querySelector('#add-customer-form #name').focus()" --}}
+                                    {{--     style="margin-right: 15px;">Simpan Form</button> --}}
+                                    {{-- <button type="submit" class="btn btn-primary">Submit Form</button> --}}
                                     <button type="button" class="btn btn-default margin-r-5"
                                         data-dismiss="modal">Batalkan</button>
                                     <button type="submit" class="btn bg-purple" id="btn-ambil">Ambil</button>
