@@ -5,6 +5,7 @@ namespace App\Http\Controllers\OrderProduct;
 use App\DataTables\OrderProductsDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\City;
+use App\Models\Config;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -457,6 +458,7 @@ class OrderProductController extends Controller
 
     public function orderPrint($id)
     {
+        $config = Config::find(1);
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
         // dd($order);
         $customers = Customer::all();
@@ -469,7 +471,7 @@ class OrderProductController extends Controller
 
         $sites = Site::all();
 
-        return view('order-products.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites'));
+        return view('order-products.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites', 'config'));
     }
 
     /**

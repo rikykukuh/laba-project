@@ -40,6 +40,10 @@
             font-size: 10px; /* Sesuaikan ukuran font */
         }
 
+        .header-right > p {
+            margin-bottom: 0px;
+        }
+
         .table {
             width: 100%;
             margin: 0 auto 5px;
@@ -73,7 +77,7 @@
         /* Print-specific styles */
         @media print {
             @page {
-                size: A5 landscape;
+                size: A4 portrait;
                 margin: 5mm; /* Kurangi margin */
             }
 
@@ -106,7 +110,7 @@
     <!-- Header Section -->
     <div class="header-section">
         <div class="header-left">
-            <img src="https://pancalaba.rikykukuhsetiawan.com/img/config/luggage.png" alt="Logo">
+            <img src="{{ asset($config->caminho_img_login) }}" alt="Logo">
             <div class="header-details">
                 <strong>PANCALABA</strong><br>
                 Jl. Boulevard TB 2/11 Kelapa Gading<br>

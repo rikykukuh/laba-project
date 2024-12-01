@@ -109,7 +109,7 @@
                                             <select class="form-control" id="city_id" name="city_id" required>
                                                 <option disabled selected> -- Pilih Kota -- </option>
                                                 @foreach ($cities as $city)
-                                                    <option value="{{ $city->id }}"> {{ $city->name }} </option>
+                                                    <option value="{{ $city->id }}" {{ $city->id == 1 ? 'selected' : '' }}> {{ $city->name }} </option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -198,7 +198,7 @@
                             <thead class="bg-navy">
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th class="text-center">Jenis</th>
+                                    {{-- <th class="text-center">Jenis</th> --}}
                                     <th class="text-center">Keterangan</th>
                                     <th class="text-center">Foto</th>
                                     <th class="text-center">Biaya</th>
@@ -225,15 +225,15 @@
                                         <h4 class="modal-title">Edit Item</h4>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="form-group">
-                                            <label for="type_edit">Jenis Service: <small
-                                                    class="text-danger">*</small></label>
-                                            <select id="type_edit" class="form-control" name="type_edit">
-                                                @foreach ($products as $product)
-                                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                        {{-- <div class="form-group"> --}}
+                                        {{--     <label for="type_edit">Jenis Service: <small --}}
+                                        {{--             class="text-danger">*</small></label> --}}
+                                        {{--     <select id="type_edit" class="form-control" name="type_edit"> --}}
+                                        {{--         @foreach ($products as $product) --}}
+                                        {{--             <option value="{{ $product->id }}">{{ $product->name }}</option> --}}
+                                        {{--         @endforeach --}}
+                                        {{--     </select> --}}
+                                        {{-- </div> --}}
                                         <div class="form-group">
                                             <label for="keterangan_edit">Keterangan: <small
                                                     class="text-danger">*</small></label>
@@ -341,9 +341,9 @@
                                 <h4 class="modal-title">Tambah Barang</h4>
                             </div>
                             <div class="modal-body" style="overflow-y: scroll; max-height: 500px;">
-                                <div class="form-group">
+                                <div class="form-group" style="display: none;">
                                     <label for="type">Jenis Service: <small class="text-danger">*</small></label>
-                                    <select id="type" class="form-control" name="type" required>
+                                    <select id="type" class="form-control" name="type">
                                         {{--                                        @foreach ($products as $product) --}}
                                         {{--                                            <option value="{{ $product->id }}">{{ $product->name }}</option> --}}
                                         {{--                                        @endforeach --}}
@@ -1250,7 +1250,7 @@
                 const row = `
                     <tr>
                         <th class="text-center">${index + 1}</th>
-                        <td class="text-center">${type.name}</td>
+                        <!-- <td class="text-center">${type.name}</td> -->
                         <td class="text-center">${item.keterangan}</td>
                         <td class="text-center">
                             <!--
@@ -1286,7 +1286,8 @@
             event.preventDefault(); // Menghentikan aksi default dari submit form
 
             // Ambil nilai dari form
-            const type = $('#type').val();
+            // const type = $('#type').val();
+            const type = 4;
             const keterangan = $('#keterangan').val();
             const biaya = $('#biaya').val().replace(/\./g, '');
             const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''),
