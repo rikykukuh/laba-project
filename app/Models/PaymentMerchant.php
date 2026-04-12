@@ -6,19 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\PaymentMethod;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PaymentMerchant extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'payment_method_id',
         'name'
     ];
 
-    public function paymentMethod(){
-        return $this->belongsTo(paymentMethod::Class, 'payment_method_id');
+    protected $dates = ['deleted_at'];
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
-
-
 }

@@ -7,7 +7,7 @@
 @section('content')
 
     <div class="row">
-    
+
         <div class="col-md-12">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
@@ -19,7 +19,7 @@
                     <div class="active tab-pane" id="general">
 
                         <div class="row">
-                            <div class="col-md-12"> 
+                            <div class="col-md-12">
                                 <form action="{{ route('config.update',$config->id) }}" method="post" enctype="multipart/form-data">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="_method" value="put">
@@ -107,7 +107,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        </div>  
+                                        </div>
                                         <div class="col-lg-12">
                                             <br>
                                             <h4><b><i class="fa fa-fw fa-arrow-right"></i> Login Options</b></h4>
@@ -143,7 +143,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        </div>                            
+                                        </div>
                                         <div class="col-lg-2">
                                             <div class="form-group {{ $errors->has('tamanho_img_login') ? 'has-error' : '' }}">
                                                 <label for="nome">Image size Login</label>
@@ -160,7 +160,7 @@
                                             <br>
                                             <img src="{{ asset($config->caminho_img_login) }}" width="30px" class="img-thumbnail">
                                             <br><br>
-                                        </div>                            
+                                        </div>
                                         <div class="col-lg-3">
                                             <div class="form-group {{ $errors->has('caminho_img_login') ? 'has-error' : '' }}">
                                                 <label>Image Login</label>
@@ -176,15 +176,15 @@
                                             <br>
                                             <h4><b><i class="fa fa-fw fa-arrow-right"></i> Layout options</b></h4>
                                             <hr/>
-                                        </div> 
+                                        </div>
                                         <div class="col-lg-4">
                                             <div class="form-group {{ $errors->has('layout') ? 'has-error' : '' }}">
                                                 <label for="nome">Layout</label>
                                                 <select class="form-control" name="layout">
                                                     <option value="{{$config->layout}}">{{$config->layout}}</option>
-                                                    <option value="layout-boxed">layout-boxed</option>                                        
-                                                    <option value="sidebar-collapse">sidebar-collapse</option>                                        
-                                                    <option value="fixed">fixed</option>                                        
+                                                    <option value="layout-boxed">layout-boxed</option>
+                                                    <option value="sidebar-collapse">sidebar-collapse</option>
+                                                    <option value="fixed">fixed</option>
                                                 </select>
                                                 @if($errors->has('layout'))
                                                     <span class="help-block">
@@ -192,18 +192,18 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        </div>                            
+                                        </div>
                                         <div class="col-lg-4">
                                             <div class="form-group {{ $errors->has('skin') ? 'has-error' : '' }}">
                                                 <label>Skin</label>
                                                 <select class="form-control" name="skin">
                                                     <option value="{{$config->skin}}">{{$config->skin}}</option>
-                                                    <option value="black">Black</option>                                        
-                                                    <option value="purple">Purple</option>                                        
-                                                    <option value="green">Green</option>                                        
-                                                    <option value="red">Red</option>                                        
-                                                    <option value="yellow">Yellow</option>                                        
-                                                    <option value="blue">Blue</option>                                        
+                                                    <option value="black">Black</option>
+                                                    <option value="purple">Purple</option>
+                                                    <option value="green">Green</option>
+                                                    <option value="red">Red</option>
+                                                    <option value="yellow">Yellow</option>
+                                                    <option value="blue">Blue</option>
                                                 </select>
                                                 @if($errors->has('skin'))
                                                     <span class="help-block">
@@ -211,13 +211,13 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        </div>                            
+                                        </div>
                                         <div class="col-lg-1">
                                             <label>Current Favicon</label>
                                             <br>
                                             <img src="{{ asset($config->favicon) }}" width="30px" class="img-thumbnail">
                                             <br><br>
-                                        </div> 
+                                        </div>
                                         <div class="col-lg-3">
                                             <div class="form-group {{ $errors->has('favicon') ? 'has-error' : '' }}">
                                                 <label>Favicon</label>
@@ -228,13 +228,13 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        </div>  
+                                        </div>
 
                                         <div class="col-lg-12">
                                             <br/>
                                             <h4><b><i class="fa fa-fw fa-arrow-right"></i> Register</b></h4>
                                             <hr/>
-                                        </div> 
+                                        </div>
 
                                         <div class="col-lg-4">
                                             <div class="form-group {{ $errors->has('register') ? 'has-error' : '' }}">
@@ -261,13 +261,31 @@
                                             <div class="form-group">
                                                 <label for="sistema">Default permission for new users when registering</label>
                                                 <select class="form-control" name="default_role_id" required="">
-                                                    <option value="">Selecione</option>                                                    
-                                                    @foreach($roles as $role)	
+                                                    <option value="">Selecione</option>
+                                                    @foreach($roles as $role)
                                                         @if($role->id != 1)
                                                             <option value="{{ $role->id }}" @if($config->default_role_id == $role->id) selected @endif >{{ $role->name }}</option>
-                                                        @endif   
+                                                        @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            <br/>
+                                            <h4><b><i class="fa fa-fw fa-arrow-right"></i> Disclaimer</b></h4>
+                                            <hr/>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label for="disclaimer">Enter disclaimer</label>
+                                                <textarea class="form-control" name="disclaimer" id="disclaimer" cols="3" rows="3">{{ $config->disclaimer }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label for="vat">Enter VAT</label>
+                                                <input type="number" class="form-control" name="vat" id="vat" value="{{ $config->vat }}">
                                             </div>
                                         </div>
 
@@ -275,17 +293,17 @@
 
                                         <div class="col-lg-12">
                                             <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-fw fa-save"></i> Save</button>
-                                        </div>              
+                                        </div>
 
-                                    </div>                        
+                                    </div>
                                 </form>
                             </div>
-                        </div> 
+                        </div>
 
                     </div>
 
                     <div class="tab-pane" id="permissiongroups">
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-add-permission-group"><i class="fa fa-fw fa-plus"></i> Add Permission Group</button>
@@ -298,7 +316,7 @@
                                                 </button>
                                                 <h4 class="modal-title"><i class="fa fa-plus"></i> Add Permission Group</h4>
                                             </div>
-                                            
+
                                             <form action="{{ route('config.store.permission_group') }}" method="post" enctype="multipart/form-data">
                                                 {{ csrf_field() }}
 
@@ -309,7 +327,7 @@
                                                                 <label>Name</label>
                                                                 <input type="text" name="name" class="form-control"  maxlength="50" placeholder="Name" required>
                                                             </div>
-                                                        </div>   
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -318,29 +336,29 @@
                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                                 </div>
 
-                                            </form>  
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                             <br/><br/>
-                            <div class="col-md-12">	
+                            <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-condensed table-bordered table-hover">
                                         <thead>
-                                            <tr>			 
-                                                <th>ID</th>			 
-                                                <th>Name</th>			 
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($permission_groups as $permission_group)
-                                                <tr>           
-                                                    <td>{{ $permission_group->id }}</td>                        
-                                                    <td>{{ $permission_group->name }}</td>                        
-                                                    <td class="text-center"> 
-                                                        <a class="btn btn-warning  btn-xs" href="" title="Edit {{ $permission_group->name }}" data-toggle="modal" data-target="#modal-edit-{{ $permission_group->id }}"><i class="fa fa-pencil"></i></a> 
-                                                    </td> 
+                                                <tr>
+                                                    <td>{{ $permission_group->id }}</td>
+                                                    <td>{{ $permission_group->name }}</td>
+                                                    <td class="text-center">
+                                                        <a class="btn btn-warning  btn-xs" href="" title="Edit {{ $permission_group->name }}" data-toggle="modal" data-target="#modal-edit-{{ $permission_group->id }}"><i class="fa fa-pencil"></i></a>
+                                                    </td>
                                                 </tr>
                                                 <div class="modal fade" id="modal-edit-{{ $permission_group->id }}">
                                                     <div class="modal-dialog">
@@ -351,7 +369,7 @@
                                                                 </button>
                                                                 <h4 class="modal-title"><i class="fa fa-pencil"></i> Edit Permission Group</h4>
                                                             </div>
-                                                            
+
                                                             <form action="{{ route('config.update.permission_group', $permission_group->id ) }}" method="post" enctype="multipart/form-data">
                                                                 {{ csrf_field() }}
                                                                 <input type="hidden" name="_method" value="put">
@@ -362,7 +380,7 @@
                                                                                 <label>Name</label>
                                                                                 <input type="text" name="name" class="form-control"  maxlength="50" placeholder="Name" value="{{ $permission_group->name }}" required>
                                                                             </div>
-                                                                        </div>   
+                                                                        </div>
                                                                     </div>
                                                                 </div>
 
@@ -371,21 +389,21 @@
                                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                                                 </div>
 
-                                                            </form>  
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
-                                            <tr>			 
-                                                <th>ID</th>			 
-                                                <th>Name</th>			 
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
-                            </div>				
+                            </div>
                             <div class="col-md-12 text-center">
                                 {{ $permission_groups->links() }}
                             </div>
@@ -394,7 +412,7 @@
                     </div>
 
                     <div class="tab-pane" id="permissions">
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-add-role"><i class="fa fa-fw fa-plus"></i> Add Permission</button>
@@ -407,18 +425,18 @@
                                                 </button>
                                                 <h4 class="modal-title"><i class="fa fa-plus"></i> Add Permission</h4>
                                             </div>
-                                            
+
                                             <form action="{{ route('config.store.permission') }}" method="post" enctype="multipart/form-data">
                                                 {{ csrf_field() }}
 
                                                 <div class="modal-body">
-                                                    <div class="row">                      
+                                                    <div class="row">
                                                         <div class="col-lg-12">
                                                             <div class="form-group">
                                                                 <label for="sistema">Permission Group</label>
                                                                 <select class="form-control" name="permission_group_id" required="">
                                                                     <option value="">Selecione</option>
-                                                                    @foreach($permission_groups as $permission_group)	
+                                                                    @foreach($permission_groups as $permission_group)
                                                                         <option value="{{ $permission_group->id }}"> {{ $permission_group->name }}</option>
                                                                     @endforeach
                                                                 </select>
@@ -429,13 +447,13 @@
                                                                 <label>Name</label>
                                                                 <input type="text" name="name" class="form-control"  maxlength="50" placeholder="Name" required>
                                                             </div>
-                                                        </div>   
+                                                        </div>
                                                         <div class="col-lg-12">
                                                             <div class="form-group">
                                                                 <label>Label</label>
                                                                 <input type="text" name="label" class="form-control"  maxlength="50" placeholder="Label" required>
                                                             </div>
-                                                        </div> 
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -444,33 +462,33 @@
                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                                 </div>
 
-                                            </form>  
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                             <br/><br/>
-                            <div class="col-md-12">	
+                            <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table table-condensed table-bordered table-hover">
                                         <thead>
-                                            <tr>			 
-                                                <th>ID</th>			 
-                                                <th>Permission Group</th>			 
-                                                <th>Name</th>	 
-                                                <th>Label</th>		 
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Permission Group</th>
+                                                <th>Name</th>
+                                                <th>Label</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($permissions as $permission)
-                                                <tr>           
-                                                    <td>{{ $permission->id }}</td>  
-                                                    <td>{{ $permission->permissionGroup->name }}</td>                        
-                                                    <td>{{ $permission->name }}</td>                         
-                                                    <td>{{ $permission->label }}</td>                     
-                                                    <td class="text-center"> 
-                                                        <a class="btn btn-warning  btn-xs" href="" title="Edit {{ $permission->name }}" data-toggle="modal" data-target="#modal-edit-{{ $permission->id }}"><i class="fa fa-pencil"></i></a> 
-                                                    </td> 
+                                                <tr>
+                                                    <td>{{ $permission->id }}</td>
+                                                    <td>{{ $permission->permissionGroup->name }}</td>
+                                                    <td>{{ $permission->name }}</td>
+                                                    <td>{{ $permission->label }}</td>
+                                                    <td class="text-center">
+                                                        <a class="btn btn-warning  btn-xs" href="" title="Edit {{ $permission->name }}" data-toggle="modal" data-target="#modal-edit-{{ $permission->id }}"><i class="fa fa-pencil"></i></a>
+                                                    </td>
                                                 </tr>
                                                 <div class="modal fade" id="modal-edit-{{ $permission->id }}">
                                                     <div class="modal-dialog">
@@ -481,7 +499,7 @@
                                                                 </button>
                                                                 <h4 class="modal-title"><i class="fa fa-pencil"></i> Edit Permission</h4>
                                                             </div>
-                                                            
+
                                                             <form action="{{ route('config.update.permission', $permission->id ) }}" method="post" enctype="multipart/form-data">
                                                                 {{ csrf_field() }}
                                                                 <input type="hidden" name="_method" value="put">
@@ -492,7 +510,7 @@
                                                                                 <label for="sistema">Permission Group</label>
                                                                                 <select class="form-control" name="permission_group_id" required="">
                                                                                     <option value="">Selecione</option>
-                                                                                    @foreach($permission_groups as $permission_group)	
+                                                                                    @foreach($permission_groups as $permission_group)
                                                                                         <option value="{{ $permission_group->id }}" @if($permission->permission_group_id == $permission_group->id) selected @endif >{{ $permission_group->name }}</option>
                                                                                     @endforeach
                                                                                 </select>
@@ -503,13 +521,13 @@
                                                                                 <label>Name</label>
                                                                                 <input type="text" name="name" class="form-control"  maxlength="50" placeholder="Name" value="{{ $permission->name }}" required>
                                                                             </div>
-                                                                        </div>   
+                                                                        </div>
                                                                         <div class="col-lg-12">
                                                                             <div class="form-group">
                                                                                 <label>Label</label>
                                                                                 <input type="text" name="label" class="form-control"  maxlength="50" placeholder="Label" value="{{ $permission->label }}" required>
                                                                             </div>
-                                                                        </div>  
+                                                                        </div>
                                                                     </div>
                                                                 </div>
 
@@ -518,28 +536,28 @@
                                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
                                                                 </div>
 
-                                                            </form>  
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
-                                            <tr>			 
-                                                <th>ID</th>		
-                                                <th>Permission Group</th>	 
-                                                <th>Name</th>		 
-                                                <th>Label</th>		 
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Permission Group</th>
+                                                <th>Name</th>
+                                                <th>Label</th>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
-                            </div>				
+                            </div>
                             <div class="col-md-12 text-center">
                                 {{ $permissions->links() }}
                             </div>
                         </div>
-                        
+
                     </div>
 
                 </div>

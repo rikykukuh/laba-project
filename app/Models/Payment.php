@@ -5,30 +5,36 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\paymentMerchant;
-use App\Models\paymentMethod;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'order_id',
         'payment_method_id',
         'payment_merchant_id',
         'value',
+        'payment_type',
     ];
 
-    public function order(){
-        return $this->belongsTo(Order::Class);
+    protected $dates = ['deleted_at'];
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
     }
 
-    public function paymentMethod(){
-        return $this->belongsTo(paymentMethod::Class, 'payment_method_id');
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
-    public function paymentMerchant(){
-        return $this->belongsTo(paymentMerchant::Class, 'payment_merchant_id');
+    public function paymentMerchant(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMerchant::class, 'payment_merchant_id');
     }
 }

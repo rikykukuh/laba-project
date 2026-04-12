@@ -37,6 +37,7 @@
 <script src="{{ asset('assets/adminlte/bower_components/jquery/dist/jquery.min.js') }}"></script>
 <!-- MAskMoney -->
 <script src="{{ asset('plugins/maskMoney/jquery.maskMoney.min.js') }}"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <style>
         .link_menu_page{ color:#222d32; }
         .caixa-alta { text-transform:uppercase; }
@@ -58,6 +59,6 @@
                         format: "dd/mm/yyyy"
                 };
         });
-</script>       
+</script>
 
 @yield('layout_css')

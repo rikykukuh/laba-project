@@ -15,6 +15,8 @@ class AddRegisterToConfigsTable extends Migration
     {
         Schema::table('configs', function (Blueprint $table) {
             $table->string('register')->default('T');
+            $table->text('disclaimer')->nullable();
+            $table->integer('vat')->nullable();
         });
     }
 

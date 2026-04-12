@@ -5,24 +5,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
-use App\Models\ItemType;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderItem extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'order_id',
-        'item_type_id',
+        'product_id',
         'note',
+        'bruto',
+        'quantity',
+        'discount',
+        'netto',
+        'vat',
+        'transaction_type',
         'total',
     ];
 
-    public function order(){
-        return $this->belongsTo(Order::Class);
+    protected $dates = ['deleted_at'];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
-    public function itemType(){
-        return $this->belongsTo(ItemType::Class, 'item_type_id');
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'id', 'product_id');
+    }
+
+    public function orderItemPhotos()
+    {
+        return $this->hasMany(OrderItemPhoto::class, 'order_item_id', 'id');
     }
 }

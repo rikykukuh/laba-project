@@ -10,10 +10,14 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^2.7",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.2"
+        "laravel/ui": "^3.2",
+        "yajra/laravel-datatables-buttons": "^4.13",
+        "yajra/laravel-datatables-html": "^4.41",
+        "yajra/laravel-datatables-oracle": "9.18"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -29,7 +33,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

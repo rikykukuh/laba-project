@@ -10,14 +10,25 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('client_id');
-            $table->integer('item_type_id');
-            $table->integer('total');
-            $table->decimal('payment', 10, 2);
+            $table->string('name')->nullable();
+            $table->integer('site_id')->nullable();
+            $table->integer('customer_id')->nullable();
+            $table->decimal('bruto', 15, 2)->default(0);
+            $table->decimal('discount', 15, 2)->default(0);
+            $table->decimal('netto', 15, 2)->default(0);
+            $table->decimal('vat', 15, 2)->default(0);
+            $table->decimal('total', 15, 2)->default(0);
+            $table->integer('transaction_type')->nullable();
+            $table->integer('payment_id')->nullable();
             $table->string('status')->nullable();
             $table->string('number_ticket')->nullable();
             $table->decimal('uang_muka', 10, 2)->nullable();
+            $table->string('picked_by')->nullable();
+            $table->string('created_by')->nullable();
+            $table->text('note')->nullable();
+            $table->date('estimate_service_done')->nullable();
+            $table->date('estimate_take_item')->nullable();
+            $table->datetime('picked_at')->nullable();
             $table->date('due_date')->nullable();
             $table->decimal('sisa_pembayaran', 10, 2)->nullable();
             $table->timestamps();

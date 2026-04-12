@@ -40,6 +40,13 @@
                     <div class="form-group has-feedback">
                         <input id="password" type="password" class="form-control" placeholder="Password" name="password" required="" AUTOCOMPLETE='off'>
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select class="form-control select2" id="site_id" name="site_id" required>
+                            @foreach($sites as $site)
+                                <option value="{{ $site->id }}">{{ $site->name }}</option>
+                            @endforeach
+                        </select>
                         @if ($errors->has('email'))
                             <br/>
                             <span class="help-block">
@@ -65,13 +72,13 @@
                           <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
                         </div>  
                         <br/><br/><br/>
-                        <div class="col-xs-12 text-center">                            
-                            <a href="{{ route('password.request') }}">Forgot password?</a>
-                            @if(\App\Models\Config::find(1)->register == 'T')
-                                <br/>
-                                <a href="{{ route('register') }}">Sign up</a>    
-                            @endif                                        
-                        </div>
+                        <!--<div class="col-xs-12 text-center" >                            -->
+                        <!--    <a href="{{ route('password.request') }}">Forgot password?</a>-->
+                        <!--    @if(\App\Models\Config::find(1)->register == 'T')-->
+                        <!--        <br/>-->
+                        <!--        <a href="{{ route('register') }}">Sign up</a>    -->
+                        <!--    @endif                                        -->
+                        <!--</div>-->
                     </div>                  
                 </form> 
             </div>

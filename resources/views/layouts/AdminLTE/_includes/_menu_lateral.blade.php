@@ -1,7 +1,7 @@
 <aside class="main-sidebar">
 	<section class="sidebar">
 		<ul class="sidebar-menu" data-widget="tree">
-			<li class="header" style="color:#fff;"> MAIN MENU <i class="fa fa-level-down"></i></li>  
+			<li class="header" style="color:#fff;"> MAIN MENU <i class="fa fa-level-down"></i></li>
 			<li class="
 						{{ Request::segment(1) === null ? 'active' : null }}
 						{{ Request::segment(1) === 'home' ? 'active' : null }}
@@ -9,25 +9,122 @@
 				<a href="{{ route('home') }}" title="Dashboard"><i class="fa fa-dashboard"></i> <span> Dashboard</span></a>
 			</li>
 
-			<li class="{{Request::segment(1) === 'order' ? 'active' : null}}">
-				<a href="{{ route('order.index') }}" title="Orders"><i class="fa fa-shopping-cart"></i> <span> Order</span></a>
+			<li class="{{Request::segment(1) === 'order-products' ? 'active' : null}}">
+				<a href="{{ route('order-products.index') }}" title="Penjualan"><i class="fa fa-shopping-basket"></i> <span> Penjualan</span></a>
 			</li>
-			
+
+			<li class="treeview
+				{{ Request::segment(1) === 'orders'? 'active menu-open' : null }}
+				">
+				<a href="#" title="Report">
+                    <i class="fa fa-file"></i>
+                    <span>Reparasi</span>
+                    <span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+                </a>
+				<ul class="treeview-menu">
+					<li class="{{Request::segment(2) === 'create' ? 'active' : null}}">
+						<a href="{{ route('orders.create') }}" title="Bon-Reparasi"><i class="fa fa-shopping-cart"></i> <span>Buat Bon Reparasi</span></a>
+					</li>
+					<li class="{{Request::segment(1) === 'orders' && (Request::segment(2) === 'index' || Request::segment(2) === null) ? 'active' : null}}">
+						<a href="{{ route('orders.index') }}" title="Reparasi"><i class="fa fa-shopping-cart"></i> <span>List Reparasi</span></a>
+					</li>
+					<li class="{{Request::segment(2) === 'selesai-besok' ? 'active' : null}}">
+						<a href="{{ route('orders.selesai-besok') }}" title="Selesai Besok"><i class="fa fa-briefcase"></i> <span>List Selesai Reparasi</span></a>
+					</li>
+					
+				</ul>
+				
+			</li>
+            
+            @if (Auth::user()->can('root-dev', ''))
+            <li class="treeview
+				{{ Request::segment(1) === 'laporan' ? 'active menu-open' : null }}
+				">
+                <a href="#" title="Report">
+                    <i class="fa fa-file"></i>
+                    <span>Laporan</span>
+                    <span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{Request::segment(2) === 'penjualan' ? 'active' : null}}">
+                        <a href="{{ route('laporan.penjualan') }}" title="Penjualan"><i class="fa fa-shopping-basket"></i> <span> Penjualan</span></a>
+                    </li>
+
+                    <li class="{{Request::segment(2) === 'reparasi' ? 'active' : null}}">
+                        <a href="{{ route('laporan.reparasi') }}" title="Reparasi"><i class="fa fa-shopping-cart"></i> <span> Reparasi</span></a>
+                    </li>
+
+                    <li class="{{Request::segment(2) === 'ringkasan-pembayaran' ? 'active' : null}}">
+                        <a href="{{ route('laporan.ringkasan-pembayaran') }}" title="Report Payment"><i class="fa fa-money"></i> <span> Pembayaran</span></a>
+                    </li>
+					
+                </ul>
+            </li>
+            @endif
+
+			@if (Auth::user()->can('root-dev', ''))
+            <li class="treeview
+				{{ Request::segment(1) === 'stock-move' ? 'active menu-open' : null }}
+				">
+                <a href="#" title="Inventory">
+                    <i class="fa fa-file"></i>
+                    <span>Inventory</span>
+                    <span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+                </a>
+                <ul class="treeview-menu">
+					<li class="{{Request::segment(1) === 'stock-move' && !request('type') ? 'active' : null}}">
+                        <a href="{{ route('stock-move.index') }}" title="stcok move">
+							<i class="fa fa-shopping-basket"></i><span> List Perpindahan Barang</span>
+						</a>
+                    </li>
+					<li class="{{ request('type') === 'in' ? 'active' : '' }}">
+						<a href="{{ route('stock-move.create', ['type' => 'in']) }}">
+							<i class="fa fa-shopping-basket"></i> <span> Barang Masuk</span>
+						</a>
+					</li>
+					<li class="{{ request('type') === 'out' ? 'active' : '' }}">
+						<a href="{{ route('stock-move.create', ['type' => 'out']) }}">
+							<i class="fa fa-shopping-basket"></i> <span> Barang Keluar</span>
+						</a>
+					</li>
+					<li class="{{ request('type') === 'move' ? 'active' : '' }}">
+						<a href="{{ route('stock-move.create', ['type' => 'move']) }}">
+							<i class="fa fa-shopping-basket"></i> <span> Pindah Barang</span>
+						</a>
+					</li>
+                </ul>
+            </li>
+            @endif
+
 			@if(Request::segment(1) === 'profile')
 
 			<li class="{{ Request::segment(1) === 'profile' ? 'active' : null }}">
-				<a href="{{ route('profile') }}" title="Profile"><i class="fa fa-user"></i> <span> PROFILE</span></a>
+				<a href="{{ route('profile') }}" title="Profil"><i class="fa fa-user"></i> <span> Profil</span></a>
 			</li>
 
 			@endif
-			<li class="treeview 
+			<li class="treeview
 				{{ Request::segment(1) === 'config' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'order-logs' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'user' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'role' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'cities' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'customers' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'sites' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'products' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'payment-methods' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'payment-merchants' ? 'active menu-open' : null }}
 				">
-				<a href="#">
+			    @if (Auth::user()->can('root-dev', ''))
+				<a href="#" title="Pengaturan">
 					<i class="fa fa-gear"></i>
-					<span>SETTINGS</span>
+					<span>Pengaturan</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
@@ -39,17 +136,49 @@
 								<i class="fa fa-gear"></i> <span> Settings App</span>
 							</a>
 						</li>
-					@endif					
+                        <li class="{{ Request::segment(1) === 'order-logs' ? 'active' : null }}">
+                            <a href="{{ route('order.logs') }}" title="App Config">
+                                <i class="fa fa-file"></i> <span> Order Log</span>
+                            </a>
+                        </li>
+					@endif
 					<li class="
 						{{ Request::segment(1) === 'user' ? 'active' : null }}
 						{{ Request::segment(1) === 'role' ? 'active' : null }}
 						">
-						<a href="{{ route('user') }}" title="Users">
-							<i class="fa fa-user"></i> <span> Users</span>
+						<a href="{{ route('user') }}" title="Pengguna">
+							<i class="fa fa-user"></i> <span> Pengguna</span>
 						</a>
 					</li>
+					<li class="{{Request::segment(1) === 'cities' ? 'active' : null}}">
+						<a href="{{ route('cities.index') }}" title="Kota"><i class="fa fa-map-marker"></i> <span> Kota</span></a>
+					</li>
+
+					<li class="{{Request::segment(1) === 'customers' ? 'active' : null}}">
+						<a href="{{ route('customers.index') }}" title="Pelanggan"><i class="fa fa-users"></i> <span> Pelanggan</span></a>
+					</li>
+
+					<li class="{{Request::segment(1) === 'sites' ? 'active' : null}}">
+						<a href="{{ route('sites.index') }}" title="Cabang"><i class="fa fa-list-ol"></i> <span> Cabang</span></a>
+					</li>
+
+					<li class="{{Request::segment(1) === 'products' ? 'active' : null}}">
+						<a href="{{ route('products.index') }}" title="Jenis Produk"><i class="fa fa-list-alt"></i> <span> Jenis Produk</span></a>
+					</li>
+
+					<li class="{{Request::segment(1) === 'payment-methods' ? 'active' : null}}">
+						<a href="{{ route('payment-methods.index') }}" title="Metode Pembayaran"><i class="fa fa-exchange"></i> <span> Metode Pembayaran</span></a>
+					</li>
+
+					<li class="{{Request::segment(1) === 'payment-merchants' ? 'active' : null}}">
+						<a href="{{ route('payment-merchants.index') }}" title="Penyedia Pembayaran"><i class="fa fa-building"></i> <span> Penyedia Pembayaran</span></a>
+					</li>
+					<li class="{{Request::segment(1) === 'warehouse' ? 'active' : null}}">
+						<a href="{{ route('warehouse.index') }}" title="gudang"><i class="fa fa-building"></i> <span> Gudang</span></a>
+					</li>
 				</ul>
-			</li>      
+				@endif
+			</li>
 		</ul>
 	</section>
 </aside>
