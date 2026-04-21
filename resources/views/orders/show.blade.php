@@ -327,6 +327,7 @@
                                         <div>
                                             <label for="teknisi1">Teknisi 1</label>
                                             <select id="teknisi1_edit" class="form-control" name="type">
+                                                <option value="">-- Pilih Teknisi --</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
@@ -335,6 +336,7 @@
                                         <div>
                                             <label for="teknisi2">Teknisi 2</label>
                                             <select id="teknisi2_edit" class="form-control" name="type">
+                                                <option value="">-- Pilih Teknisi --</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
@@ -343,6 +345,7 @@
                                         <div>
                                             <label for="teknisi3">Teknisi 3</label>
                                             <select id="teknisi3_edit" class="form-control" name="type">
+                                                <option value="">-- Pilih Teknisi --</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
@@ -351,6 +354,7 @@
                                         <div>
                                             <label for="qc">QC</label>
                                             <select id="qc_edit" class="form-control" name="type">
+                                                <option value="">-- Pilih QC --</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
@@ -1859,6 +1863,10 @@
             const keterangan = $('#keterangan_edit').val();
             const bruto = $('#biaya_edit').val().replace(/\./g, '');
             const discount = $('#discount_item_edit').val().replace(/\./g, '');
+            const teknisi1 = $('#teknisi1_edit').val();
+            const teknisi2 = $('#teknisi2_edit').val();
+            const teknisi3 = $('#teknisi3_edit').val();
+
             const netto = Number(items[element].netto);
             const vat = Number(items[element].vat);
             const total = Number(items[element].total);
@@ -1873,7 +1881,12 @@
                 netto,
                 vat,
                 total,
-                gambar: dataFile
+                gambar: dataFile,
+                teknisi1_id: teknisi1,
+                teknisi2_id: teknisi2, 
+                teknisi3_id: teknisi1, 
+                qc_id: $('#qc_edit').val(),             
+                state: $('#state_edit').val()
             };
 
             console.log(newItem);
