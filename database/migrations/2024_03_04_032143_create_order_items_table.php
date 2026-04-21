@@ -25,6 +25,11 @@ class CreateOrderItemsTable extends Migration
             $table->decimal('vat', 15, 2)->default(0);
             $table->decimal('total', 15, 2)->default(0);
             $table->integer('transaction_type')->nullable();
+            $table->integer('teknisi1_id')->nullable();
+            $table->integer('teknisi2_id')->nullable();
+            $table->integer('teknisi3_id')->nullable();
+            $table->integer('qc_id')->nullable();
+            $table->string('state')->nullable();//(done, cancel, proses, masuk)
             $table->timestamps();
             $table->softDeletes();
         });

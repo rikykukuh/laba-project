@@ -324,6 +324,48 @@
                                             <input readonly type="text" class="form-control" id="total_item_edit"
                                                 name="total_item_edit">
                                         </div>
+                                        <div>
+                                            <label for="teknisi1">Teknisi 1</label>
+                                            <select id="teknisi1_edit" class="form-control" name="type">
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="teknisi2">Teknisi 2</label>
+                                            <select id="teknisi2_edit" class="form-control" name="type">
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="teknisi3">Teknisi 3</label>
+                                            <select id="teknisi3_edit" class="form-control" name="type">
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="qc">QC</label>
+                                            <select id="qc_edit" class="form-control" name="type">
+                                                @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="state_edit">Status</label>
+                                            <select id="state_edit" class="form-control" name="state">
+                                                <option value="">-- Pilih Status --</option>
+                                                <option value="masuk">Masuk</option>
+                                                <option value="proses">Proses</option>
+                                                <option value="done">Done</option>
+                                                <option value="cancel">Cancel</option>
+                                            </select>
+                                        </div>
                                         <div class="form-group">
                                             <label for="gambar_edit">Foto: <small class="text-danger">*</small></label>
                                             <input type="file" class="form-control-file" id="gambar_edit"
@@ -1102,6 +1144,11 @@
             allItem.netto = orderItems[i].netto.toLocaleString('id-ID');
             allItem.vat = orderItems[i].vat.toLocaleString('id-ID');
             allItem.total = orderItems[i].total.toLocaleString('id-ID');
+            allItem.teknisi1_id = orderItems[i].teknisi1_id;
+            allItem.teknisi2_id = orderItems[i].teknisi2_id; 
+            allItem.teknisi3_id = orderItems[i].teknisi3_id; 
+            allItem.qc_id = orderItems[i].qc_id;             
+            allItem.state = orderItems[i].state;
 
             for (let j = 0; j < orderItemPhotos.length; j++) {
                 allItem.gambar.push(
@@ -1120,7 +1167,12 @@
                 nett: 0,
                 vat: 0,
                 total: 0,
-                gambar: []
+                gambar: [],
+                teknisi1_id: null, 
+                teknisi2_id: null, 
+                teknisi3_id: null, 
+                qc_id: null,       
+                state: ''  
             };
         }
 
@@ -1407,6 +1459,11 @@
             dataFile = dataItem.gambar;
 
             $(`#type_edit option[value='${dataItem.type}']`).prop('selected', true);
+            $(`#teknisi1_edit option[value='${dataItem.teknisi1_id}']`).prop('selected', true);
+            $(`#teknisi2_edit option[value='${dataItem.teknisi2_id}']`).prop('selected', true);
+            $(`#teknisi3_edit option[value='${dataItem.teknisi3_id}']`).prop('selected', true);
+            $(`#qc_edit option[value='${dataItem.qc_id}']`).prop('selected', true);
+            $(`#state_edit option[value='${dataItem.state}']`).prop('selected', true);
             // const type = $('#type_edit').val();
             const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
             const biaya = $('#biaya_edit').val(parseInt(dataItem.bruto, 10).toLocaleString('id-ID'));

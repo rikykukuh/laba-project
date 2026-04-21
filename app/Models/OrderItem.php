@@ -23,6 +23,11 @@ class OrderItem extends Model
         'vat',
         'transaction_type',
         'total',
+        'teknisi1_id',
+        'teknisi2_id',
+        'teknisi3_id',
+        'qc_id',
+        'state',
     ];
 
     protected $dates = ['deleted_at'];
@@ -40,5 +45,25 @@ class OrderItem extends Model
     public function orderItemPhotos()
     {
         return $this->hasMany(OrderItemPhoto::class, 'order_item_id', 'id');
+    }
+
+    public function teknisi1()
+    {
+        return $this->belongsTo(User::class, 'teknisi1_id', 'id');
+    }
+
+    public function teknisi2()
+    {
+        return $this->belongsTo(User::class, 'teknisi2_id', 'id');
+    }
+
+    public function teknisi3()
+    {
+        return $this->belongsTo(User::class, 'teknisi3_id', 'id');
+    }
+
+    public function qc()
+    {
+         return $this->belongsTo(User::class, 'qc_id', 'id');
     }
 }

@@ -17,6 +17,7 @@ use App\Models\Payment;
 use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use App\Models\Site;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -393,11 +394,12 @@ class OrderController extends Controller
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
         $products = Product::all('id', 'name');
+        $users = User::all();
 
         $sites = Site::all();
 
         return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 
-        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2'));
+        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users'));
     }
 
     public function edit($id)
@@ -521,6 +523,11 @@ class OrderController extends Controller
 
             $totalItem = (int) $items[$i]['bruto'];
             $discountItem = (int) $items[$i]['discount'];
+            $teknisi1 = $items[$i]['teknisi1_id'];
+            $teknisi2 = $items[$i]['teknisi2_id'];
+            $teknisi3 = $items[$i]['teknisi3_id'];
+            $qc = $items[$i]['qc_id'];
+            $state = $items[$i]['state'];
 
             if($discountItem > 100) {
                 $total_discount_item = (int) $items[$i]['discount'];
@@ -540,6 +547,11 @@ class OrderController extends Controller
                 'vat' => $vatItem,
                 'total' => $nettoItem - $vatItem,
                 'note' => $items[$i]['keterangan'],
+                'teknisi1_id' => $teknisi1,
+                'teknisi2_id' => $teknisi2,
+                'teknisi3_id' => $teknisi3,
+                'qc_id' => $qc,
+                'state' => $state
             ]);
 
             if(isset($items[$i]['gambar'])) {
