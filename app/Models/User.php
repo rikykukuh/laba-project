@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return Cache::has('user-is-online-' . $this->id);
     }
+
+    public function orderItems()
+    {
+        return $this->belongsToMany(OrderItem::class, 'order_item_teknisi')->withTimestamps();;
+    }
 }

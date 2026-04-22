@@ -328,7 +328,7 @@
                                             <label for="teknisi1">Teknisi 1</label>
                                             <select id="teknisi1_edit" class="form-control" name="type">
                                                 <option value="">-- Pilih Teknisi --</option>
-                                                @foreach ($users as $user)
+                                                @foreach ($users_teknisi as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
@@ -337,7 +337,7 @@
                                             <label for="teknisi2">Teknisi 2</label>
                                             <select id="teknisi2_edit" class="form-control" name="type">
                                                 <option value="">-- Pilih Teknisi --</option>
-                                                @foreach ($users as $user)
+                                                @foreach ($users_teknisi as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
@@ -346,7 +346,7 @@
                                             <label for="teknisi3">Teknisi 3</label>
                                             <select id="teknisi3_edit" class="form-control" name="type">
                                                 <option value="">-- Pilih Teknisi --</option>
-                                                @foreach ($users as $user)
+                                                @foreach ($users_teknisi as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
@@ -355,7 +355,7 @@
                                             <label for="qc">QC</label>
                                             <select id="qc_edit" class="form-control" name="type">
                                                 <option value="">-- Pilih QC --</option>
-                                                @foreach ($users as $user)
+                                                @foreach ($users_qc as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
@@ -1186,6 +1186,41 @@
 
         sumTotalItem();
 
+        function updateTeknisiOptions() {
+            // ambil semua value yang sudah dipilih
+            let selectedValues = [];
+
+            $('#teknisi1_edit, #teknisi2_edit, #teknisi3_edit').each(function () {
+                let val = $(this).val();
+                if (val) {
+                    selectedValues.push(val);
+                }
+            });
+
+            // reset semua option dulu
+            $('#teknisi1_edit option, #teknisi2_edit option, #teknisi3_edit option')
+                .prop('disabled', false);
+
+            // disable yang sudah dipilih di dropdown lain
+            selectedValues.forEach(function (val) {
+                $('#teknisi1_edit option[value="' + val + '"],' +
+                '#teknisi2_edit option[value="' + val + '"],' +
+                '#teknisi3_edit option[value="' + val + '"]')
+                .not(':selected')
+                .prop('disabled', true);
+            });
+        }
+
+        // trigger saat berubah
+        $('#teknisi1_edit, #teknisi2_edit, #teknisi3_edit').on('change', function () {
+            updateTeknisiOptions();
+        });
+
+        // jalankan saat pertama load
+        $(document).ready(function () {
+            updateTeknisiOptions();
+        });
+
         const status = "{{ $order->status }}";
         if (status.toLowerCase() === 'diambil') {
             $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove')
@@ -1884,7 +1919,7 @@
                 gambar: dataFile,
                 teknisi1_id: teknisi1,
                 teknisi2_id: teknisi2, 
-                teknisi3_id: teknisi1, 
+                teknisi3_id: teknisi3, 
                 qc_id: $('#qc_edit').val(),             
                 state: $('#state_edit').val()
             };

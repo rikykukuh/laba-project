@@ -323,12 +323,16 @@ class OrderController extends Controller
         $payment_methods = PaymentMethod::all();
         $payment_merchants = PaymentMerchant::all();
         $products = Product::all('id', 'name');
+        $users_teknisi = User::whereHas('roles', fn($q) => 
+                    $q->whereIn('name', ['teknisi'])
+                )->get();
+        $users_qc = User::all();
         $users = User::all();
 
         $sites = Site::all();
 
         return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 
-        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users'));
+        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc'));
     }
 
     public function edit($id)
@@ -482,6 +486,18 @@ class OrderController extends Controller
                 'qc_id' => $qc,
                 'state' => $state
             ]);
+
+            $teknisiIds = collect([
+                $teknisi1,
+                $teknisi2,
+                $teknisi3,
+            ])
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+            $order_item->teknisis()->sync($teknisiIds);
 
             if(isset($items[$i]['gambar'])) {
                 for ($k = 0; $k < count($items[$i]['gambar']); $k++) {

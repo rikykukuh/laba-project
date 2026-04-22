@@ -66,4 +66,9 @@ class OrderItem extends Model
     {
          return $this->belongsTo(User::class, 'qc_id', 'id');
     }
+
+    public function teknisis()
+    {
+        return $this->belongsToMany(User::class, 'order_item_teknisi')->withTimestamps();;
+    }
 }
