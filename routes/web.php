@@ -31,6 +31,15 @@ Route::group(['prefix'=>'laporan'], function(){
     // Route::get('/selesai-besok', '\App\Http\Controllers\Order\OrderController@selesai_besok')->name('laporan.selesai-besok');
     Route::get('/report-matching','\App\Http\Controllers\ReportMatching\ReportMatchingController@index')->name('laporan.report-matching');
     Route::get('/report-matching-data','\App\Http\Controllers\ReportMatching\ReportMatchingController@data')->name('laporan.report-matching-data');
+     Route::get('/order-item-teknisi', 'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@index')->name('laporan.order-item-teknisi');
+
+   Route::get('/order-item-teknisi/export', 
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@export'
+    )->name('order-item-teknisi.export');
+
+    Route::get('/order-item-teknisi/export-summary', 
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@exportSummary'
+    )->name('order-item-teknisi.export-summary');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){

@@ -37,5 +37,9 @@ php artisan key:generate
 ```php
 php artisan serve
 ```
+
+export excel 
+composer require maatwebsite/excel
+
 8) Access the application. Example: `http://127.0.0.1:8000`
 9) Login: `dev@dev.com` Password: `root`

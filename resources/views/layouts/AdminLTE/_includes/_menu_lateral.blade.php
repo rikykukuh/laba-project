@@ -61,6 +61,12 @@
                     <li class="{{Request::segment(2) === 'ringkasan-pembayaran' ? 'active' : null}}">
                         <a href="{{ route('laporan.ringkasan-pembayaran') }}" title="Report Payment"><i class="fa fa-money"></i> <span> Pembayaran</span></a>
                     </li>
+
+					<li class="{{ request()->is('order-item-teknisi*') ? 'active' : '' }}">
+						<a href="{{ route('laporan.order-item-teknisi') }}" title="Laporan Teknisi">
+							<i class="fa fa-users"></i> <span>Laporan Teknisi</span>
+						</a>
+					</li>
 					
                 </ul>
             </li>

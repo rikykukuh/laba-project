@@ -364,9 +364,9 @@
                                             <label for="state_edit">Status</label>
                                             <select id="state_edit" class="form-control" name="state">
                                                 <option value="">-- Pilih Status --</option>
-                                                <option value="masuk">Masuk</option>
+                                                <!-- <option value="masuk">Masuk</option> -->
                                                 <option value="proses">Proses</option>
-                                                <option value="done">Done</option>
+                                                <option value="Selesai">Selesai</option>
                                                 <option value="cancel">Cancel</option>
                                             </select>
                                         </div>
