@@ -62,12 +62,19 @@
                         <a href="{{ route('laporan.ringkasan-pembayaran') }}" title="Report Payment"><i class="fa fa-money"></i> <span> Pembayaran</span></a>
                     </li>
 
-					<li class="{{ request()->is('order-item-teknisi*') ? 'active' : '' }}">
+					<li class="{{ str_contains(request()->path(), 'order-item-teknisi') ? 'active' : '' }}">
 						<a href="{{ route('laporan.order-item-teknisi') }}" title="Laporan Teknisi">
 							<i class="fa fa-users"></i> <span>Laporan Teknisi</span>
 						</a>
 					</li>
-					
+
+					<li class="{{ request()->is('laporan/complain-list*') ? 'active' : '' }}">
+						<a href="{{ route('laporan.complain-list') }}" title="List Complain">
+							<i class="fa fa-exclamation-circle"></i> 
+							<span>List Complain</span>
+						</a>
+					</li>
+										
                 </ul>
             </li>
             @endif

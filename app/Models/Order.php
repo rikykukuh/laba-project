@@ -37,6 +37,7 @@ class Order extends Model
         'picked_at',
         'due_date',
         'sisa_pembayaran',
+        'complain',
     ];
 
     protected $dates = ['deleted_at'];

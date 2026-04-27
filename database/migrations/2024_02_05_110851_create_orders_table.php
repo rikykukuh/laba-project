@@ -31,6 +31,7 @@ class CreateOrdersTable extends Migration
             $table->datetime('picked_at')->nullable();
             $table->date('due_date')->nullable();
             $table->decimal('sisa_pembayaran', 10, 2)->nullable();
+            $table->text('complain')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -240,6 +240,50 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-complain" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Form Complain</h4>
+                </div>
+
+                <form method="POST" id="form-complain">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- <input type="hidden" name="order_item_id" id="complain-order-id"> -->
+
+                    <div class="modal-body">
+                        <p>
+                            Masukkan complain untuk pesanan </br>
+                            <strong id="complain-order-name"></strong> </br>
+                            <strong id="complain-order-customer"></strong>
+                            
+                        </p>
+
+                        <div class="form-group">
+                            <textarea name="complain" class="form-control" rows="4" placeholder="Tulis complain..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">
+                            Tutup
+                        </button>
+                        <button type="submit" class="btn btn-warning margin-r-5">
+                            Submit
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
 @endsection
 
 @include('layouts.AdminLTE._includes._data_tables')
@@ -279,10 +323,26 @@
                 $('#form-delete').attr('action', url)
             });
 
+            
             // $('#modal-delete').on('hidden.bs.modal', function(e) {
             //     $('#order_id').val('');
             //     $('#order-name').text('');
             // });
+        });
+
+        $(document).on('click', '[data-target="#modal-complain"]', function () {
+
+            let id = $(this).data('id');
+            let name = $(this).attr('data-name') || '-';
+            let customer = $(this).attr('data-customer') || '-';
+
+            console.log(id, name); // debug
+
+            $('#complain-order-id').val(id);
+            $('#complain-order-name').text(name);
+            $('#complain-order-customer').text(customer);
+
+            $('#form-complain').attr('action', "{{ url('orders/complain') }}/" + id);
         });
     </script>
     @if (Request::segment(1) === 'laporan')

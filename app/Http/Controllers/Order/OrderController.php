@@ -174,6 +174,7 @@ class OrderController extends Controller
                 'total' => $nettoItem - $vatItem,
                 'note' => $items[$i]['keterangan'],
                 'transaction_type' => 0,
+                'state' => 'masuk'
             ]);
 
             if(isset($items[$i]['gambar'])) {
@@ -620,6 +621,57 @@ class OrderController extends Controller
     //         return response()->json(['message' => 'Error updating order', 'error' => $e->getMessage()], 500);
     //     }
     // }
+
+    public function complain(Request $request, $id)
+    {
+        $request->validate([
+            'complain' => 'required|min:3'
+        ]);
+
+        $order = Order::with('customer')->findOrFail($id);
+
+        $order->update([
+            'complain' => $request->complain,
+        ]);
+
+        return redirect()->back()->with(
+            'success',
+            'Complain untuk pesanan ' . $order->number_ticket . 
+            ' (' . optional($order->customer)->name . ') berhasil disimpan!'
+        );
+    }
+
+
+    public function complainList(Request $request)
+    {
+        // dd($data, $customers);
+        $query = Order::with('customer')
+            ->whereNotNull('complain');
+
+        // 🔍 filter by customer
+        if ($request->customer_id) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        // 🔍 optional: filter search nama / no hp
+        if ($request->search) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('phone_number', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // if ($request->start_date && $request->end_date) {
+        //     $query->whereBetween('created_at', [...]);
+        // }
+
+        $data = $query->latest()->paginate(10);
+
+        // dropdown customer
+        $customers = \App\Models\Customer::pluck('name', 'id');
+
+        return view('orders.index_complain', compact('data', 'customers'));
+    }
 
     public function destroy($id)
     {

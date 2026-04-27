@@ -201,6 +201,14 @@ class OrdersDataTable extends DataTable
                 if (Auth::user()->can('root-dev')) {
                     $btn .= '<button class="btn btn-danger btn-sm btn-delete" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'"><i class="fa fa-trash"></i></button>';
                 }
+                $btn .= '<button class="btn btn-warning btn-sm"
+                            data-toggle="modal"
+                            data-target="#modal-complain"
+                            data-id="'.$order->id.'"
+                            data-name="'.$order->number_ticket.'"
+                            data-customer="'.$order->customer->name.'">
+                            <i class="fa fa-exclamation-circle"></i>
+                        </button>';
                 return $btn;
             })
             ->orderColumns(['created_at'], '-:column $1')

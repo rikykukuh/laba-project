@@ -32,6 +32,7 @@ Route::group(['prefix'=>'laporan'], function(){
     Route::get('/report-matching','\App\Http\Controllers\ReportMatching\ReportMatchingController@index')->name('laporan.report-matching');
     Route::get('/report-matching-data','\App\Http\Controllers\ReportMatching\ReportMatchingController@data')->name('laporan.report-matching-data');
      Route::get('/order-item-teknisi', 'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@index')->name('laporan.order-item-teknisi');
+     Route::get('/complain-list', 'App\Http\Controllers\Order\OrderController@complainList')->name('laporan.complain-list');
 
    Route::get('/order-item-teknisi/export', 
         'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@export'
@@ -80,6 +81,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
+    Route::put('/orders/complain/{id}','App\Http\Controllers\Order\OrderController@complain')->name('orders.complain');
+    
    
     Route::delete('/orders/item/photo/', 'App\Http\Controllers\Order\OrderController@destroyItemPhoto')->name('orders.item-photo');
     Route::resource('customers', \App\Http\Controllers\Customer\CustomerController::class);

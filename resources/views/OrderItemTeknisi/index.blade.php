@@ -24,7 +24,7 @@
                 <tr>
                     <th>Teknisi</th>
                     <th>Banyak Item</th>
-                    <!-- <th>Masuk</th> -->
+                    <th>Masuk</th>
                     <th>Proses</th>
                     <th>Selesai</th>
                     <th>Cancel</th>
@@ -35,7 +35,7 @@
                     <tr>
                         <td>{{ $s->user->name ?? '-' }}</td>
                         <td>{{ $s->total }}</td>
-                        <!-- <td><span class="label label-info">{{ $s->masuk }}</span></td> -->
+                        <td><span class="label label-info">{{ $s->masuk }}</span></td>
                         <td><span class="label label-warning">{{ $s->proses }}</span></td>
                         <td><span class="label label-success">{{ $s->selesai }}</span></td>
                         <td><span class="label label-danger">{{ $s->cancel }}</span></td>
