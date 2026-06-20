@@ -521,6 +521,55 @@
             </div>
         </div>
         <div class="col-md-12 total-items">
+            <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">Delivery</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="box-body">
+
+                    <!-- Checkbox / Radio -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="is_delivery" name="is_delivery" value="1">
+                            Delivery
+                        </label>
+                    </div>
+
+                    <!-- Field yang di-hide -->
+                    <div id="delivery-fields" style="display:none;">
+
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" name="address_order" id="address_order" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Link Google Maps</label>
+                            <input type="text" name="link_map_address" id="link_map_address" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Driver</label>
+                            <select name="driver_id" id="driver_id" class="form-control">
+                                <option value="">-- Pilih Driver --</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 total-items">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">Nilai</h3>
@@ -1319,59 +1368,6 @@
             dataFile = [];
         }
 
-        // function saveItem(event) {
-        //     $('#items').show();
-        //     $('.total-items').show();
-        //     event.preventDefault(); // Menghentikan aksi default dari submit form
-
-        //     // Ambil nilai dari form
-        //     // const type = $('#type').val();
-        //     const type = 4;
-        //     const keterangan = $('#keterangan').val();
-        //     const biaya = $('#biaya').val().replace(/\./g, '');
-        //     const discount_item = $('#discount_item').val() !== '' ? parseInt($('#discount_item').val().replace(/\./g, ''),
-        //         10) : 0;
-        //     const gambar = dataFile;
-
-        //     // Buat objek item
-        //     const newItem = {
-        //         type,
-        //         keterangan,
-        //         biaya,
-        //         discount_item,
-        //         // netto: biaya - discount_item,
-        //         gambar
-        //     };
-
-        //     // console.log(newItem);
-
-        //     // Lakukan operasi CRUD di sini, misalnya tambahkan item ke array atau kirimkan ke server melalui AJAX
-
-        //     // Contoh operasi CRUD sederhana (tambahkan item ke array)
-        //     items.push(newItem); // items adalah variabel yang berisi array item
-
-        //     renderItems();
-
-        //     // Tampilkan pesan atau lakukan tindakan lainnya setelah berhasil menambahkan item
-        //     const message = 'Barang berhasil ditambahkan!';
-        //     $('.top-right').notify({
-        //         message: {
-        //             text: `Sukses! ${message}`
-        //         }
-        //     }).show();
-
-        //     // Tutup modal setelah selesai menyimpan data
-        //     $('#modal-add-item').modal('hide');
-
-        //     // Reset form
-        //     $('#add-item-form').trigger("reset");
-        //     // Atau lakukan tindakan lainnya, seperti menutup modal, mereset form, dll.
-
-        //     sumTotalItem();
-        //     $('#discount').trigger('input');
-        //     dataFile = [];
-        // }
-
         function formEditItem(event) {
             $('#items').show();
             $('.total-items').show();
@@ -1466,6 +1462,16 @@
             const split_payment = $('#toggle_split_payment').is(':checked');
             const payment_type = 0;
             const note = $('#note').val();
+            var is_delivery = $('#is_delivery').is(':checked');
+            const address = $('#address_order').val();
+            const link_map_address = $('#link_map_address').val();
+            const driver_id = $('#driver_id').val();
+
+            if (is_delivery == true){
+                is_delivery = 1;
+            }else{
+                is_delivery = 0;
+            }
 
             if (customer_id === '') {
                 $('html, body').animate({
@@ -1516,7 +1522,11 @@
                     split_payment_merchant,
                     split_payment,
                     payment_type,
-                    note
+                    note,
+                    is_delivery,
+                    driver_id,
+                    address,
+                    link_map_address
                 },
                 method: 'POST',
                 headers: {
@@ -1903,6 +1913,19 @@
                 $('#site_id').val(defaultSite).trigger('change');
             }
 
+        });
+
+        function toggleDelivery() {
+            if ($('#is_delivery').is(':checked')) {
+                $('#delivery-fields').show();
+            } else {
+                $('#delivery-fields').hide();
+            }
+        }
+
+        // saat klik
+        $('#is_delivery').on('change', function() {
+            toggleDelivery();
         });
     </script>
 

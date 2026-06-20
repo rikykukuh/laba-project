@@ -553,6 +553,91 @@
             </div>
         </div>
 
+        <div class="col-md-12 total-items">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title">Complain</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="" data-original-title="Collapse Form Order">
+                            <i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <textarea name="complain" id="complain" class="form-control">{{ $order->complain }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 total-items">
+            <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">Delivery</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="box-body">
+
+                    <!-- Checkbox / Radio -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox"
+                                id="is_delivery"
+                                name="is_delivery"
+                                value="1"
+                                {{ $order->is_delivery ? 'checked' : '' }}>
+                            Delivery
+                        </label>
+                    </div>
+
+                    <!-- Field yang di-hide -->
+                    <div id="delivery-fields"
+                        style="{{ $order->is_delivery ? '' : 'display:none;' }}">
+
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text"
+                                name="address_order"
+                                id="address_order"
+                                class="form-control"
+                                value="{{ $order->address }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Link Google Maps</label>
+                            <input type="text"
+                                name="link_map_address"
+                                id="link_map_address"
+                                class="form-control"
+                                value="{{ $order->link_map_address }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Driver</label>
+                            <select name="driver_id" id="driver_id" class="form-control">
+                                <option value="">-- Pilih Driver --</option>
+
+                                @foreach($users_driver as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ $order->driver_id == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
 
         @if ($order->uang_muka != 0)
             <div class="col-md-12 total-items">
@@ -1143,6 +1228,7 @@
             allItem.id = orderItems[i].id;
             allItem.type = orderItems[i].product_id;
             allItem.keterangan = orderItems[i].note;
+            allItem.complain = orderItems[i].complain;
             allItem.bruto = orderItems[i].bruto.toLocaleString('id-ID');
             allItem.discount = orderItems[i].discount.toLocaleString('id-ID');
             allItem.netto = orderItems[i].netto.toLocaleString('id-ID');
@@ -1219,11 +1305,12 @@
         // jalankan saat pertama load
         $(document).ready(function () {
             updateTeknisiOptions();
+            toggleDelivery();
         });
 
         const status = "{{ $order->status }}";
         if (status.toLowerCase() === 'diambil') {
-            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove')
+            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, .btn-remove')
                 .attr("disabled", true);
         }
 
@@ -1686,12 +1773,23 @@
             const estimate_service_done = $('#estimate_service_done').val();
             const estimate_take_item = $('#estimate_take_item').val();
             const note = $('#note').val();
+            const complain = $('#complain').val();
             const first_payment_id = $('#first_payment_id').val();
             const payment_method_first = $('#payment_method_first').val();
             const payment_merchant_first = $('#payment_merchant_first').val();
             const first_split_payment_id = $('#first_split_payment_id').val();
             const split_payment_method_first = $('#split_payment_method_first').val();
             const split_payment_merchant_first = $('#split_payment_merchant_first').val();
+            var is_delivery = $('#is_delivery').is(':checked');
+            const address = $('#address_order').val();
+            const link_map_address = $('#link_map_address').val();
+            const driver_id = $('#driver_id').val();
+
+            if (is_delivery == true){
+                is_delivery = 1;
+            }else{
+                is_delivery = 0;
+            }
             const nominal1 = ($('#nominal1').val() || '').replace(/\./g, '');
             const nominal2 = ($('#nominal2').val() || '').replace(/\./g, '');
             console.log(first_payment_id)
@@ -1723,7 +1821,12 @@
                 uang_muka: dp,
                 estimate_service_done,
                 estimate_take_item,
-                note
+                note,
+                complain,
+                is_delivery,
+                address,
+                driver_id,
+                link_map_address
             };
 
             $.ajax({
@@ -1761,7 +1864,7 @@
                     // Reset form
                     $('#pickup-item-form').trigger("reset");
                     if (picked_by.length > 0) {
-                        $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, #btn-simpan, .btn-edit, .btn-remove')
+                        $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, .btn-remove')
                             .attr("disabled", true);
                     }
                 },
@@ -2256,6 +2359,19 @@
             //     }
             // });
 
+        });
+
+        function toggleDelivery() {
+            if ($('#is_delivery').is(':checked')) {
+                $('#delivery-fields').show();
+            } else {
+                $('#delivery-fields').hide();
+            }
+        }
+
+        // saat klik
+        $('#is_delivery').on('change', function() {
+            toggleDelivery();
         });
     </script>
 

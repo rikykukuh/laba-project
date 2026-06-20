@@ -38,6 +38,10 @@ class Order extends Model
         'due_date',
         'sisa_pembayaran',
         'complain',
+        'is_delivery',
+        'address',
+        'driver_id',
+        'link_map_address'
     ];
 
     protected $dates = ['deleted_at'];

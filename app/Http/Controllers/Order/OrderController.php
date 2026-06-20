@@ -88,8 +88,11 @@ class OrderController extends Controller
         $payment_merchants = PaymentMerchant::all();
         $sites = Site::all();
         $cities = City::all();
+        $users = User::whereHas('roles', fn($q) => 
+                    $q->whereIn('name', ['driver'])
+                )->get();
 
-        return view('orders.create', compact('statuses', 'customers', 'products', 'payment_methods', 'payment_merchants', 'sites', 'cities', 'config'));
+        return view('orders.create', compact('statuses', 'customers', 'products', 'payment_methods', 'payment_merchants', 'sites', 'cities', 'config', 'users'));
     }
 
     public function store(Request $request)
@@ -115,6 +118,10 @@ class OrderController extends Controller
         $customer_id = $request->customer_id;
         $site_id = $request->site_id;
         $note = $request->note;
+        $is_delivery = $request->is_delivery;
+        $address = $request->address;
+        $link_map_address = $request->link_map_address;
+        $driver_id = $request->driver_id;
         $estimate_take_item = Carbon::parse($request->estimate_take_item);
 
         // selalu 1 hari sebelum
@@ -138,6 +145,10 @@ class OrderController extends Controller
             'estimate_service_done' => $estimate_service_done,
             'estimate_take_item' => $estimate_take_item,
             'note' => $note,
+            'address'=> $address,
+            'is_delivery'=> $is_delivery,
+            'link_map_address'=> $link_map_address,
+            'driver_id'=> $driver_id
 
             // 'name' => $random_string,
             // 'payment' => rand(1000, 100000),
@@ -145,6 +156,8 @@ class OrderController extends Controller
             // 'picked_by' => $request->picked_by,
             // 'picked_at' => date('Y-m-d H:i:s', strtotime($request->picked_at)),
         ]);
+
+        // dd($order);
 
         $ticket_format = sprintf('%06d', $order->id);
         $code_site = Site::findOrFail($site_id);
@@ -327,12 +340,17 @@ class OrderController extends Controller
         $users_teknisi = User::whereHas('roles', fn($q) => 
                     $q->whereIn('name', ['teknisi'])
                 )->get();
+        $users_driver = User::whereHas('roles', fn($q) => 
+                    $q->whereIn('name', ['driver'])
+                )->get();
         $users_qc = User::all();
         $users = User::all();
 
+
+
         $sites = Site::all();
 
-        return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 
+        return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'users_driver',
         'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc'));
     }
 
@@ -369,6 +387,7 @@ class OrderController extends Controller
         $estimate_service_done = $request->estimate_service_done;
         $estimate_take_item =  $request->estimate_take_item;
         $note =  $request->note;
+        $complain =  $request->complain;
         $uang_muka = $request->uang_muka;
         $first_payment_id = $request->first_payment_id;
         $payment_methods_first = $request->payment_method_first;
@@ -378,6 +397,11 @@ class OrderController extends Controller
         $split_payment_merchants_first = $request->split_payment_merchant_first;
         $nominal1 = $request->nominal1;
         $nominal2 = $request->nominal2;
+        $address = $request->address;
+        $driver_id = $request->driver_id;
+        $is_delivery = $request->is_delivery;
+        $link_map_address = $request->link_map_address;
+
 
         $nettoItem = $bruto - $discount;
         $vatItem = calculate_included_vat($nettoItem, $config->vat);
@@ -396,9 +420,14 @@ class OrderController extends Controller
             'site_id' => $site_id,
             'picked_by' => $picked_by,
             'note' => $note,
+            'complain' => $complain,
             'picked_at' => date('Y-m-d H:i:s', strtotime($picked_at)),
             'estimate_service_done' => $estimate_service_done,
             'estimate_take_item' => $estimate_take_item,
+            'is_delivery' => $is_delivery,
+            'address' => $address,
+            'link_map_address' => $link_map_address,
+            'driver_id' => $driver_id
         ]);
 
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
@@ -888,5 +917,15 @@ class OrderController extends Controller
         $site = Site::findOrFail($siteId);
         $numberTicket = $site->code . '-' . $ticketFormat;
         $order->update(['number_ticket' => $numberTicket]);
+    }
+
+    public function getComplainId($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        return response()->json([
+            'complain' => $order->complain ?? ''
+        ]);
+
     }
 }

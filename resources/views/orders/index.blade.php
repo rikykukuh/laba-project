@@ -260,11 +260,10 @@
                             Masukkan complain untuk pesanan </br>
                             <strong id="complain-order-name"></strong> </br>
                             <strong id="complain-order-customer"></strong>
-                            
                         </p>
 
                         <div class="form-group">
-                            <textarea name="complain" class="form-control" rows="4" placeholder="Tulis complain..."></textarea>
+                            <textarea id="complain-text" name="complain-text" class="form-control" rows="4" placeholder="Tulis complain..."></textarea>
                         </div>
                     </div>
 
@@ -335,8 +334,24 @@
             let id = $(this).data('id');
             let name = $(this).attr('data-name') || '-';
             let customer = $(this).attr('data-customer') || '-';
+            
 
             console.log(id, name); // debug
+
+            $.ajax({
+                url: '/orders/get-complain/' + id,
+                type: 'GET',
+                success: function(res) {
+                    let complain = res.complain || '-';
+
+                    // tampilkan ke modal (misalnya textarea / span)
+                    $('#complain-text').text(complain); // kalau textarea
+                    // atau
+                    // $('#complain-text').text(complain); // kalau div/span
+
+                    console.log(complain);
+                }
+            });
 
             $('#complain-order-id').val(id);
             $('#complain-order-name').text(name);

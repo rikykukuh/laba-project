@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
     Route::put('/orders/complain/{id}','App\Http\Controllers\Order\OrderController@complain')->name('orders.complain');
+    Route::get('/orders/get-complain/{id}', 'App\Http\Controllers\Order\OrderController@getComplainId');
     
    
     Route::delete('/orders/item/photo/', 'App\Http\Controllers\Order\OrderController@destroyItemPhoto')->name('orders.item-photo');
