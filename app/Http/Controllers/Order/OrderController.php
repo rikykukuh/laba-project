@@ -702,6 +702,42 @@ class OrderController extends Controller
         return view('orders.index_complain', compact('data', 'customers'));
     }
 
+    public function deliveryList(Request $request)
+    {
+        $query = Order::with(['customer', 'site', 'driver'])
+            ->where('transaction_type', 0)
+            ->where('is_delivery', true)
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'DIAMBIL');
+            });
+
+        if ($request->search) {
+            $query->where(function ($query) use ($request) {
+                $query->where('number_ticket', 'like', '%' . $request->search . '%')
+                    ->orWhere('address', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('customer', function ($customerQuery) use ($request) {
+                        $customerQuery->where('name', 'like', '%' . $request->search . '%')
+                            ->orWhere('phone_number', 'like', '%' . $request->search . '%');
+                    });
+
+                $searchNumber = ltrim(preg_replace('/\D/', '', $request->search), '0');
+                if ($searchNumber !== '') {
+                    $query->orWhere('id', (int) $searchNumber);
+                }
+            });
+        }
+
+        if ($request->site_id) {
+            $query->where('site_id', $request->site_id);
+        }
+
+        $data = $query->latest()->paginate(15);
+        $sites = Site::orderBy('name')->get();
+
+        return view('orders.index_delivery', compact('data', 'sites'));
+    }
+
     public function destroy($id)
     {
         $order = Order::with('orderItems.orderItemPhotos')->findOrFail($id);
@@ -745,6 +781,23 @@ class OrderController extends Controller
         return response()->json($orderItemPhoto);
     }
 
+    public function updateItemState(Request $request, $id): JsonResponse
+    {
+        $state = $request->input('state');
+        $allowedStates = [null, '', 'masuk', 'proses', 'selesai', 'gudang A', 'gudang B', 'gudang C', 'cancel'];
+
+        if (!in_array($state, $allowedStates, true)) {
+            return response()->json(['message' => 'State tidak valid.'], 422);
+        }
+
+        $orderItem = OrderItem::findOrFail($id);
+        $orderItem->update([
+            'state' => $state === '' ? null : $state,
+        ]);
+
+        return response()->json($orderItem->fresh());
+    }
+
     /**
      * @param Request $request
      * @param $id
@@ -752,10 +805,75 @@ class OrderController extends Controller
      */
     public function setStatus(Request $request, $id): JsonResponse
     {
+        if (strtoupper((string) $request->status) === 'LUNAS') {
+            return response()->json(['message' => 'Gunakan proses pelunasan untuk mengubah status LUNAS.'], 422);
+        }
+
         $order = Order::find($id);
         $order->status = $request->status;
         $order->save();
         return response()->json($order);
+    }
+
+    public function setLunas(Request $request, $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'payment_method' => 'required|integer|exists:payment_methods,id',
+            'payment_merchant' => 'nullable|integer|exists:payment_merchants,id',
+            'nominal_pelunasan' => 'required|numeric|min:0',
+        ]);
+
+        $order = Order::where('transaction_type', 0)->findOrFail($id);
+        $nominalPelunasan = (int) $validated['nominal_pelunasan'];
+        $sisaPembayaran = (int) $order->sisa_pembayaran;
+
+        if ($order->status === 'LUNAS') {
+            return response()->json(['message' => 'Reparasi sudah lunas.'], 422);
+        }
+
+        if ($nominalPelunasan !== $sisaPembayaran) {
+            return response()->json([
+                'message' => 'Nominal pelunasan harus sama dengan sisa pembayaran.',
+                'sisa_pembayaran' => $sisaPembayaran,
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $payment = null;
+
+            if ($nominalPelunasan > 0) {
+                $payment = Payment::create([
+                    'order_id' => $order->id,
+                    'payment_type' => 1,
+                    'value' => $nominalPelunasan,
+                    'payment_method_id' => (int) $validated['payment_method'],
+                    'payment_merchant_id' => isset($validated['payment_merchant'])
+                        ? (int) $validated['payment_merchant']
+                        : null,
+                ]);
+            }
+
+            $order->update([
+                'status' => 'LUNAS',
+                'sisa_pembayaran' => 0,
+                'uang_muka' => (int) $order->uang_muka + $nominalPelunasan,
+                'payment_id' => $payment ? $payment->id : $order->payment_id,
+            ]);
+
+            DB::commit();
+
+            return response()->json($order->fresh());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error pelunasan order', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json(['message' => 'Pelunasan tidak berhasil disimpan.'], 500);
+        }
     }
 
     private function prepareOrderData($request)

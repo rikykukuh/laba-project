@@ -33,6 +33,7 @@ Route::group(['prefix'=>'laporan'], function(){
     Route::get('/report-matching-data','\App\Http\Controllers\ReportMatching\ReportMatchingController@data')->name('laporan.report-matching-data');
      Route::get('/order-item-teknisi', 'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@index')->name('laporan.order-item-teknisi');
      Route::get('/complain-list', 'App\Http\Controllers\Order\OrderController@complainList')->name('laporan.complain-list');
+     Route::get('/delivery-list', 'App\Http\Controllers\Order\OrderController@deliveryList')->name('laporan.delivery-list');
 
    Route::get('/order-item-teknisi/export', 
         'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@export'
@@ -81,11 +82,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
+    Route::put('/orders/lunas/{id}', 'App\Http\Controllers\Order\OrderController@setLunas')->name('orders.lunas');
     Route::put('/orders/complain/{id}','App\Http\Controllers\Order\OrderController@complain')->name('orders.complain');
     Route::get('/orders/get-complain/{id}', 'App\Http\Controllers\Order\OrderController@getComplainId');
     
    
     Route::delete('/orders/item/photo/', 'App\Http\Controllers\Order\OrderController@destroyItemPhoto')->name('orders.item-photo');
+    Route::put('/orders/item/state/{id}', 'App\Http\Controllers\Order\OrderController@updateItemState')->name('orders.item-state');
     Route::resource('customers', \App\Http\Controllers\Customer\CustomerController::class);
     Route::resource('cities', \App\Http\Controllers\City\CityController::class);
     Route::resource('products', \App\Http\Controllers\Product\ProductController::class);

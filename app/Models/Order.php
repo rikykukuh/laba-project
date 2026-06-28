@@ -66,6 +66,11 @@ class Order extends Model
         return $this->belongsTo(Payment::class, 'payment_id', 'id');
     }
 
+    public function driver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'driver_id', 'id');
+    }
+
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'id');

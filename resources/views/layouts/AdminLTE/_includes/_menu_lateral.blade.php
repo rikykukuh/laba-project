@@ -15,6 +15,7 @@
 
 			<li class="treeview
 				{{ Request::segment(1) === 'orders'? 'active menu-open' : null }}
+				{{ request()->is('laporan/delivery-list*') ? 'active menu-open' : null }}
 				">
 				<a href="#" title="Report">
                     <i class="fa fa-file"></i>
@@ -33,6 +34,11 @@
 					<li class="{{Request::segment(2) === 'selesai-besok' ? 'active' : null}}">
 						<a href="{{ route('orders.selesai-besok') }}" title="Selesai Besok"><i class="fa fa-briefcase"></i> <span>List Selesai Reparasi</span></a>
 					</li>
+					@if (Auth::user()->can('root-dev', ''))
+					<li class="{{ request()->is('laporan/delivery-list*') ? 'active' : null }}">
+						<a href="{{ route('laporan.delivery-list') }}" title="List Delivery"><i class="fa fa-truck"></i> <span>List Delivery</span></a>
+					</li>
+					@endif
 					
 				</ul>
 				
@@ -40,7 +46,7 @@
             
             @if (Auth::user()->can('root-dev', ''))
             <li class="treeview
-				{{ Request::segment(1) === 'laporan' ? 'active menu-open' : null }}
+				{{ Request::segment(1) === 'laporan' && Request::segment(2) !== 'delivery-list' ? 'active menu-open' : null }}
 				">
                 <a href="#" title="Report">
                     <i class="fa fa-file"></i>
@@ -74,7 +80,7 @@
 							<span>List Complain</span>
 						</a>
 					</li>
-										
+
                 </ul>
             </li>
             @endif

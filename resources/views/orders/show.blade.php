@@ -228,6 +228,7 @@
                                     <th class="text-center">Biaya</th>
                                     <th class="text-center">Discount</th>
                                     <th class="text-center">Total</th>
+                                    <th class="text-center">State</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -238,6 +239,34 @@
                                             (int) $orderItem->discount > 100
                                                 ? (int) $orderItem->discount
                                                 : (int) $orderItem->bruto * ((int) $orderItem->discount / 100);
+                                        $stateLabels = [
+                                            'masuk' => 'Masuk',
+                                            'proses' => 'Proses',
+                                            'selesai' => 'Selesai',
+                                            'gudang A' => 'Gudang A',
+                                            'gudang B' => 'Gudang B',
+                                            'gudang C' => 'Gudang C',
+                                            'cancel' => 'Cancel',
+                                        ];
+                                        $stateClasses = [
+                                            'masuk' => 'label-info',
+                                            'proses' => 'label-warning',
+                                            'selesai' => 'label-success',
+                                            'gudang A' => 'label-primary',
+                                            'gudang B' => 'label-primary',
+                                            'gudang C' => 'label-primary',
+                                            'cancel' => 'label-danger',
+                                        ];
+                                        $stateButtonClasses = [
+                                            'masuk' => 'btn-info',
+                                            'proses' => 'btn-warning',
+                                            'selesai' => 'btn-success',
+                                            'gudang A' => 'btn-primary',
+                                            'gudang B' => 'btn-primary',
+                                            'gudang C' => 'btn-primary',
+                                            'cancel' => 'btn-danger',
+                                        ];
+                                        $itemState = $orderItem->state;
                                     @endphp
                                     <tr>
                                         <th class="text-center">{{ $loop->iteration }}</th>
@@ -265,9 +294,21 @@
                                             <b>{{ number_format($orderItem->bruto - $infoDiscount, null, ',', '.') }}</b>
                                         </td>
                                         <td class="text-center">
+                                            <span class="label {{ $stateClasses[$itemState] ?? 'label-default' }} item-state-label"
+                                                id="item-state-{{ $loop->iteration - 1 }}">
+                                                {{ $stateLabels[$itemState] ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
                                             <button type="button" class="btn btn-warning btn-xs margin-r-5 btn-edit"
                                                 data-toggle="modal" data-target="#modal-edit-item"
                                                 onclick="showEditItemForm({{ $loop->iteration - 1 }})">Edit</button>
+                                            <button type="button"
+                                                class="btn {{ $stateButtonClasses[$itemState] ?? 'btn-default' }} btn-xs item-state-button"
+                                                id="item-state-button-{{ $loop->iteration - 1 }}"
+                                                onclick="toggleItemState({{ $loop->iteration - 1 }})">
+                                                State
+                                            </button>
                                             {{-- <button type="button" class="btn btn-danger btn-xs margin-r-5 btn-remove" onclick="removeItem(event, this, {{ $loop->iteration - 1 }})">Remove</button> --}}
                                         </td>
                                     </tr>
@@ -363,10 +404,13 @@
                                         <div>
                                             <label for="state_edit">Status</label>
                                             <select id="state_edit" class="form-control" name="state">
-                                                <!-- <option value="">-- Pilih Status --</option> -->
+                                                <option value="">-- Kosong --</option>
                                                 <option value="masuk">Masuk</option>
                                                 <option value="proses">Proses</option>
-                                                <option value="Selesai">Selesai</option>
+                                                <option value="selesai">Selesai</option>
+                                                <option value="gudang A">Gudang A</option>
+                                                <option value="gudang B">Gudang B</option>
+                                                <option value="gudang C">Gudang C</option>
                                                 <option value="cancel">Cancel</option>
                                             </select>
                                         </div>
@@ -733,7 +777,7 @@
             @endif
         @endif
 
-        @if ($order->status == "DIAMBIL")
+        @if (in_array($order->status, ['DIAMBIL', 'LUNAS']) && $second_payment)
         <div class="col-md-12 total-items">
             <div class="box box-info">
                 <div class="box-header">
@@ -746,13 +790,13 @@
                 </div>
                 <div class="box-body">
                     <div class="form-group">
-                        <input type="hidden" name="second_payment_id" id="second_payment_id" value="{{ $second_payment->id}}">
+                        <input type="hidden" name="second_payment_id" id="second_payment_id" value="{{ optional($second_payment)->id }}">
                         <label for="payment_method">Metode Pembayaran: <small
                                 class="text-danger">*</small></label>
                         <select class="form-control" id="payment_method_second" name="payment_method_second">
                             @foreach ($payment_methods as $payment_method)
                                 <option value="{{ $payment_method->id }}"
-                                {{ $payment_method->id == $second_payment->payment_method_id ? 'selected' : '' }}>
+                                {{ $payment_method->id == optional($second_payment)->payment_method_id ? 'selected' : '' }}>
                                 {{ $payment_method->name }}
                                 </option>
                             @endforeach
@@ -764,7 +808,7 @@
                             required>
                             @foreach ($payment_merchants as $payment_merchant)
                                 <option value="{{ $payment_merchant->id }}"
-                                {{ $payment_merchant->id == $second_payment->payment_merchant_id ? 'selected' : '' }}>
+                                {{ $payment_merchant->id == optional($second_payment)->payment_merchant_id ? 'selected' : '' }}>
                                 {{ $payment_merchant->name }}
                                 </option>
                             @endforeach
@@ -820,6 +864,11 @@
                     data-target="#modal-pickup-item">
                     <i class="fa fa-fw fa-save"></i>
                     <span>Ambil</span>
+                </button>
+                <button type="button" class="btn bg-green" id="btn-lunas"
+                    {{ $order->status == 'LUNAS' ? 'disabled' : '' }} data-toggle="modal"
+                    data-target="#modal-lunas-item" style="margin-left: 5px;">
+                    <i class="glyphicon glyphicon-ok"></i> Lunas
                 </button>
 
                 <!-- Modal -->
@@ -934,6 +983,12 @@
                     data-target="#modal-pickup-item" style="margin-right: 15px;">
                     <i class="fa fa-fw fa-save"></i>
                     <span>Ambil</span>
+                </button>
+                <button type="button" class="btn bg-green pull-left" id="btn-lunas"
+                    style="margin-right: 15px;" {{ $order->status == 'LUNAS' ? 'disabled' : '' }}
+                    data-toggle="modal" data-target="#modal-lunas-item">
+                    <i class="glyphicon glyphicon-ok"></i>
+                    <span>Lunas</span>
                 </button>
                 <!-- Modal -->
                 <div id="modal-pickup-item" class="modal fade" role="dialog" data-keyboard="false"
@@ -1050,6 +1105,51 @@
         </div>
     @endif
 
+    <div id="modal-lunas-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <form id="lunas-item-form" action="{{ route('orders.lunas', $order->id) }}" method="post"
+                onsubmit="lunasItemForm(event)" autocomplete="off">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Form Pelunasan</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="payment_method_lunas">Metode Pembayaran: <small
+                                    class="text-danger">*</small></label>
+                            <select class="form-control" id="payment_method_lunas" name="payment_method_lunas" required>
+                                @foreach ($payment_methods as $payment_method)
+                                    <option value="{{ $payment_method->id }}">{{ $payment_method->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_merchant_lunas">Penyedia Pembayaran:</label>
+                            <select class="form-control" id="payment_merchant_lunas" name="payment_merchant_lunas">
+                                @foreach ($payment_merchants as $payment_merchant)
+                                    <option value="{{ $payment_merchant->id }}">{{ $payment_merchant->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nominal_pelunasan">Nominal Pelunasan: <small
+                                    class="text-danger">*</small></label>
+                            <input type="text" class="form-control" id="nominal_pelunasan" name="nominal_pelunasan"
+                                value="{{ number_format($order->sisa_pembayaran, null, ',', '.') }}" required>
+                            <p class="help-block">Sisa pembayaran: Rp
+                                {{ number_format($order->sisa_pembayaran, null, ',', '.') }}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default margin-r-5" data-dismiss="modal">Batalkan</button>
+                        <button type="submit" class="btn bg-green" id="btn-submit-lunas">Lunas</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('layout_js')
@@ -1073,6 +1173,16 @@
         };
 
         const orderItems = <?= $order->orderItems->toJson() ?>;
+        const itemStates = [
+            { value: '', label: '-' },
+            { value: 'masuk', label: 'Masuk' },
+            { value: 'proses', label: 'Proses' },
+            { value: 'selesai', label: 'Selesai' },
+            { value: 'gudang A', label: 'Gudang A' },
+            { value: 'gudang B', label: 'Gudang B' },
+            { value: 'gudang C', label: 'Gudang C' },
+            { value: 'cancel', label: 'Cancel' },
+        ];
 
         const cameraContent = `
            <div class="form-group" style="margin-top: 15px;">
@@ -1310,7 +1420,7 @@
 
         const status = "{{ $order->status }}";
         if (status.toLowerCase() === 'diambil') {
-            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, .btn-remove')
+            $('#btn-add-customer, #btn-add-item, #customer, #site_id, #btn-pickup, .btn-remove, #btn-lunas')
                 .attr("disabled", true);
         }
 
@@ -1334,6 +1444,10 @@
             getPaymentMerchant();
         });
 
+        $('#payment_method_lunas').on('change', function() {
+            getPaymentMerchantLunas();
+        });
+
         function getPaymentMerchant() {
             $.ajax({
                 url: '{{ route('order.merchant_by_payment') }}',
@@ -1346,6 +1460,27 @@
                     $('#payment_merchant').empty();
                     $.each(response, function(index, paymentMerchant) {
                         $('#payment_merchant').append('<option value="' + paymentMerchant.id + '">' +
+                            paymentMerchant.name + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        function getPaymentMerchantLunas() {
+            $.ajax({
+                url: '{{ route('order.merchant_by_payment') }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    payment_method: $('#payment_method_lunas').val()
+                },
+                success: function(response) {
+                    $('#payment_merchant_lunas').empty();
+                    $.each(response, function(index, paymentMerchant) {
+                        $('#payment_merchant_lunas').append('<option value="' + paymentMerchant.id + '">' +
                             paymentMerchant.name + '</option>');
                     });
                 },
@@ -1589,7 +1724,7 @@
             $(`#teknisi2_edit option[value='${dataItem.teknisi2_id}']`).prop('selected', true);
             $(`#teknisi3_edit option[value='${dataItem.teknisi3_id}']`).prop('selected', true);
             $(`#qc_edit option[value='${dataItem.qc_id}']`).prop('selected', true);
-            $(`#state_edit option[value='${dataItem.state}']`).prop('selected', true);
+            $('#state_edit').val(dataItem.state || '');
             // const type = $('#type_edit').val();
             const keterangan = $('#keterangan_edit').val(dataItem.keterangan);
             const biaya = $('#biaya_edit').val(parseInt(dataItem.bruto, 10).toLocaleString('id-ID'));
@@ -1752,6 +1887,198 @@
                     scrollTop: $("#alert-container").offset().top - 125
                 }, 1000);
             }
+        }
+
+        function lunasItemForm(event) {
+            event.preventDefault();
+
+            const expectedNominal = {{ (int) $order->sisa_pembayaran }};
+            const nominalPelunasan = parseInt(($('#nominal_pelunasan').val() || '').replace(/\./g, ''), 10) || 0;
+
+            if (nominalPelunasan !== expectedNominal) {
+                const message = `Nominal pelunasan harus sama dengan sisa pembayaran Rp ${expectedNominal.toLocaleString('id-ID')}.`;
+                const alert = `
+                    <div class="alert alert-danger alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <strong>Oops!</strong> ${message}
+                    </div>
+                `;
+                $('#alert-container').html(alert);
+                $('html, body').animate({
+                    scrollTop: $("#alert-container").offset().top - 125
+                }, 1000);
+                return;
+            }
+
+            if (confirm("Pastikan nominal pelunasan Rp " + nominalPelunasan.toLocaleString('id-ID') + " sudah benar. Lanjutkan?") !== true) {
+                return;
+            }
+
+            $('#btn-submit-lunas').attr('disabled', true);
+
+            $.ajax({
+                url: $('#lunas-item-form').attr('action'),
+                method: 'PUT',
+                data: {
+                    payment_method: $('#payment_method_lunas').val(),
+                    payment_merchant: $('#payment_merchant_lunas').val(),
+                    nominal_pelunasan: nominalPelunasan
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    const alert = `
+                        <div class="alert alert-success alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Sukses!</strong> Reparasi berhasil dilunasi.
+                        </div>
+                    `;
+                    $('#alert-container').html(alert);
+                    $('#modal-lunas-item').modal('hide');
+                    $('#status').text('LUNAS');
+                    $('#btn-lunas, #btn-pickup').attr('disabled', true);
+
+                    setTimeout(() => {
+                        $('.alert').alert('close');
+                        window.location.reload();
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    const message = xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
+                        : 'Pelunasan tidak berhasil disimpan!';
+                    const alert = `
+                        <div class="alert alert-danger alert-dismissible">
+                          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                          <strong>Oops!</strong> ${message}
+                        </div>
+                    `;
+                    $('#alert-container').html(alert);
+                    $('#btn-submit-lunas').removeAttr('disabled');
+                }
+            });
+
+            $('html, body').animate({
+                scrollTop: $("#alert-container").offset().top - 125
+            }, 1000);
+        }
+
+        function getItemStateLabel(state) {
+            const selectedState = itemStates.find(function(itemState) {
+                return itemState.value === (state || '');
+            });
+
+            return selectedState ? selectedState.label : state;
+        }
+
+        function getItemStateClass(state) {
+            const stateClasses = {
+                'masuk': 'label-info',
+                'proses': 'label-warning',
+                'selesai': 'label-success',
+                'gudang A': 'label-primary',
+                'gudang B': 'label-primary',
+                'gudang C': 'label-primary',
+                'cancel': 'label-danger',
+            };
+
+            return stateClasses[state] || 'label-default';
+        }
+
+        function getItemStateButtonClass(state) {
+            const stateClasses = {
+                'masuk': 'btn-info',
+                'proses': 'btn-warning',
+                'selesai': 'btn-success',
+                'gudang A': 'btn-primary',
+                'gudang B': 'btn-primary',
+                'gudang C': 'btn-primary',
+                'cancel': 'btn-danger',
+            };
+
+            return stateClasses[state] || 'btn-default';
+        }
+
+        function renderItemStateLabel(index, state) {
+            const displayState = state ? getItemStateLabel(state) : '-';
+            return `<span class="label ${getItemStateClass(state)} item-state-label" id="item-state-${index}">${displayState}</span>`;
+        }
+
+        function renderItemStateButton(index, state) {
+            return `
+                <button type="button" class="btn ${getItemStateButtonClass(state)} btn-xs item-state-button" id="item-state-button-${index}" onclick="toggleItemState(${index})">
+                    State
+                </button>
+            `;
+        }
+
+        function getNextItemState(state) {
+            const currentIndex = itemStates.findIndex(function(itemState) {
+                return itemState.value === (state || '');
+            });
+            const nextIndex = currentIndex === -1 || currentIndex === itemStates.length - 1 ? 0 : currentIndex + 1;
+
+            return itemStates[nextIndex].value;
+        }
+
+        function toggleItemState(index) {
+            const currentState = items[index] && items[index].state ? items[index].state : '';
+            updateItemState(index, getNextItemState(currentState));
+        }
+
+        function updateItemState(index, state) {
+            const item = items[index];
+
+            if (!item || !item.id) {
+                return;
+            }
+
+            const url = "{{ route('orders.item-state', ':id') }}".replace(':id', item.id);
+
+            $.ajax({
+                url,
+                method: 'PUT',
+                data: {
+                    state
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    items[index].state = response.state || '';
+                    const label = $('#item-state-' + index);
+                    label
+                        .removeClass('label-default label-info label-warning label-success label-primary label-danger')
+                        .addClass(getItemStateClass(items[index].state))
+                        .text(items[index].state ? getItemStateLabel(items[index].state) : '-');
+                    const button = $('#item-state-button-' + index);
+                    button
+                        .removeClass('btn-default btn-info btn-warning btn-success btn-primary btn-danger')
+                        .addClass(getItemStateButtonClass(items[index].state))
+                        .text('State');
+
+                    $('.top-right').notify({
+                        message: {
+                            text: `Sukses! State barang menjadi ${getItemStateLabel(items[index].state)}.`
+                        }
+                    }).show();
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    const message = xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
+                        : 'State barang tidak berhasil diubah!';
+
+                    $('.top-right').notify({
+                        message: {
+                            text: `Oops! ${message}`
+                        },
+                        type: 'danger'
+                    }).show();
+                }
+            });
         }
 
         function pickUpItemForm(event) {
@@ -1931,7 +2258,11 @@
                             <b>${(parseInt(item.bruto, 10) - parseInt(info_discount, 10)).toLocaleString('id-ID')}</b>
                         </td>
                         <td class="text-center">
+                            ${renderItemStateLabel(index, item.state)}
+                        </td>
+                        <td class="text-center">
                             <button type="button" class="btn btn-warning btn-xs margin-r-5" data-toggle="modal" data-target="#modal-edit-item" onclick="showEditItemForm(${index})">Edit</button>
+                            ${renderItemStateButton(index, item.state)}
                             <!-- <button type="button" class="btn btn-danger btn-xs margin-r-5" onclick="removeItem(event, this, ${index})">Remove</button> -->
                         </td>
                     </tr>
@@ -2126,6 +2457,10 @@
             $('#modal-show-image-item').on('hidden.bs.modal', function() {
                 $('.content-image').empty();
             });
+            $('#modal-lunas-item').on('shown.bs.modal', function() {
+                getPaymentMerchantLunas();
+                $('#nominal_pelunasan').focus();
+            });
             $('#modal-add-item').on('hidden.bs.modal', function() {
                 resetFormAddItem();
             });
@@ -2273,7 +2608,7 @@
                     $('#btn-ambil').attr('disabled', true);
                 }
             });
-            $('#biaya, #biaya_edit, #discount, #discount_item, #discount_item_edit, #kekurangan-sisa, #nominal1, #nominal2').on('input',
+            $('#biaya, #biaya_edit, #discount, #discount_item, #discount_item_edit, #kekurangan-sisa, #nominal1, #nominal2, #nominal_pelunasan').on('input',
                 function(e) {
                     const value = $(this).val();
 

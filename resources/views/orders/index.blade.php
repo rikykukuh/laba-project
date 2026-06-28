@@ -35,6 +35,8 @@
                                             {{ request()->get('status') == 'READY' ? 'selected' : '' }}>READY</option>
                                         <option value="DIAMBIL"
                                             {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
+                                        <option value="LUNAS"
+                                            {{ request()->get('status') == 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -83,6 +85,8 @@
                                             {{ request()->get('status') == 'DIPROSES' ? 'selected' : '' }}>Diproses</option>
                                         <option value="DIAMBIL"
                                             {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
+                                        <option value="LUNAS"
+                                            {{ request()->get('status') == 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                                     </optgroup>
                                 </select>
                             </div>
