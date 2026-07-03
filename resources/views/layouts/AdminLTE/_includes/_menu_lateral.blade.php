@@ -38,6 +38,9 @@
 					<li class="{{ request()->is('laporan/delivery-list*') ? 'active' : null }}">
 						<a href="{{ route('laporan.delivery-list') }}" title="List Delivery"><i class="fa fa-truck"></i> <span>List Delivery</span></a>
 					</li>
+					<li class="{{ request()->is('laporan/delivery-list-sudah-diambil*') ? 'active' : null }}">
+						<a href="{{ route('laporan.delivery-list-sudah-diambil') }}" title="List Delivery Sudah Diambil"><i class="fa fa-check"></i> <span>List Delivery Sudah Diambil</span></a>
+					</li>
 					@endif
 					
 				</ul>

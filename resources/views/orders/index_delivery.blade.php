@@ -10,12 +10,16 @@
 
 @section('content')
 
+@php
+    $isTakenList = ($listType ?? 'pending') === 'taken';
+@endphp
+
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title">List Delivery</h3>
+        <h3 class="box-title">{{ $isTakenList ? 'List Delivery Sudah Diambil' : 'List Delivery' }}</h3>
 
         <div class="box-tools">
-            <form method="GET" action="{{ route('laporan.delivery-list') }}" style="display:flex; gap:8px;">
+            <form method="GET" action="{{ $isTakenList ? route('laporan.delivery-list-sudah-diambil') : route('laporan.delivery-list') }}" style="display:flex; gap:8px;">
                 <select name="site_id" class="form-control input-sm">
                     <option value="">Semua Cabang</option>
                     @foreach ($sites as $site)
@@ -33,7 +37,7 @@
                     <i class="fa fa-search"></i>
                 </button>
 
-                <a href="{{ route('laporan.delivery-list') }}" class="btn btn-default btn-sm">Reset</a>
+                <a href="{{ $isTakenList ? route('laporan.delivery-list-sudah-diambil') : route('laporan.delivery-list') }}" class="btn btn-default btn-sm">Reset</a>
             </form>
         </div>
     </div>
@@ -70,7 +74,9 @@
                         </td>
                         <td class="text-center">{{ optional($order->site)->name ?? '-' }}</td>
                         <td class="text-center">
-                            <span class="label label-info">{{ $order->status ?? '-' }}</span>
+                            <span class="label {{ $order->status == 'DIAMBIL' ? 'label-success' : 'label-info' }}">
+                                {{ $order->status ?? '-' }}
+                            </span>
                         </td>
                         <td class="text-center">{{ $order->estimate_take_item ?? '-' }}</td>
                         <td class="text-center">{{ optional($order->driver)->name ?? '-' }}</td>
@@ -91,7 +97,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center">Tidak ada delivery yang belum diambil</td>
+                        <td colspan="8" class="text-center">
+                            {{ $isTakenList ? 'Tidak ada delivery yang sudah diambil' : 'Tidak ada delivery yang belum diambil' }}
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

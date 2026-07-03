@@ -734,8 +734,43 @@ class OrderController extends Controller
 
         $data = $query->latest()->paginate(15);
         $sites = Site::orderBy('name')->get();
+        $listType = 'pending';
 
-        return view('orders.index_delivery', compact('data', 'sites'));
+        return view('orders.index_delivery', compact('data', 'sites', 'listType'));
+    }
+
+    public function deliveryListSudahDiambil(Request $request)
+    {
+        $query = Order::with(['customer', 'site', 'driver'])
+            ->where('transaction_type', 0)
+            ->where('is_delivery', true)
+            ->where('status', 'DIAMBIL');
+
+        if ($request->search) {
+            $query->where(function ($query) use ($request) {
+                $query->where('number_ticket', 'like', '%' . $request->search . '%')
+                    ->orWhere('address', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('customer', function ($customerQuery) use ($request) {
+                        $customerQuery->where('name', 'like', '%' . $request->search . '%')
+                            ->orWhere('phone_number', 'like', '%' . $request->search . '%');
+                    });
+
+                $searchNumber = ltrim(preg_replace('/\D/', '', $request->search), '0');
+                if ($searchNumber !== '') {
+                    $query->orWhere('id', (int) $searchNumber);
+                }
+            });
+        }
+
+        if ($request->site_id) {
+            $query->where('site_id', $request->site_id);
+        }
+
+        $data = $query->latest()->paginate(15);
+        $sites = Site::orderBy('name')->get();
+        $listType = 'taken';
+
+        return view('orders.index_delivery', compact('data', 'sites', 'listType'));
     }
 
     public function destroy($id)

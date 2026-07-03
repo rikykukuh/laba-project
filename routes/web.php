@@ -34,6 +34,7 @@ Route::group(['prefix'=>'laporan'], function(){
      Route::get('/order-item-teknisi', 'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@index')->name('laporan.order-item-teknisi');
      Route::get('/complain-list', 'App\Http\Controllers\Order\OrderController@complainList')->name('laporan.complain-list');
      Route::get('/delivery-list', 'App\Http\Controllers\Order\OrderController@deliveryList')->name('laporan.delivery-list');
+     Route::get('/delivery-list-sudah-diambil', 'App\Http\Controllers\Order\OrderController@deliveryListSudahDiambil')->name('laporan.delivery-list-sudah-diambil');
 
    Route::get('/order-item-teknisi/export', 
         'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@export'
