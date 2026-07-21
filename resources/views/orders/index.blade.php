@@ -16,107 +16,75 @@
 
 
 @section('content')
-    @if (Request::segment(2) === 'selesai-besok')
+    @php
+        $isSelesaiBesok = Request::segment(2) === 'selesai-besok';
+        $isReparasi = Request::segment(2) === 'reparasi';
+    @endphp
+
+    @if ($isSelesaiBesok || $isReparasi)
         <div class="box box-primary">
             <div class="box-body">
                 <form class="form-inline" id="form-filter">
-                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="status">Status:</label>
-                                <select id='status' class="form-control" style="width: 200px" name="status">
-                                    <optgroup label="--Select Status--">
-                                        <option value="ALL"
-                                            {{ request()->get('status') == 'ALL' || request()->get('status') == '' ? 'selected' : '' }}>
-                                            All</option>
-                                        <option value="DIPROSES"
-                                            {{ request()->get('status') == 'DIPROSES' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="READY"
-                                            {{ request()->get('status') == 'READY' ? 'selected' : '' }}>READY</option>
-                                        <option value="DIAMBIL"
-                                            {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
-                                        <option value="LUNAS"
-                                            {{ request()->get('status') == 'LUNAS' ? 'selected' : '' }}>Lunas</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <input type="hidden" class="form-control" name="is_ready_tomorrow" id="is_ready_tomorrow" value="True">
-                                <label for="selesai_hari_ini">Selesai hari ini:</label>
-                                <input type="checkbox" name="ready_today" {{ request('ready_today') ? 'checked' : '' }}>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="selesai_besok">Selesai besok:</label>
-                                <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" {{ request('ready_tomorrow') ? 'checked' : '' }}>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-sm bg-maroon">
-                                    <i class="fa fa-filter"></i> Filter
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
-    @if (Request::segment(2) === 'reparasi')
-        <div class="box box-primary">
-            <div class="box-body">
-                <form class="form-inline" id="form-filter">
-                    <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
-                    <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
+                    @if ($isReparasi)
+                        <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
+                        <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
+                    @endif
+
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="status">Status:</label>
                                 <select id='status' class="form-control" style="width: 200px" name="status">
                                     <optgroup label="--Select Status--">
-                                        <option value="ALL"
-                                            {{ request()->get('status') == 'ALL' || request()->get('status') == '' ? 'selected' : '' }}>
-                                            All</option>
-                                        <option value="DIPROSES"
-                                            {{ request()->get('status') == 'DIPROSES' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="DIAMBIL"
-                                            {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
-                                        <option value="LUNAS"
-                                            {{ request()->get('status') == 'LUNAS' ? 'selected' : '' }}>Lunas</option>
+                                        <option value="ALL" @selected(request()->get('status') == 'ALL' || !request()->has('status'))>All</option>
+                                        <option value="DIPROSES" @selected(request()->get('status') == 'DIPROSES')>Diproses</option>
+                                        @if ($isSelesaiBesok)
+                                            <option value="READY" @selected(request()->get('status') == 'READY')>READY</option>
+                                        @endif
+                                        <option value="DIAMBIL" @selected(request()->get('status') == 'DIAMBIL')>Diambil</option>
+                                        <option value="LUNAS" @selected(request()->get('status') == 'LUNAS')>Lunas</option>
                                     </optgroup>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Date range:</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="text" class="form-control pull-right" id="reservation">
+
+                        @if ($isSelesaiBesok)
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="hidden" class="form-control" name="is_ready_tomorrow" id="is_ready_tomorrow" value="True">
+                                    <label for="selesai_hari_ini">Selesai hari ini:</label>
+                                    <input type="checkbox" name="ready_today" @checked(request('ready_today'))>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="site_id">Cabang:</label>
-                                <select class="form-control" id="site_id" name="site_id">
-                                    <option value="ALL"
-                                        {{ request()->get('site_id') == 'ALL' || request()->get('site_id') == '' ? 'selected' : '' }}>
-                                        All</option>
-                                    @foreach ($sites as $site)
-                                        <option value="{{ $site->id }}"
-                                            {{ request()->get('site_id') == $site->id ? 'selected' : '' }}>
-                                            {{ $site->name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="selesai_besok">Selesai besok:</label>
+                                    <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" @checked(request('ready_tomorrow'))>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Date range:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                        <input type="text" class="form-control pull-right" id="reservation">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="site_id">Cabang:</label>
+                                    <select class="form-control" id="site_id" name="site_id">
+                                        <option value="ALL" @selected(request()->get('site_id') == 'ALL' || !request()->has('site_id'))>All</option>
+                                        @foreach ($sites as $site)
+                                            <option value="{{ $site->id }}" @selected(request()->get('site_id') == $site->id)>{{ $site->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="col-md-12" style="margin: 15px auto;">
                             <div class="form-group">
                                 <button type="submit" class="btn btn-sm bg-maroon">
@@ -336,8 +304,8 @@
         $(document).on('click', '[data-target="#modal-complain"]', function () {
 
             let id = $(this).data('id');
-            let name = $(this).attr('data-name') || '-';
-            let customer = $(this).attr('data-customer') || '-';
+            let name = $(this).data('name') || '-';
+            let customer = $(this).data('customer') || '-';
             
 
             console.log(id, name); // debug
