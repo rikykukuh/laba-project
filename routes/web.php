@@ -55,6 +55,18 @@ Route::group(['prefix'=>'laporan'], function(){
     Route::post('/order-item-teknisi/import',
         'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@import'
     )->middleware('auth')->name('order-item-teknisi.import');
+
+    Route::get('/order-item-teknisi/orders',
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@searchOrders'
+    )->middleware('auth')->name('order-item-teknisi.orders.search');
+
+    Route::get('/order-item-teknisi/orders/{order}/items',
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@orderItems'
+    )->middleware('auth')->name('order-item-teknisi.orders.items');
+
+    Route::post('/order-item-teknisi/assign',
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@store'
+    )->middleware('auth')->name('order-item-teknisi.assign');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){

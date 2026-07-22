@@ -42,6 +42,11 @@ class OrderItem extends Model
         return $this->hasMany(Product::class, 'id', 'product_id');
     }
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
     public function orderItemPhotos()
     {
         return $this->hasMany(OrderItemPhoto::class, 'order_item_id', 'id');

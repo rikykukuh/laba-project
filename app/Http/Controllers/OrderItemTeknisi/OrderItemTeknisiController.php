@@ -11,9 +11,11 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderItemTeknisiExport;
 use App\Exports\SummaryTeknisiExport;
 use App\Exports\TechnicianImportTemplateExport;
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
@@ -67,8 +69,154 @@ class OrderItemTeknisiController extends Controller
                     ->get();
 
 
-        return view('OrderItemTeknisi.index', compact('data', 'summary'));
+        $technicians = $this->eligibleTechnicians()
+            ->orderBy('name')
+            ->get(['users.id', 'users.name']);
 
+        return view('OrderItemTeknisi.index', compact('data', 'summary', 'technicians'));
+
+    }
+
+    public function searchOrders(Request $request): JsonResponse
+    {
+        $search = trim((string) $request->input('q'));
+
+        $orders = Order::query()
+            ->with('customer:id,name')
+            ->withCount('orderItems')
+            ->where('transaction_type', 0)
+            ->whereHas('orderItems')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('number_ticket', 'like', '%' . $search . '%')
+                        ->orWhereHas('customer', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                });
+            })
+            ->latest('id')
+            ->limit(20)
+            ->get();
+
+        return response()->json([
+            'results' => $orders->map(function (Order $order) {
+                $customerName = optional($order->customer)->name;
+
+                return [
+                    'id' => $order->id,
+                    'text' => ($order->number_ticket ?: 'Tanpa No. Bon')
+                        . ($customerName ? ' - ' . $customerName : '')
+                        . ' (' . $order->order_items_count . ' item)',
+                ];
+            })->values(),
+        ]);
+    }
+
+    public function orderItems(Order $order): JsonResponse
+    {
+        abort_unless((int) $order->transaction_type === 0, 404);
+
+        $order->load(['orderItems.product:id,name', 'orderItems.teknisis:id']);
+        $isPickedUp = strtoupper((string) $order->status) === 'DIAMBIL';
+
+        $items = $order->orderItems->map(function (OrderItem $item) use ($isPickedUp) {
+            $technicianIds = $this->assignedTechnicianIds($item);
+            $productName = optional($item->product)->name ?: 'Item service';
+            $description = trim((string) $item->note);
+
+            return [
+                'id' => $item->id,
+                'text' => '#' . $item->id . ' - ' . $productName
+                    . ($description !== '' ? ' | ' . $description : '')
+                    . ' (Slot ' . $technicianIds->count() . '/3)',
+                'state' => $isPickedUp ? 'selesai' : ($item->state ?: ''),
+                'technician_ids' => $technicianIds->values(),
+                'technician_count' => $technicianIds->count(),
+                'is_full' => $technicianIds->count() >= 3,
+            ];
+        })->values();
+
+        return response()->json([
+            'order_picked_up' => $isPickedUp,
+            'all_slots_full' => $items->isNotEmpty() && $items->every(function ($item) {
+                return $item['is_full'];
+            }),
+            'items' => $items,
+        ]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'order_id' => 'required|integer|exists:orders,id',
+            'order_item_id' => 'required|integer|exists:order_items,id',
+            'state' => 'required|in:masuk,proses,selesai,gudang A,gudang B,gudang C,cancel',
+        ]);
+
+        if (!$this->eligibleTechnicians()->whereKey($validated['user_id'])->exists()) {
+            return response()->json([
+                'message' => 'User yang dipilih tidak terdaftar sebagai teknisi atau QC.',
+            ], 422);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($validated) {
+                $item = OrderItem::where('order_id', $validated['order_id'])
+                    ->lockForUpdate()
+                    ->findOrFail($validated['order_item_id']);
+                $item->load(['order:id,status,transaction_type', 'teknisis:id']);
+
+                if ((int) optional($item->order)->transaction_type !== 0) {
+                    return ['error' => 'Bon yang dipilih bukan transaksi reparasi.'];
+                }
+
+                $technicianIds = $this->assignedTechnicianIds($item);
+                $userId = (int) $validated['user_id'];
+                $alreadyInPivot = $item->teknisis->pluck('id')->map(function ($id) {
+                    return (int) $id;
+                })->contains($userId);
+
+                if ($alreadyInPivot) {
+                    return ['error' => 'Teknisi tersebut sudah ditugaskan pada item service ini.'];
+                }
+
+                if (!$technicianIds->contains($userId) && $technicianIds->count() >= 3) {
+                    return ['error' => 'Slot teknisi pada item service ini sudah terpenuhi (3/3).'];
+                }
+
+                $now = now();
+                DB::table('order_item_teknisi')->updateOrInsert(
+                    ['order_item_id' => $item->id, 'user_id' => $userId],
+                    ['created_at' => $now, 'updated_at' => $now]
+                );
+
+                $technicianIds = $technicianIds->push($userId)->unique()->values();
+                $isPickedUp = strtoupper((string) optional($item->order)->status) === 'DIAMBIL';
+
+                $item->update([
+                    'teknisi1_id' => $technicianIds->get(0),
+                    'teknisi2_id' => $technicianIds->get(1),
+                    'teknisi3_id' => $technicianIds->get(2),
+                    'state' => $isPickedUp ? 'selesai' : ($validated['state'] ?: null),
+                ]);
+
+                return ['item' => $item, 'is_picked_up' => $isPickedUp];
+            });
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
+            return response()->json([
+                'message' => 'Item service tidak ditemukan pada bon yang dipilih.',
+            ], 422);
+        }
+
+        if (isset($result['error'])) {
+            return response()->json(['message' => $result['error']], 422);
+        }
+
+        return response()->json([
+            'message' => 'Teknisi berhasil ditugaskan pada item service.',
+            'state' => $result['item']->state,
+        ]);
     }
 
     public function export(Request $request)
@@ -314,6 +462,18 @@ class OrderItemTeknisiController extends Controller
         return User::whereHas('roles', function ($query) {
             $query->whereIn('name', ['teknisi', 'qc_user']);
         });
+    }
+
+    private function assignedTechnicianIds(OrderItem $item)
+    {
+        return collect([$item->teknisi1_id, $item->teknisi2_id, $item->teknisi3_id])
+            ->merge($item->relationLoaded('teknisis') ? $item->teknisis->pluck('id') : [])
+            ->filter()
+            ->map(function ($id) {
+                return (int) $id;
+            })
+            ->unique()
+            ->values();
     }
 
     private function normalizeInteger($value)

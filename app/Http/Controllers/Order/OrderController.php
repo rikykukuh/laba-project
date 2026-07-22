@@ -500,11 +500,16 @@ class OrderController extends Controller
 
     private function buildWhatsAppBonMessage(Order $order, $bonUrl)
     {
+        $order->loadMissing(['customer', 'creator']);
         $template = config('whatsapp.order_message_template');
 
         return strtr($template, [
             '{nama_pelanggan}' => optional($order->customer)->name ?: 'Pelanggan',
+            '{nama_kasir}' => optional($order->creator)->name ?: 'Kasir',
             '{no_bon}' => $order->number_ticket ?: '-',
+            '{tanggal_transaksi}' => $order->created_at
+                ? $order->created_at->timezone('Asia/Jakarta')->format('d-m-Y H:i') . ' WIB'
+                : '-',
             '{link_bon}' => $bonUrl,
         ]);
     }
@@ -658,6 +663,11 @@ class OrderController extends Controller
         }
 
         $order->update($data->all());
+        $isPickedUp = strtoupper((string) $order->status) === 'DIAMBIL';
+
+        if ($isPickedUp) {
+            $order->orderItems()->update(['state' => 'selesai']);
+        }
 
         for ($i = 0; $i < count($items); $i++) {
             $order_item = OrderItem::findOrFail($items[$i]['id']);
@@ -668,7 +678,7 @@ class OrderController extends Controller
             $teknisi2 = $items[$i]['teknisi2_id'];
             $teknisi3 = $items[$i]['teknisi3_id'];
             $qc = $items[$i]['qc_id'];
-            $state = $items[$i]['state'];
+            $state = $isPickedUp ? 'selesai' : $items[$i]['state'];
 
             if($discountItem > 100) {
                 $total_discount_item = (int) $items[$i]['discount'];
@@ -1003,9 +1013,10 @@ class OrderController extends Controller
             return response()->json(['message' => 'State tidak valid.'], 422);
         }
 
-        $orderItem = OrderItem::findOrFail($id);
+        $orderItem = OrderItem::with('order:id,status')->findOrFail($id);
+        $isPickedUp = strtoupper((string) optional($orderItem->order)->status) === 'DIAMBIL';
         $orderItem->update([
-            'state' => $state === '' ? null : $state,
+            'state' => $isPickedUp ? 'selesai' : ($state === '' ? null : $state),
         ]);
 
         return response()->json($orderItem->fresh());
@@ -1022,9 +1033,18 @@ class OrderController extends Controller
             return response()->json(['message' => 'Gunakan proses pelunasan untuk mengubah status LUNAS.'], 422);
         }
 
-        $order = Order::find($id);
-        $order->status = $request->status;
-        $order->save();
+        $order = DB::transaction(function () use ($request, $id) {
+            $order = Order::findOrFail($id);
+            $order->status = $request->status;
+            $order->save();
+
+            if (strtoupper((string) $order->status) === 'DIAMBIL') {
+                $order->orderItems()->update(['state' => 'selesai']);
+            }
+
+            return $order;
+        });
+
         return response()->json($order);
     }
 
