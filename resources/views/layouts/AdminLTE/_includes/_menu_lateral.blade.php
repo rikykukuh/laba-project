@@ -31,17 +31,18 @@
 					<li class="{{Request::segment(1) === 'orders' && (Request::segment(2) === 'index' || Request::segment(2) === null) ? 'active' : null}}">
 						<a href="{{ route('orders.index') }}" title="Reparasi"><i class="fa fa-shopping-cart"></i> <span>List Reparasi</span></a>
 					</li>
+					<li class="{{ request()->routeIs('orders.item-positions') ? 'active' : null }}">
+						<a href="{{ route('orders.item-positions') }}" title="List Posisi Barang"><i class="fa fa-map-marker"></i> <span>List Posisi Barang</span></a>
+					</li>
 					<li class="{{Request::segment(2) === 'selesai-besok' ? 'active' : null}}">
 						<a href="{{ route('orders.selesai-besok') }}" title="Selesai Besok"><i class="fa fa-briefcase"></i> <span>List Selesai Reparasi</span></a>
 					</li>
-					@if (Auth::user()->can('root-dev', ''))
 					<li class="{{ request()->is('laporan/delivery-list*') ? 'active' : null }}">
 						<a href="{{ route('laporan.delivery-list') }}" title="List Delivery"><i class="fa fa-truck"></i> <span>List Delivery</span></a>
 					</li>
 					<li class="{{ request()->is('laporan/delivery-list-sudah-diambil*') ? 'active' : null }}">
 						<a href="{{ route('laporan.delivery-list-sudah-diambil') }}" title="List Delivery Sudah Diambil"><i class="fa fa-check"></i> <span>List Delivery Sudah Diambil</span></a>
 					</li>
-					@endif
 					
 				</ul>
 				
@@ -131,6 +132,24 @@
 			</li>
 
 			@endif
+
+			@if (Auth::user()->hasAnyRoles('Administrators'))
+			<li class="treeview {{ Request::segment(1) === 'whatsapp' ? 'active menu-open' : null }}">
+				<a href="#" title="WhatsApp">
+					<i class="fa fa-whatsapp"></i> <span>WhatsApp</span>
+					<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+				</a>
+				<ul class="treeview-menu">
+					<li class="{{ request()->routeIs('whatsapp.devices') ? 'active' : null }}">
+						<a href="{{ route('whatsapp.devices') }}"><i class="fa fa-mobile"></i> <span>Device</span></a>
+					</li>
+					<li class="{{ request()->routeIs('whatsapp.messages') ? 'active' : null }}">
+						<a href="{{ route('whatsapp.messages') }}"><i class="fa fa-comments"></i> <span>Riwayat Pesan</span></a>
+					</li>
+				</ul>
+			</li>
+			@endif
+
 			<li class="treeview
 				{{ Request::segment(1) === 'config' ? 'active menu-open' : null }}
 				{{ Request::segment(1) === 'order-logs' ? 'active menu-open' : null }}

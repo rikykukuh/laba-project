@@ -2,13 +2,67 @@
 
 @section('icon_page', 'user')
 
-@section('title', 'Users')
+@section('title', 'Laporan Teknisi')
 
 @section('menu_pagina')	
 
 @endsection
 
 @section('content')   
+
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ session('success') }}
+    </div>
+@endif
+
+@if ($errors->any() || session('import_errors'))
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <strong>Import gagal:</strong>
+        <ul style="margin-bottom: 0;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+            @foreach (session('import_errors', []) as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Import Penugasan Teknisi</h3>
+    </div>
+    <div class="box-body">
+        <p class="text-muted">
+            Download template, pilih teknisi dari dropdown, lalu isi ID Barang, No Bon, dan tanggal pengerjaan.
+            Tanggal Dikerjakan wajib diisi. Tanggal Selesai yang kosong otomatis menggunakan tanggal hari ini saat import.
+        </p>
+        <div class="row">
+            <div class="col-md-3">
+                <a href="{{ route('order-item-teknisi.import-template') }}" class="btn btn-info btn-block">
+                    <i class="fa fa-download"></i> Download Template Excel
+                </a>
+            </div>
+            <div class="col-md-9">
+                <form method="POST" action="{{ route('order-item-teknisi.import') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="input-group">
+                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required>
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-upload"></i> Import Excel
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="box">
     <div class="box-header">
@@ -27,7 +81,11 @@
                     <th>Masuk</th>
                     <th>Proses</th>
                     <th>Selesai</th>
+                    <th>Gudang A</th>
+                    <th>Gudang B</th>
+                    <th>Gudang C</th>
                     <th>Cancel</th>
+                    <th>Belum Ada State</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,11 +96,15 @@
                         <td><span class="label label-info">{{ $s->masuk }}</span></td>
                         <td><span class="label label-warning">{{ $s->proses }}</span></td>
                         <td><span class="label label-success">{{ $s->selesai }}</span></td>
+                        <td><span class="label label-primary">{{ $s->gudang_a }}</span></td>
+                        <td><span class="label label-primary">{{ $s->gudang_b }}</span></td>
+                        <td><span class="label label-primary">{{ $s->gudang_c }}</span></td>
                         <td><span class="label label-danger">{{ $s->cancel }}</span></td>
+                        <td><span class="label label-default">{{ $s->belum_ada_state }}</span></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Tidak ada data</td>
+                        <td colspan="10" class="text-center">Tidak ada data</td>
                     </tr>
                 @endforelse
             </tbody>

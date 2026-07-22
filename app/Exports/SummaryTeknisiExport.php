@@ -24,7 +24,11 @@ class SummaryTeknisiExport implements FromCollection, withHeadings
             'Masuk',
             'Proses',
             'Selesai',
+            'Gudang A',
+            'Gudang B',
+            'Gudang C',
             'Cancel',
+            'Belum Ada State',
         ];
     }
 
@@ -37,7 +41,11 @@ class SummaryTeknisiExport implements FromCollection, withHeadings
                 'Masuk' => $s->masuk,
                 'Proses' => $s->proses,
                 'Selesai' => $s->selesai,
+                'Gudang A' => $s->gudang_a,
+                'Gudang B' => $s->gudang_b,
+                'Gudang C' => $s->gudang_c,
                 'Cancel' => $s->cancel,
+                'Belum Ada State' => $s->belum_ada_state,
             ];
         });
     }

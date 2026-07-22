@@ -18,13 +18,16 @@ use App\Models\PaymentMerchant;
 use App\Models\PaymentMethod;
 use App\Models\Site;
 use App\Models\User;
+use App\Models\WhatsAppMessageLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Yajra\DataTables\DataTables;
@@ -41,6 +44,74 @@ class OrderController extends Controller
     {
         $sites = Site::all();
         return $dataTable->render('orders.index', compact('sites'));
+    }
+
+    public function itemPositions(Request $request)
+    {
+        $selectedState = $request->get('state', 'ALL');
+        $search = trim((string) $request->get('search', ''));
+
+        $states = OrderItem::whereHas('order', function ($query) {
+                $query->where('transaction_type', 0);
+            })
+            ->whereNotNull('state')
+            ->where('state', '<>', '')
+            ->distinct()
+            ->orderBy('state')
+            ->pluck('state');
+
+        $hasItemsWithoutState = OrderItem::whereHas('order', function ($query) {
+                $query->where('transaction_type', 0);
+            })
+            ->where(function ($query) {
+                $query->whereNull('state')->orWhere('state', '');
+            })
+            ->exists();
+
+        $allowedStates = $states->concat(['BELUM_ADA_STATE', 'ALL']);
+        if (!$allowedStates->contains($selectedState)) {
+            $selectedState = 'ALL';
+        }
+
+        $query = OrderItem::query()
+            ->select('order_items.*')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.transaction_type', 0)
+            ->whereNull('orders.deleted_at')
+            ->with([
+                'order:id,number_ticket,created_at',
+                'orderItemPhotos:id,order_item_id,thumbnail_url,preview_url',
+            ]);
+
+        if ($selectedState === 'BELUM_ADA_STATE') {
+            $query->where(function ($query) {
+                $query->whereNull('order_items.state')->orWhere('order_items.state', '');
+            });
+        } elseif ($selectedState !== 'ALL') {
+            $query->where('order_items.state', $selectedState);
+        }
+
+        if ($search !== '') {
+            $query->where(function ($query) use ($search) {
+                $query->where('orders.number_ticket', 'like', '%' . $search . '%')
+                    ->orWhere('order_items.id', 'like', '%' . $search . '%')
+                    ->orWhere('order_items.note', 'like', '%' . $search . '%');
+            });
+        }
+
+        $items = $query
+            ->orderByDesc('orders.created_at')
+            ->orderByDesc('order_items.id')
+            ->paginate(20)
+            ->appends($request->query());
+
+        return view('orders.item-positions', compact(
+            'items',
+            'states',
+            'hasItemsWithoutState',
+            'selectedState',
+            'search'
+        ));
     }
 
     public function report(OrdersDataTable $dataTable)
@@ -350,8 +421,115 @@ class OrderController extends Controller
 
         $sites = Site::all();
 
+        $bonWhatsappUrl = URL::signedRoute('orders.print.shared', [
+            'id' => $order->id,
+            'type' => 'customer',
+        ]);
+        $whatsappMessage = $this->buildWhatsAppBonMessage($order, $bonWhatsappUrl);
+
         return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'users_driver',
-        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc'));
+        'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc',
+        'bonWhatsappUrl', 'whatsappMessage'));
+    }
+
+    public function sendWhatsAppBon(Order $order)
+    {
+        $order->loadMissing('customer');
+        $phoneNumber = preg_replace('/\D+/', '', (string) optional($order->customer)->phone_number);
+
+        if (!$order->customer || !$phoneNumber) {
+            return back()->with('error', 'Nomor WhatsApp pelanggan belum tersedia.');
+        }
+
+        if (strlen($phoneNumber) < 8 || strlen($phoneNumber) > 16) {
+            return back()->with('error', 'Nomor WhatsApp pelanggan tidak valid.');
+        }
+
+        $token = config('services.fonnte.token');
+        if (!$token) {
+            return back()->with('error', 'Token Fonnte belum dikonfigurasi.');
+        }
+
+        $bonUrl = URL::signedRoute('orders.print.shared', [
+            'id' => $order->id,
+            'type' => 'customer',
+        ]);
+        $message = $this->buildWhatsAppBonMessage($order, $bonUrl);
+
+        try {
+            $response = Http::timeout(20)->get(config('services.fonnte.endpoint'), [
+                'token' => $token,
+                'target' => $phoneNumber,
+                'message' => $message,
+                'countryCode' => (string) config('services.fonnte.country_code', '62'),
+                'typing' => 'true',
+                'preview' => 'false',
+            ]);
+
+            $payload = $response->json();
+            $isSuccess = $response->successful()
+                && (bool) ($payload['status'] ?? $payload['Status'] ?? false);
+
+            if (!$isSuccess) {
+                $reason = $payload['reason'] ?? $payload['detail'] ?? 'Fonnte menolak pengiriman pesan.';
+                $this->logWhatsAppMessage($order, $phoneNumber, $message, 'failed', $payload);
+                Log::warning('Pengiriman bon WhatsApp gagal.', [
+                    'order_id' => $order->id,
+                    'status_code' => $response->status(),
+                    'reason' => $reason,
+                ]);
+
+                return back()->with('error', 'Pesan WhatsApp gagal dikirim: ' . $reason);
+            }
+
+            $this->logWhatsAppMessage($order, $phoneNumber, $message, 'queued', $payload);
+        } catch (\Throwable $exception) {
+            $this->logWhatsAppMessage($order, $phoneNumber, $message, 'failed', [
+                'reason' => 'connection_error',
+            ]);
+            Log::error('Koneksi ke Fonnte gagal.', [
+                'order_id' => $order->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()->with('error', 'Tidak dapat terhubung ke layanan WhatsApp. Silakan coba lagi.');
+        }
+
+        return back()->with('success', 'Link bon berhasil dikirim ke WhatsApp pelanggan.');
+    }
+
+    private function buildWhatsAppBonMessage(Order $order, $bonUrl)
+    {
+        $template = config('whatsapp.order_message_template');
+
+        return strtr($template, [
+            '{nama_pelanggan}' => optional($order->customer)->name ?: 'Pelanggan',
+            '{no_bon}' => $order->number_ticket ?: '-',
+            '{link_bon}' => $bonUrl,
+        ]);
+    }
+
+    private function logWhatsAppMessage(Order $order, $target, $message, $status, array $payload)
+    {
+        try {
+            $providerIds = $payload['id'] ?? null;
+
+            WhatsAppMessageLog::create([
+                'order_id' => $order->id,
+                'sent_by' => auth()->id(),
+                'target' => $target,
+                'message' => $message,
+                'status' => $status,
+                'provider_message_id' => is_array($providerIds) ? implode(',', $providerIds) : $providerIds,
+                'request_id' => $payload['requestid'] ?? null,
+                'provider_response' => json_encode($payload),
+            ]);
+        } catch (\Throwable $exception) {
+            Log::error('Gagal menyimpan riwayat pesan WhatsApp.', [
+                'order_id' => $order->id,
+                'message' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function edit($id)

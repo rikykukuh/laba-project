@@ -30,4 +30,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+        'account_token' => env('FONNTE_ACCOUNT_TOKEN'),
+        'endpoint' => env('FONNTE_ENDPOINT', 'https://api.fonnte.com/send/'),
+        'country_code' => env('FONNTE_COUNTRY_CODE', '62'),
+        'get_devices_endpoint' => env('FONNTE_GET_DEVICES_ENDPOINT', 'https://api.fonnte.com/get-devices'),
+        'add_device_endpoint' => env('FONNTE_ADD_DEVICE_ENDPOINT', 'https://api.fonnte.com/add-device'),
+        'disconnect_endpoint' => env('FONNTE_DISCONNECT_ENDPOINT', 'https://api.fonnte.com/disconnect'),
+    ],
+
 ];

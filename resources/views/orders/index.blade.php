@@ -36,13 +36,13 @@
                                 <label for="status">Status:</label>
                                 <select id='status' class="form-control" style="width: 200px" name="status">
                                     <optgroup label="--Select Status--">
-                                        <option value="ALL" @selected(request()->get('status') == 'ALL' || !request()->has('status'))>All</option>
-                                        <option value="DIPROSES" @selected(request()->get('status') == 'DIPROSES')>Diproses</option>
+                                        <option value="ALL" {{ request()->get('status') == 'ALL' || !request()->has('status') ? 'selected' : '' }}>All</option>
+                                        <option value="DIPROSES" {{ request()->get('status') == 'DIPROSES' ? 'selected' : '' }}>Diproses</option>
                                         @if ($isSelesaiBesok)
-                                            <option value="READY" @selected(request()->get('status') == 'READY')>READY</option>
+                                            <option value="READY" {{ request()->get('status') == 'READY' ? 'selected' : '' }}>READY</option>
                                         @endif
-                                        <option value="DIAMBIL" @selected(request()->get('status') == 'DIAMBIL')>Diambil</option>
-                                        <option value="LUNAS" @selected(request()->get('status') == 'LUNAS')>Lunas</option>
+                                        <option value="DIAMBIL" {{ request()->get('status') == 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
+                                        <option value="LUNAS" {{ request()->get('status') == 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -53,13 +53,13 @@
                                 <div class="form-group">
                                     <input type="hidden" class="form-control" name="is_ready_tomorrow" id="is_ready_tomorrow" value="True">
                                     <label for="selesai_hari_ini">Selesai hari ini:</label>
-                                    <input type="checkbox" name="ready_today" @checked(request('ready_today'))>
+                                    <input type="checkbox" name="ready_today" {{ request('ready_today') ? 'checked' : '' }}>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="selesai_besok">Selesai besok:</label>
-                                    <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" @checked(request('ready_tomorrow'))>
+                                    <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" {{ request('ready_tomorrow') ? 'checked' : '' }}>
                                 </div>
                             </div>
                         @else
@@ -76,9 +76,9 @@
                                 <div class="form-group">
                                     <label for="site_id">Cabang:</label>
                                     <select class="form-control" id="site_id" name="site_id">
-                                        <option value="ALL" @selected(request()->get('site_id') == 'ALL' || !request()->has('site_id'))>All</option>
+                                        <option value="ALL" {{ request()->get('site_id') == 'ALL' || !request()->has('site_id') ? 'selected' : '' }}>All</option>
                                         @foreach ($sites as $site)
-                                            <option value="{{ $site->id }}" @selected(request()->get('site_id') == $site->id)>{{ $site->name }}</option>
+                                            <option value="{{ $site->id }}" {{ request()->get('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

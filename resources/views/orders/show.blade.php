@@ -222,6 +222,7 @@
                             <thead class="bg-navy">
                                 <tr>
                                     <th class="text-center">#</th>
+                                    <th class="text-center">ID Barang</th>
                                     <th class="text-center">Jenis</th>
                                     <th class="text-center">Keterangan</th>
                                     <th class="text-center">Foto</th>
@@ -270,6 +271,7 @@
                                     @endphp
                                     <tr>
                                         <th class="text-center">{{ $loop->iteration }}</th>
+                                        <td class="text-center">{{ $orderItem->id }}</td>
                                         <td class="text-center">{{ $products->find($orderItem->product_id)->name }}</td>
                                         <td class="text-center">{{ $orderItem->note }}</td>
                                         <td class="text-center">
@@ -966,6 +968,10 @@
                         class="btn bg-navy">
                         <i class="fa fa-fw fa-print"></i> Reparation
                     </a>
+                    <button type="button" class="btn btn-success" style="margin-left: 5px;"
+                        data-toggle="modal" data-target="#modal-send-whatsapp-bon">
+                        <i class="fa fa-whatsapp"></i> Kirim WhatsApp
+                    </button>
                 </div>
 
                 <!-- Back Button -->
@@ -1099,11 +1105,52 @@
                     <i class="fa fa-fw fa-print"></i>
                     <span>Reparation</span>
                 </a>
+                <button type="button" class="btn btn-success" style="margin-right: 15px;margin-top: -20px;"
+                    data-toggle="modal" data-target="#modal-send-whatsapp-bon">
+                    <i class="fa fa-whatsapp"></i>
+                    <span>Kirim WhatsApp</span>
+                </button>
                 <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i
                         class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
             </div>
         </div>
     @endif
+
+    <div id="modal-send-whatsapp-bon" class="modal fade" role="dialog" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('orders.send-whatsapp', $order->id) }}">
+                    @csrf
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-whatsapp text-green"></i> Kirim Link Bon via WhatsApp
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Penerima</label>
+                            <input type="text" class="form-control"
+                                value="{{ optional($order->customer)->name ?: '-' }} ({{ optional($order->customer)->phone_number ?: 'Nomor belum tersedia' }})"
+                                readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Template Pesan</label>
+                            <textarea class="form-control" rows="9" readonly>{{ $whatsappMessage }}</textarea>
+                            <p class="help-block">Link bon hanya dapat digunakan jika tidak diubah.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success"
+                            {{ optional($order->customer)->phone_number ? '' : 'disabled' }}>
+                            <i class="fa fa-whatsapp"></i> Kirim Pesan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-lunas-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-sm">
@@ -2237,6 +2284,7 @@
                 const row = `
                     <tr>
                         <th class="text-center">${index + 1}</th>
+                        <td class="text-center">${item.id || '-'}</td>
                         <td class="text-center">${type.name}</td>
                         <td class="text-center">${item.keterangan}</td>
                         <td class="text-center">

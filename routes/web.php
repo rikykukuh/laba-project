@@ -9,6 +9,10 @@ Route::impersonate();
 
 Auth::routes();
 
+Route::get('/bon/{id}/print', 'App\Http\Controllers\Order\OrderController@orderPrint')
+    ->middleware('signed')
+    ->name('orders.print.shared');
+
 Route::middleware('auth')->group(function () {
     Route::get('/', 'App\Http\Controllers\HomeController@index');
     Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
@@ -43,6 +47,14 @@ Route::group(['prefix'=>'laporan'], function(){
     Route::get('/order-item-teknisi/export-summary', 
         'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@exportSummary'
     )->name('order-item-teknisi.export-summary');
+
+    Route::get('/order-item-teknisi/import-template',
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@downloadImportTemplate'
+    )->middleware('auth')->name('order-item-teknisi.import-template');
+
+    Route::post('/order-item-teknisi/import',
+        'App\Http\Controllers\OrderItemTeknisi\OrderItemTeknisiController@import'
+    )->middleware('auth')->name('order-item-teknisi.import');
 });
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile', 'middleware' => 'auth'], function (){
@@ -78,8 +90,14 @@ Route::group(['namespace' => 'App\Http\Controllers\User', 'middleware' => 'auth'
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/whatsapp/devices', 'App\Http\Controllers\WhatsApp\WhatsAppController@index')->name('whatsapp.devices');
+    Route::post('/whatsapp/devices', 'App\Http\Controllers\WhatsApp\WhatsAppController@store')->name('whatsapp.devices.store');
+    Route::post('/whatsapp/devices/{device}/disconnect', 'App\Http\Controllers\WhatsApp\WhatsAppController@disconnect')->name('whatsapp.devices.disconnect');
+    Route::get('/whatsapp/messages', 'App\Http\Controllers\WhatsApp\WhatsAppController@messages')->name('whatsapp.messages');
     Route::resource('order-products', \App\Http\Controllers\OrderProduct\OrderProductController::class);
     Route::get('/order-products/print/{id}', 'App\Http\Controllers\OrderProduct\OrderProductController@orderPrint')->name('order-products.print');
+    Route::get('/orders/item-positions', 'App\Http\Controllers\Order\OrderController@itemPositions')->name('orders.item-positions');
+    Route::post('/orders/{order}/send-whatsapp', 'App\Http\Controllers\Order\OrderController@sendWhatsAppBon')->name('orders.send-whatsapp');
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
     Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
