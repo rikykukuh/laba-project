@@ -20,11 +20,130 @@
     @if ($apiError)
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i> {{ $apiError }}
-            @if (!config('services.fonnte.account_token'))
-                Gunakan account token dari menu Settings Fonnte, bukan token device pengiriman pesan.
+            @if (!$hasAccountToken)
+                Isi account token pada form pengaturan di bawah. Account token berbeda dengan token device pengiriman.
             @endif
         </div>
     @endif
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-cog"></i> Pengaturan Fonnte</h3>
+            <span class="label label-info pull-right">Disimpan di Database</span>
+        </div>
+        <form method="POST" action="{{ route('whatsapp.settings.update') }}">
+            @csrf
+            @method('PUT')
+            <div class="box-body">
+                @if ($errors->whatsappSettings->any())
+                    <div class="alert alert-danger">
+                        <strong>Pengaturan belum tersimpan:</strong>
+                        <ul style="margin-bottom: 0;">
+                            @foreach ($errors->whatsappSettings->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <p class="text-muted">
+                    Token disimpan terenkripsi. Kosongkan kolom token jika tidak ingin mengganti token yang sudah tersimpan.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="device-token">Token Device Pengiriman</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa {{ $hasDeviceToken ? 'fa-check text-green' : 'fa-times text-red' }}"></i>
+                                </span>
+                                <input type="password" id="device-token" name="device_token" class="form-control"
+                                    maxlength="4096" autocomplete="new-password"
+                                    placeholder="{{ $hasDeviceToken ? 'Token sudah tersimpan' : 'Masukkan token device Fonnte' }}">
+                            </div>
+                            @if ($hasDeviceToken)
+                                <div class="checkbox">
+                                    <label><input type="checkbox" name="clear_device_token" value="1"> Hapus token device tersimpan</label>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-token">Account Token</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa {{ $hasAccountToken ? 'fa-check text-green' : 'fa-times text-red' }}"></i>
+                                </span>
+                                <input type="password" id="account-token" name="account_token" class="form-control"
+                                    maxlength="4096" autocomplete="new-password"
+                                    placeholder="{{ $hasAccountToken ? 'Account token sudah tersimpan' : 'Masukkan account token Fonnte' }}">
+                            </div>
+                            @if ($hasAccountToken)
+                                <div class="checkbox">
+                                    <label><input type="checkbox" name="clear_account_token" value="1"> Hapus account token tersimpan</label>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <label for="send-endpoint">URL Kirim Pesan</label>
+                            <input type="url" id="send-endpoint" name="send_endpoint" class="form-control"
+                                value="{{ old('send_endpoint', $setting->send_endpoint) }}" maxlength="2048" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="country-code">Kode Negara</label>
+                            <input type="text" id="country-code" name="country_code" class="form-control"
+                                value="{{ old('country_code', $setting->country_code) }}" pattern="[0-9]{1,4}" maxlength="4" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="qr-endpoint">URL Connect/QR</label>
+                            <input type="url" id="qr-endpoint" name="qr_endpoint" class="form-control"
+                                value="{{ old('qr_endpoint', $setting->qr_endpoint) }}" maxlength="2048" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="get-devices-endpoint">URL Daftar Device</label>
+                            <input type="url" id="get-devices-endpoint" name="get_devices_endpoint" class="form-control"
+                                value="{{ old('get_devices_endpoint', $setting->get_devices_endpoint) }}" maxlength="2048" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="add-device-endpoint">URL Tambah Device</label>
+                            <input type="url" id="add-device-endpoint" name="add_device_endpoint" class="form-control"
+                                value="{{ old('add_device_endpoint', $setting->add_device_endpoint) }}" maxlength="2048" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="disconnect-endpoint">URL Disconnect Device</label>
+                            <input type="url" id="disconnect-endpoint" name="disconnect_endpoint" class="form-control"
+                                value="{{ old('disconnect_endpoint', $setting->disconnect_endpoint) }}" maxlength="2048" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="submit" class="btn btn-info">
+                    <i class="fa fa-save"></i> Simpan Pengaturan WhatsApp
+                </button>
+            </div>
+        </form>
+    </div>
 
     <div class="row">
         <div class="col-md-4"><div class="small-box bg-green"><div class="inner"><h3>{{ $summary['connected'] }}</h3><p>Device Terkoneksi</p></div><div class="icon"><i class="fa fa-link"></i></div></div></div>
@@ -36,7 +155,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">Daftar Device</h3>
             <button type="button" class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#add-device-modal"
-                {{ config('services.fonnte.account_token') ? '' : 'disabled' }}><i class="fa fa-plus"></i> Add Device</button>
+                {{ $hasAccountToken ? '' : 'disabled' }}><i class="fa fa-plus"></i> Add Device</button>
         </div>
         <div class="box-body table-responsive no-padding">
             <table class="table table-bordered table-hover">
@@ -63,7 +182,10 @@
                                         </button>
                                     </form>
                                 @else
-                                    <span class="text-muted">-</span>
+                                    <button type="button" class="btn btn-success btn-xs btn-connect-device"
+                                        data-device="{{ $device['device'] }}">
+                                        <i class="fa fa-qrcode"></i> Connect
+                                    </button>
                                 @endif
                             </td>
                         </tr>
@@ -91,10 +213,157 @@
             </form>
         </div></div>
     </div>
+
+    <div class="modal fade" id="connect-device-modal" role="dialog" aria-labelledby="connect-device-title">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="connect-device-title">
+                        <i class="fa fa-whatsapp text-green"></i> Connect WhatsApp
+                    </h4>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="connect-device-loading" style="padding: 40px 0;">
+                        <i class="fa fa-spinner fa-spin fa-3x text-green"></i>
+                        <p style="margin-top: 15px;">Meminta QR Code dari Fonnte...</p>
+                    </div>
+                    <div id="connect-device-error" class="alert alert-danger" style="display: none;"></div>
+                    <div id="connect-device-connected" class="alert alert-success" style="display: none;"></div>
+                    <div id="connect-device-qr-wrapper" style="display: none;">
+                        <p>
+                            Buka WhatsApp di ponsel → <strong>Perangkat tertaut</strong> →
+                            <strong>Tautkan perangkat</strong>, lalu scan QR Code berikut.
+                        </p>
+                        <img id="connect-device-qr" alt="QR Code koneksi WhatsApp"
+                            style="width: 280px; max-width: 100%; border: 1px solid #ddd; padding: 8px;">
+                        <p class="text-muted" style="margin-top: 12px;">
+                            QR Code dapat kedaluwarsa. Klik Connect kembali untuk membuat QR baru.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" onclick="window.location.reload();">
+                        <i class="fa fa-refresh"></i> Refresh Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('layout_js')
-    @if ($errors->any())
-        <script>$(function () { $('#add-device-modal').modal('show'); });</script>
-    @endif
+    <script>
+        $(function () {
+            var connectStatusTimer = null;
+            var connectStatusPending = false;
+
+            function stopConnectStatusPolling() {
+                if (connectStatusTimer) {
+                    window.clearInterval(connectStatusTimer);
+                    connectStatusTimer = null;
+                }
+                connectStatusPending = false;
+            }
+
+            function startConnectStatusPolling(device) {
+                stopConnectStatusPolling();
+
+                connectStatusTimer = window.setInterval(function () {
+                    if (connectStatusPending) {
+                        return;
+                    }
+
+                    connectStatusPending = true;
+                    $.ajax({
+                        url: @json(url('/whatsapp/devices')) + '/' + encodeURIComponent(device) + '/status',
+                        method: 'GET',
+                        dataType: 'json',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }).done(function (response) {
+                        if (!response.connected || !$('#connect-device-modal').hasClass('in')) {
+                            return;
+                        }
+
+                        stopConnectStatusPolling();
+                        $('#connect-device-loading, #connect-device-error, #connect-device-qr-wrapper').hide();
+                        $('#connect-device-connected').text(response.message).show();
+
+                        window.setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                    }).always(function () {
+                        connectStatusPending = false;
+                    });
+                }, 3000);
+            }
+
+            function connectDevice(device) {
+                var $modal = $('#connect-device-modal');
+                var $loading = $('#connect-device-loading');
+                var $error = $('#connect-device-error');
+                var $connected = $('#connect-device-connected');
+                var $qrWrapper = $('#connect-device-qr-wrapper');
+                var $qr = $('#connect-device-qr');
+
+                $loading.show();
+                $error.hide().text('');
+                $connected.hide().text('');
+                $qrWrapper.hide();
+                $qr.removeAttr('src');
+                $modal.modal('show');
+
+                $.ajax({
+                    url: @json(url('/whatsapp/devices')) + '/' + encodeURIComponent(device) + '/connect',
+                    method: 'POST',
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    }
+                }).done(function (response) {
+                    $loading.hide();
+
+                    if (response.connected) {
+                        $connected.text(response.message).show();
+                        window.setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                        return;
+                    }
+
+                    var qrSource = response.qr.indexOf('data:image') === 0
+                        ? response.qr
+                        : 'data:image/png;base64,' + response.qr;
+
+                    $qr.attr('src', qrSource);
+                    $qrWrapper.show();
+                    startConnectStatusPolling(device);
+                }).fail(function (xhr) {
+                    var response = xhr.responseJSON || {};
+                    $loading.hide();
+                    $error.text(response.message || 'QR Code koneksi tidak dapat dibuat.').show();
+                });
+            }
+
+            $('.btn-connect-device').on('click', function () {
+                connectDevice($(this).data('device'));
+            });
+
+            $('#connect-device-modal').on('hidden.bs.modal', function () {
+                stopConnectStatusPolling();
+            });
+
+            @if ($errors->any())
+                $('#add-device-modal').modal('show');
+            @endif
+
+            @if (session('connect_device'))
+                connectDevice(@json((string) session('connect_device')));
+            @endif
+        });
+    </script>
 @endsection

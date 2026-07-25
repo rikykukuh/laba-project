@@ -19,6 +19,7 @@ use App\Models\PaymentMethod;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\WhatsAppMessageLog;
+use App\Models\WhatsAppSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -445,9 +446,10 @@ class OrderController extends Controller
             return back()->with('error', 'Nomor WhatsApp pelanggan tidak valid.');
         }
 
-        $token = config('services.fonnte.token');
+        $whatsAppSetting = WhatsAppSetting::current();
+        $token = $whatsAppSetting->device_token;
         if (!$token) {
-            return back()->with('error', 'Token Fonnte belum dikonfigurasi.');
+            return back()->with('error', 'Token device Fonnte belum dikonfigurasi pada menu WhatsApp.');
         }
 
         $bonUrl = URL::signedRoute('orders.print.shared', [
@@ -457,11 +459,11 @@ class OrderController extends Controller
         $message = $this->buildWhatsAppBonMessage($order, $bonUrl);
 
         try {
-            $response = Http::timeout(20)->get(config('services.fonnte.endpoint'), [
+            $response = Http::timeout(20)->get($whatsAppSetting->send_endpoint, [
                 'token' => $token,
                 'target' => $phoneNumber,
                 'message' => $message,
-                'countryCode' => (string) config('services.fonnte.country_code', '62'),
+                'countryCode' => (string) $whatsAppSetting->country_code,
                 'typing' => 'true',
                 'preview' => 'false',
             ]);

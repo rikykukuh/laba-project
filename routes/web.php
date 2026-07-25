@@ -103,7 +103,10 @@ Route::group(['namespace' => 'App\Http\Controllers\User', 'middleware' => 'auth'
 
 Route::middleware('auth')->group(function () {
     Route::get('/whatsapp/devices', 'App\Http\Controllers\WhatsApp\WhatsAppController@index')->name('whatsapp.devices');
+    Route::put('/whatsapp/settings', 'App\Http\Controllers\WhatsApp\WhatsAppController@updateSettings')->name('whatsapp.settings.update');
     Route::post('/whatsapp/devices', 'App\Http\Controllers\WhatsApp\WhatsAppController@store')->name('whatsapp.devices.store');
+    Route::post('/whatsapp/devices/{device}/connect', 'App\Http\Controllers\WhatsApp\WhatsAppController@connect')->name('whatsapp.devices.connect');
+    Route::get('/whatsapp/devices/{device}/status', 'App\Http\Controllers\WhatsApp\WhatsAppController@status')->name('whatsapp.devices.status');
     Route::post('/whatsapp/devices/{device}/disconnect', 'App\Http\Controllers\WhatsApp\WhatsAppController@disconnect')->name('whatsapp.devices.disconnect');
     Route::get('/whatsapp/messages', 'App\Http\Controllers\WhatsApp\WhatsAppController@messages')->name('whatsapp.messages');
     Route::resource('order-products', \App\Http\Controllers\OrderProduct\OrderProductController::class);
