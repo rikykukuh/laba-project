@@ -25,15 +25,14 @@ class TechnicianImportTemplateSheet implements FromArray, ShouldAutoSize, WithEv
     public function array(): array
     {
         $rows = [[
-            'No Bon',
-            'ID Barang',
+            'Kode Bon Item',
             'Nama Teknisi',
             'Tanggal Dikerjakan',
             'Tanggal Selesai',
         ]];
 
         for ($row = 0; $row < 100; $row++) {
-            $rows[] = [null, null, null, null, null];
+            $rows[] = [null, null, null, null];
         }
 
         return $rows;
@@ -64,16 +63,15 @@ class TechnicianImportTemplateSheet implements FromArray, ShouldAutoSize, WithEv
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $sheet->freezePane('A2');
-                $sheet->setAutoFilter('A1:E101');
-                $sheet->getStyle('D2:E501')->getNumberFormat()->setFormatCode('dd-mm-yyyy');
+                $sheet->setAutoFilter('A1:D101');
+                $sheet->getStyle('C2:D501')->getNumberFormat()->setFormatCode('dd-mm-yyyy');
                 $sheet->getStyle('A2:A501')->getNumberFormat()->setFormatCode('@');
-                $sheet->getStyle('A1:E101')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle('A1:D101')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 $sheet->getRowDimension(1)->setRowHeight(24);
-                $sheet->getColumnDimension('A')->setWidth(20);
-                $sheet->getColumnDimension('B')->setWidth(14);
-                $sheet->getColumnDimension('C')->setWidth(28);
-                $sheet->getColumnDimension('D')->setWidth(22);
-                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('A')->setWidth(24);
+                $sheet->getColumnDimension('B')->setWidth(28);
+                $sheet->getColumnDimension('C')->setWidth(22);
+                $sheet->getColumnDimension('D')->setWidth(20);
 
                 $validation = new DataValidation();
                 $validation->setType(DataValidation::TYPE_LIST);
@@ -93,14 +91,15 @@ class TechnicianImportTemplateSheet implements FromArray, ShouldAutoSize, WithEv
                 $validation->setFormula1('=DaftarTeknisi');
 
                 for ($row = 2; $row <= 501; $row++) {
-                    $sheet->getCell('C' . $row)->setDataValidation(clone $validation);
+                    $sheet->getCell('B' . $row)->setDataValidation(clone $validation);
                 }
 
-                $sheet->getComment('A1')->getText()->createTextRun('Nomor bon harus sesuai dengan ID Barang.');
-                $sheet->getComment('B1')->getText()->createTextRun('Gunakan ID Barang yang tampil pada detail service.');
-                $sheet->getComment('C1')->getText()->createTextRun('Wajib dipilih dari dropdown.');
-                $sheet->getComment('D1')->getText()->createTextRun('Tanggal teknisi mulai mengerjakan barang.');
-                $sheet->getComment('E1')->getText()->createTextRun('Boleh dikosongkan. Saat import, nilai kosong otomatis menggunakan tanggal hari ini.');
+                $sheet->getComment('A1')->getText()->createTextRun(
+                    'Gabungkan nomor bon tanpa tanda hubung dengan urutan item. Contoh: bon B-12345 item A ditulis B12345A.'
+                );
+                $sheet->getComment('B1')->getText()->createTextRun('Wajib dipilih dari dropdown.');
+                $sheet->getComment('C1')->getText()->createTextRun('Tanggal teknisi mulai mengerjakan barang.');
+                $sheet->getComment('D1')->getText()->createTextRun('Boleh dikosongkan. Saat import, nilai kosong otomatis menggunakan tanggal hari ini.');
             },
         ];
     }

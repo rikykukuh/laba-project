@@ -198,7 +198,7 @@
             <table class="table table-sm table-striped table-bordered" cellpadding="0">
                 <thead>
                 <tr>
-                    <th class="text-center" style="font-size: 14px;width: 5%;">No.</th>
+                    <th class="text-center" style="font-size: 14px;width: 18%;">Kode Bon Item</th>
                     <!--<th style="font-size: 11px;width: 25%;">Jenis Service</th>-->
                     <th style="font-size: 14px;width: 50%;">Keterangan</th>
                     <th class="text-right" style="font-size: 14px;width: 20%;">Subtotal</th>
@@ -206,8 +206,12 @@
                 </thead>
                 <tbody>
                 @foreach($order->orderItems as $orderItem)
+                    @php
+                        $itemSequence = \App\Models\OrderItem::sequenceLabel($loop->iteration);
+                        $itemImportCode = $order->itemImportCode($loop->iteration);
+                    @endphp
                     <tr>
-                        <td class="text-center" style="font-size: 14px;"><strong>{{ $loop->iteration }}</strong></td>
+                        <td class="text-center" style="font-size: 14px;"><strong>{{ $itemImportCode }}</strong></td>
                         <!--<td style="font-size: 11px;">{{ $products->find($orderItem->product_id)->name }}</td>-->
                         <td style="font-size: 14px;">{{ $orderItem->note }}</td>
                         <td class="text-right" style="font-size: 14px;">Rp{{ number_format($orderItem->bruto, null, ",", ".") }}</td>

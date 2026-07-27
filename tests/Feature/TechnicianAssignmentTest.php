@@ -7,8 +7,11 @@ use App\Models\OrderItem;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tests\TestCase;
 
 class TechnicianAssignmentTest extends TestCase
@@ -144,8 +147,91 @@ class TechnicianAssignmentTest extends TestCase
         $response->assertOk()
             ->assertJsonCount(1, 'items')
             ->assertJsonPath('items.0.id', $selectedItem->id)
+            ->assertJsonPath('items.0.sequence', 'A')
+            ->assertJsonPath('items.0.import_code', 'D000005A')
             ->assertJsonPath('items.0.state', 'proses')
             ->assertJsonPath('all_slots_full', false);
+    }
+
+    public function test_excel_import_uses_ticket_without_dash_and_item_sequence(): void
+    {
+        $technician = $this->createTechnician('Teknisi Import');
+        $order = $this->createOrder('B-12345');
+        $firstItem = $this->createItem($order);
+        $secondItem = $this->createItem($order);
+        $filePath = $this->createTechnicianImportFile([
+            ['B12345B', $technician->name, '25-07-2026', '25-07-2026'],
+        ]);
+
+        try {
+            $response = $this->actingAs($technician)->post(
+                route('order-item-teknisi.import'),
+                [
+                    'file' => new UploadedFile(
+                        $filePath,
+                        'import-teknisi.xlsx',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        null,
+                        true
+                    ),
+                ]
+            );
+        } finally {
+            @unlink($filePath);
+        }
+
+        $response->assertRedirect()
+            ->assertSessionHas('success', '1 penugasan teknisi berhasil diimport.');
+
+        $this->assertDatabaseMissing('order_item_teknisi', [
+            'order_item_id' => $firstItem->id,
+            'user_id' => $technician->id,
+        ]);
+        $this->assertDatabaseHas('order_item_teknisi', [
+            'order_item_id' => $secondItem->id,
+            'user_id' => $technician->id,
+        ]);
+        $this->assertDatabaseHas('order_items', [
+            'id' => $secondItem->id,
+            'teknisi1_id' => $technician->id,
+        ]);
+    }
+
+    public function test_excel_import_rejects_item_sequence_not_present_on_ticket(): void
+    {
+        $technician = $this->createTechnician('Teknisi Urutan');
+        $order = $this->createOrder('B-54321');
+        $item = $this->createItem($order);
+        $filePath = $this->createTechnicianImportFile([
+            ['B54321C', $technician->name, '25-07-2026', '25-07-2026'],
+        ]);
+
+        try {
+            $response = $this->actingAs($technician)->post(
+                route('order-item-teknisi.import'),
+                [
+                    'file' => new UploadedFile(
+                        $filePath,
+                        'import-teknisi.xlsx',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        null,
+                        true
+                    ),
+                ]
+            );
+        } finally {
+            @unlink($filePath);
+        }
+
+        $response->assertRedirect()
+            ->assertSessionHas('import_errors', function ($errors) {
+                return in_array('Baris 2: Item C tidak ditemukan pada bon B-54321.', $errors, true);
+            });
+
+        $this->assertDatabaseMissing('order_item_teknisi', [
+            'order_item_id' => $item->id,
+            'user_id' => $technician->id,
+        ]);
     }
 
     private function createTechnician($name): User
@@ -181,6 +267,22 @@ class TechnicianAssignmentTest extends TestCase
             'product_id' => 1,
             'state' => 'masuk',
         ], $attributes));
+    }
+
+    private function createTechnicianImportFile(array $rows): string
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray([
+            ['Kode Bon Item', 'Nama Teknisi', 'Tanggal Dikerjakan', 'Tanggal Selesai'],
+        ]);
+        $sheet->fromArray($rows, null, 'A2');
+
+        $filePath = tempnam(sys_get_temp_dir(), 'teknisi-import-');
+        (new Xlsx($spreadsheet))->save($filePath);
+        $spreadsheet->disconnectWorksheets();
+
+        return $filePath;
     }
 
     private function createSchema(): void

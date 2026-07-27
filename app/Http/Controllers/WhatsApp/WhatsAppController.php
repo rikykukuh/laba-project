@@ -11,10 +11,13 @@ use App\Models\WhatsAppSetting;
 
 class WhatsAppController extends Controller
 {
+    private const FONNTE_SETTINGS_ADMIN_EMAIL = 'admin@admin.com';
+
     public function index()
     {
         $this->ensureAdministrator();
 
+        $canManageFonnteSettings = $this->canManageFonnteSettings();
         $setting = WhatsAppSetting::current();
         $accountToken = $setting->account_token;
         $hasDeviceToken = !empty($setting->device_token);
@@ -57,13 +60,14 @@ class WhatsAppController extends Controller
             'apiError',
             'setting',
             'hasDeviceToken',
-            'hasAccountToken'
+            'hasAccountToken',
+            'canManageFonnteSettings'
         ));
     }
 
     public function updateSettings(Request $request)
     {
-        $this->ensureAdministrator();
+        $this->ensureFonnteSettingsAdministrator();
 
         $data = $request->validateWithBag('whatsappSettings', [
             'device_token' => 'nullable|string|max:4096',
@@ -393,5 +397,17 @@ class WhatsAppController extends Controller
     private function ensureAdministrator()
     {
         abort_unless(auth()->user()->hasAnyRoles('Administrators'), 403);
+    }
+
+    private function ensureFonnteSettingsAdministrator(): void
+    {
+        $this->ensureAdministrator();
+        abort_unless($this->canManageFonnteSettings(), 403);
+    }
+
+    private function canManageFonnteSettings(): bool
+    {
+        return auth()->check()
+            && strcasecmp(trim((string) auth()->user()->email), self::FONNTE_SETTINGS_ADMIN_EMAIL) === 0;
     }
 }

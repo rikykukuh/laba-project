@@ -44,7 +44,8 @@
     </div>
     <div class="box-body">
         <p class="text-muted">
-            Download template, pilih teknisi dari dropdown, lalu isi ID Barang, No Bon, dan tanggal pengerjaan.
+            Download template, lalu isi Kode Bon Item tanpa tanda hubung dan pilih teknisi dari dropdown.
+            Contoh: bon B-12345 item urutan A ditulis <strong>B12345A</strong>.
             Tanggal Dikerjakan wajib diisi. Tanggal Selesai yang kosong otomatis menggunakan tanggal hari ini saat import.
         </p>
         <div class="row">
@@ -150,7 +151,7 @@
                     <thead>
                         <tr>
                             <th>Teknisi</th>
-                            <th>Order Item ID</th>
+                            <th>Kode Bon Item</th>
                             <th>Nomer BON</th>
                             <th>Tanggal Bon</th>
                             <th>Tanggal Assign</th>
@@ -161,7 +162,7 @@
                         @forelse ($data as $item)
                             <tr>
                                 <td>{{ $item->user->name ?? '-' }}</td>
-                                <td>{{ $item->order_item_id }}</td>
+                                <td><strong>{{ optional($item->orderItem)->importCode() ?? '-' }}</strong></td>
                                 <td>{{ optional(optional($item->orderItem)->order)->number_ticket ?? '-' }}</td>
                                 <td>{{ optional(optional($item->orderItem)->order)->created_at->format('d-m-Y') ?? '-' }}</td>
                                 <td>{{ $item->created_at ? $item->created_at->format('d-m-Y') : '-' }}</td>

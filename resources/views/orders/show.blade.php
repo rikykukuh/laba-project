@@ -221,8 +221,8 @@
                             id="table-items">
                             <thead class="bg-navy">
                                 <tr>
-                                    <th class="text-center">#</th>
-                                    <th class="text-center">ID Barang</th>
+                                    <th class="text-center">Urutan</th>
+                                    <th class="text-center">Kode Bon Item</th>
                                     <th class="text-center">Jenis</th>
                                     <th class="text-center">Keterangan</th>
                                     <th class="text-center">Foto</th>
@@ -236,6 +236,8 @@
                             <tbody>
                                 @foreach ($order->orderItems as $orderItem)
                                     @php
+                                        $itemSequence = \App\Models\OrderItem::sequenceLabel($loop->iteration);
+                                        $itemImportCode = $order->itemImportCode($loop->iteration);
                                         $infoDiscount =
                                             (int) $orderItem->discount > 100
                                                 ? (int) $orderItem->discount
@@ -270,8 +272,8 @@
                                         $itemState = $orderItem->state;
                                     @endphp
                                     <tr>
-                                        <th class="text-center">{{ $loop->iteration }}</th>
-                                        <td class="text-center">{{ $orderItem->id }}</td>
+                                        <th class="text-center">{{ $itemSequence }}</th>
+                                        <td class="text-center"><strong>{{ $itemImportCode }}</strong></td>
                                         <td class="text-center">{{ $products->find($orderItem->product_id)->name }}</td>
                                         <td class="text-center">{{ $orderItem->note }}</td>
                                         <td class="text-center">

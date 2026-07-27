@@ -20,7 +20,7 @@ class OrderItemTeknisiExport implements FromCollection, WithHeadings
     {
         return [
             'Teknisi',
-            'Order Item ID',
+            'Kode Bon Item',
             'Nomer BON',
             'Tanggal Bon',
             'Tanggal Assign',
@@ -36,7 +36,7 @@ class OrderItemTeknisiExport implements FromCollection, WithHeadings
 
             return [
                 'Teknisi' => $item->user->name ?? '-',
-                'Order Item ID' => $item->order_item_id,
+                'Kode Bon Item' => optional($item->orderItem)->importCode() ?? '-',
                 'Nomer BON' => optional($order)->number_ticket ?? '-',
                 'Tanggal Bon' => optional(optional($order)->created_at)->format('d-m-Y') ?? '-',
                 'Tanggal Assign' => optional($item->created_at)->format('d-m-Y') ?? '-',

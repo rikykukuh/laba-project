@@ -20,12 +20,13 @@
     @if ($apiError)
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i> {{ $apiError }}
-            @if (!$hasAccountToken)
+            @if (!$hasAccountToken && $canManageFonnteSettings)
                 Isi account token pada form pengaturan di bawah. Account token berbeda dengan token device pengiriman.
             @endif
         </div>
     @endif
 
+    @if ($canManageFonnteSettings)
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title"><i class="fa fa-cog"></i> Pengaturan Fonnte</h3>
@@ -144,6 +145,7 @@
             </div>
         </form>
     </div>
+    @endif
 
     <div class="row">
         <div class="col-md-4"><div class="small-box bg-green"><div class="inner"><h3>{{ $summary['connected'] }}</h3><p>Device Terkoneksi</p></div><div class="icon"><i class="fa fa-link"></i></div></div></div>

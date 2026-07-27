@@ -25,7 +25,7 @@ class OrderItemTeknisiController extends Controller
 
     public function index(Request $request)
     {
-        $query = OrderItemTeknisi::with(['user', 'orderItem', 'orderItem.order']);
+        $query = OrderItemTeknisi::with(['user', 'orderItem', 'orderItem.order.orderItems:id,order_id']);
 
         if ($request->search) {
             $query->where('order_item_id', 'like', '%' . $request->search . '%')
@@ -119,14 +119,18 @@ class OrderItemTeknisiController extends Controller
         $order->load(['orderItems.product:id,name', 'orderItems.teknisis:id']);
         $isPickedUp = strtoupper((string) $order->status) === 'DIAMBIL';
 
-        $items = $order->orderItems->map(function (OrderItem $item) use ($isPickedUp) {
+        $items = $order->orderItems->values()->map(function (OrderItem $item, int $index) use ($isPickedUp, $order) {
             $technicianIds = $this->assignedTechnicianIds($item);
             $productName = optional($item->product)->name ?: 'Item service';
             $description = trim((string) $item->note);
+            $sequenceLabel = OrderItem::sequenceLabel($index + 1);
+            $importCode = $order->itemImportCode($index + 1);
 
             return [
                 'id' => $item->id,
-                'text' => '#' . $item->id . ' - ' . $productName
+                'sequence' => $sequenceLabel,
+                'import_code' => $importCode,
+                'text' => $sequenceLabel . ' [' . $importCode . '] - ' . $productName
                     . ($description !== '' ? ' | ' . $description : '')
                     . ' (Slot ' . $technicianIds->count() . '/3)',
                 'state' => $isPickedUp ? 'selesai' : ($item->state ?: ''),
@@ -221,7 +225,7 @@ class OrderItemTeknisiController extends Controller
 
     public function export(Request $request)
     {
-        $query = OrderItemTeknisi::with(['user', 'orderItem.order']);
+        $query = OrderItemTeknisi::with(['user', 'orderItem.order.orderItems:id,order_id']);
 
         if ($request->search) {
             $query->where('order_item_id', 'like', '%' . $request->search . '%')
@@ -298,8 +302,8 @@ class OrderItemTeknisiController extends Controller
             return back()->withErrors(['file' => 'File Excel tidak memiliki data.']);
         }
 
-        $expectedHeaders = ['no-bon', 'id-barang', 'nama-teknisi', 'tanggal-dikerjakan', 'tanggal-selesai'];
-        $actualHeaders = collect($rows->first())->take(5)->map(function ($header) {
+        $expectedHeaders = ['kode-bon-item', 'nama-teknisi', 'tanggal-dikerjakan', 'tanggal-selesai'];
+        $actualHeaders = collect($rows->first())->take(4)->map(function ($header) {
             return Str::slug(trim((string) $header));
         })->values()->all();
 
@@ -318,18 +322,17 @@ class OrderItemTeknisiController extends Controller
         $parsedRows = [];
         $errors = [];
 
-        foreach ($rows->slice(1) as $index => $row) {
+        foreach ($rows->slice(1)->values() as $index => $row) {
             $excelRow = $index + 2;
-            $values = collect($row)->pad(5, null)->take(5)->values();
-            $ticketNumber = trim($this->normalizeText($values[0]));
-            $itemId = $this->normalizeInteger($values[1]);
-            $technicianName = trim((string) $values[2]);
-            $startedAt = $this->parseExcelDate($values[3]);
-            $finishedAt = $values[4] === null || (is_string($values[4]) && trim($values[4]) === '')
+            $values = collect($row)->pad(4, null)->take(4)->values();
+            $itemCode = $this->normalizeItemImportCode($values[0]);
+            $technicianName = trim((string) $values[1]);
+            $startedAt = $this->parseExcelDate($values[2]);
+            $finishedAt = $values[3] === null || (is_string($values[3]) && trim($values[3]) === '')
                 ? now()->startOfDay()
-                : $this->parseExcelDate($values[4]);
+                : $this->parseExcelDate($values[3]);
 
-            if ($technicianName === '' && !$itemId && $ticketNumber === '' && !$startedAt) {
+            if ($technicianName === '' && $itemCode === '' && !$startedAt) {
                 continue;
             }
 
@@ -343,12 +346,9 @@ class OrderItemTeknisiController extends Controller
                 $errors[] = "Baris {$excelRow}: Nama teknisi '{$technicianName}' duplikat di data user.";
             }
 
-            if (!$itemId) {
-                $errors[] = "Baris {$excelRow}: ID Barang wajib berupa angka positif.";
-            }
-
-            if ($ticketNumber === '') {
-                $errors[] = "Baris {$excelRow}: No Bon wajib diisi.";
+            $codeParts = $this->parseItemImportCode($itemCode);
+            if (!$codeParts) {
+                $errors[] = "Baris {$excelRow}: Kode Bon Item tidak valid. Contoh penulisan: B12345A.";
             }
 
             if (!$startedAt) {
@@ -359,7 +359,7 @@ class OrderItemTeknisiController extends Controller
                 $errors[] = "Baris {$excelRow}: Tanggal Selesai tidak valid.";
             }
 
-            if ($technicianMatches->count() === 1 && $itemId && $ticketNumber !== '' && $startedAt && $finishedAt) {
+            if ($technicianMatches->count() === 1 && $codeParts && $startedAt && $finishedAt) {
                 if ($finishedAt->lt($startedAt)) {
                     $errors[] = "Baris {$excelRow}: Tanggal Selesai tidak boleh sebelum Tanggal Dikerjakan.";
                 }
@@ -367,8 +367,10 @@ class OrderItemTeknisiController extends Controller
                 $parsedRows[] = [
                     'excel_row' => $excelRow,
                     'user_id' => $technicianMatches->first()->id,
-                    'order_item_id' => $itemId,
-                    'ticket_number' => $ticketNumber,
+                    'item_code' => $itemCode,
+                    'ticket_code' => $codeParts['ticket_code'],
+                    'item_sequence' => $codeParts['item_sequence'],
+                    'item_position' => $codeParts['item_position'],
                     'started_at' => $startedAt,
                     'finished_at' => $finishedAt,
                 ];
@@ -379,26 +381,52 @@ class OrderItemTeknisiController extends Controller
             return back()->withErrors(['file' => 'Tidak ada baris data yang dapat diimport.']);
         }
 
-        $items = OrderItem::with(['order:id,number_ticket', 'teknisis:id'])
-            ->whereIn('id', collect($parsedRows)->pluck('order_item_id')->unique())
+        $ticketCodes = collect($parsedRows)->pluck('ticket_code')->unique()->values();
+        $orders = Order::with(['orderItems.teknisis:id'])
+            ->where('transaction_type', 0)
+            ->whereIn(
+                DB::raw("UPPER(REPLACE(REPLACE(number_ticket, '-', ''), ' ', ''))"),
+                $ticketCodes
+            )
             ->get()
-            ->keyBy('id');
+            ->groupBy(function (Order $order) {
+                return $this->normalizeTicketCode($order->number_ticket);
+            });
 
-        foreach ($parsedRows as $parsedRow) {
-            $item = $items->get($parsedRow['order_item_id']);
+        $items = collect();
 
-            if (!$item) {
-                $errors[] = "Baris {$parsedRow['excel_row']}: ID Barang {$parsedRow['order_item_id']} tidak ditemukan.";
+        foreach ($parsedRows as $rowIndex => $parsedRow) {
+            $orderMatches = $orders->get($parsedRow['ticket_code'], collect());
+
+            if ($orderMatches->isEmpty()) {
+                $errors[] = "Baris {$parsedRow['excel_row']}: Bon {$parsedRow['ticket_code']} tidak ditemukan.";
                 continue;
             }
 
-            $actualTicket = $this->normalizeText(optional($item->order)->number_ticket);
-            if ($actualTicket !== $parsedRow['ticket_number']) {
-                $errors[] = "Baris {$parsedRow['excel_row']}: No Bon tidak sesuai dengan ID Barang {$parsedRow['order_item_id']}.";
+            if ($orderMatches->count() > 1) {
+                $errors[] = "Baris {$parsedRow['excel_row']}: Bon {$parsedRow['ticket_code']} ditemukan lebih dari satu kali.";
+                continue;
             }
+
+            /** @var Order $order */
+            $order = $orderMatches->first();
+            $item = $order->orderItems->values()->get($parsedRow['item_position'] - 1);
+
+            if (!$item) {
+                $errors[] = "Baris {$parsedRow['excel_row']}: Item {$parsedRow['item_sequence']} tidak ditemukan pada bon {$order->number_ticket}.";
+                continue;
+            }
+
+            $parsedRows[$rowIndex]['order_item_id'] = $item->id;
+            $parsedRows[$rowIndex]['ticket_number'] = $order->number_ticket;
+            $items->put($item->id, $item);
         }
 
-        foreach (collect($parsedRows)->groupBy('order_item_id') as $itemId => $itemRows) {
+        $resolvedRows = collect($parsedRows)->filter(function ($row) {
+            return isset($row['order_item_id']);
+        });
+
+        foreach ($resolvedRows->groupBy('order_item_id') as $itemId => $itemRows) {
             $item = $items->get($itemId);
             if (!$item) {
                 continue;
@@ -411,14 +439,16 @@ class OrderItemTeknisiController extends Controller
                 ->unique();
 
             if ($technicianIds->count() > 3) {
-                $ticketNumber = $this->normalizeText(optional($item->order)->number_ticket);
-                $errors[] = "ID Barang {$itemId} dengan No Bon {$ticketNumber} sudah memiliki 3 teknisi yang menangani.";
+                $itemCode = $itemRows->first()['item_code'];
+                $errors[] = "Kode Bon Item {$itemCode} sudah memiliki 3 teknisi yang menangani.";
             }
         }
 
         if (!empty($errors)) {
             return back()->withInput()->with('import_errors', array_values(array_unique($errors)));
         }
+
+        $parsedRows = $resolvedRows->values()->all();
 
         DB::transaction(function () use ($parsedRows, $items) {
             foreach ($parsedRows as $parsedRow) {
@@ -476,15 +506,6 @@ class OrderItemTeknisiController extends Controller
             ->values();
     }
 
-    private function normalizeInteger($value)
-    {
-        if (!is_numeric($value) || (int) $value <= 0 || (float) $value != (int) $value) {
-            return null;
-        }
-
-        return (int) $value;
-    }
-
     private function normalizeText($value)
     {
         if (is_float($value) && floor($value) === $value) {
@@ -492,6 +513,35 @@ class OrderItemTeknisiController extends Controller
         }
 
         return trim((string) $value);
+    }
+
+    private function normalizeTicketCode($value): string
+    {
+        return Order::normalizeTicketCode($this->normalizeText($value));
+    }
+
+    private function normalizeItemImportCode($value): string
+    {
+        return $this->normalizeTicketCode($value);
+    }
+
+    private function parseItemImportCode(string $itemCode): ?array
+    {
+        if (!preg_match('/^(.+\d)([A-Z]+)$/', $itemCode, $matches)) {
+            return null;
+        }
+
+        $position = OrderItem::sequencePosition($matches[2]);
+
+        if (!$position) {
+            return null;
+        }
+
+        return [
+            'ticket_code' => $matches[1],
+            'item_sequence' => $matches[2],
+            'item_position' => $position,
+        ];
     }
 
     private function parseExcelDate($value)

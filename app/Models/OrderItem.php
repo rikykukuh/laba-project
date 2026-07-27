@@ -76,4 +76,60 @@ class OrderItem extends Model
     {
         return $this->belongsToMany(User::class, 'order_item_teknisi')->withTimestamps();;
     }
+
+    public static function sequenceLabel(int $position): string
+    {
+        if ($position < 1) {
+            return '';
+        }
+
+        $label = '';
+
+        while ($position > 0) {
+            $position--;
+            $label = chr(65 + ($position % 26)) . $label;
+            $position = intdiv($position, 26);
+        }
+
+        return $label;
+    }
+
+    public static function sequencePosition(string $label): ?int
+    {
+        $label = strtoupper(trim($label));
+
+        if ($label === '' || !preg_match('/^[A-Z]+$/', $label)) {
+            return null;
+        }
+
+        $position = 0;
+
+        foreach (str_split($label) as $letter) {
+            $position = ($position * 26) + (ord($letter) - 64);
+        }
+
+        return $position;
+    }
+
+    public function sequencePositionInOrder(): ?int
+    {
+        if (!$this->order) {
+            return null;
+        }
+
+        $index = $this->order->orderItems->search(function (OrderItem $item) {
+            return (int) $item->id === (int) $this->id;
+        });
+
+        return $index === false ? null : $index + 1;
+    }
+
+    public function importCode(): ?string
+    {
+        $position = $this->sequencePositionInOrder();
+
+        return $position && $this->order
+            ? $this->order->itemImportCode($position)
+            : null;
+    }
 }

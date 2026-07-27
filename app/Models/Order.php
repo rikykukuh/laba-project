@@ -73,6 +73,16 @@ class Order extends Model
 
     public function orderItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+        return $this->hasMany(OrderItem::class, 'order_id', 'id')->orderBy('id');
+    }
+
+    public static function normalizeTicketCode($ticketNumber): string
+    {
+        return strtoupper((string) preg_replace('/[^A-Z0-9]/', '', strtoupper(trim((string) $ticketNumber))));
+    }
+
+    public function itemImportCode(int $position): string
+    {
+        return static::normalizeTicketCode($this->number_ticket) . OrderItem::sequenceLabel($position);
     }
 }
