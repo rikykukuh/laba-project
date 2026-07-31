@@ -32,6 +32,11 @@ class HomeController extends Controller
         $canViewProductivityCharts = auth()->user()->hasAnyRoles('Administrators');
         $cashierProductivity = collect();
         $technicianProductivity = collect();
+        $productivityMonths = (int) $request->input('productivity_months', 1);
+        if (!in_array($productivityMonths, [1, 3, 6, 12], true)) {
+            $productivityMonths = 1;
+        }
+        $productivityStartDate = now()->subMonthsNoOverflow($productivityMonths)->startOfDay();
 
         if ($canViewProductivityCharts) {
             $cashierProductivity = Order::select(
@@ -40,6 +45,7 @@ class HomeController extends Controller
             )
             ->with('creator:id,name')
             ->whereNotNull('created_by')
+            ->where('created_at', '>=', $productivityStartDate)
             ->where(function ($query) {
                 $query->whereNull('status')
                     ->orWhereRaw("LOWER(TRIM(status)) <> 'cancel'");
@@ -60,6 +66,7 @@ class HomeController extends Controller
                 DB::raw('COUNT(*) as total')
             )
             ->with('user:id,name')
+            ->where('created_at', '>=', $productivityStartDate)
             ->groupBy('user_id')
             ->orderByDesc('total')
             ->get()
@@ -79,6 +86,7 @@ class HomeController extends Controller
         'totalPenjualanToday',
         'barangMasuk',
         'canViewProductivityCharts',
+        'productivityMonths',
         'cashierProductivity',
         'technicianProductivity'));
     }

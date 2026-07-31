@@ -426,15 +426,28 @@ class OrderController extends Controller
             'id' => $order->id,
             'type' => 'customer',
         ]);
-        $whatsappMessage = $this->buildWhatsAppBonMessage($order, $bonWhatsappUrl);
+        $whatsappMessages = [
+            'bon' => $this->buildWhatsAppMessage($order, 'bon', $bonWhatsappUrl),
+            'pickup_reminder' => $this->buildWhatsAppMessage($order, 'pickup_reminder', $bonWhatsappUrl),
+        ];
+        $whatsappSentCount = WhatsAppMessageLog::where('order_id', $order->id)
+            ->where('status', 'queued')
+            ->count();
+        $lastWhatsAppSentAt = WhatsAppMessageLog::where('order_id', $order->id)
+            ->where('status', 'queued')
+            ->latest('created_at')
+            ->value('created_at');
 
         return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'users_driver',
         'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc',
-        'bonWhatsappUrl', 'whatsappMessage'));
+        'bonWhatsappUrl', 'whatsappMessages', 'whatsappSentCount', 'lastWhatsAppSentAt'));
     }
 
-    public function sendWhatsAppBon(Order $order)
+    public function sendWhatsAppBon(Request $request, Order $order)
     {
+        $validated = $request->validate([
+            'message_template' => 'required|in:bon,pickup_reminder',
+        ]);
         $order->loadMissing('customer');
         $phoneNumber = preg_replace('/\D+/', '', (string) optional($order->customer)->phone_number);
 
@@ -456,7 +469,7 @@ class OrderController extends Controller
             'id' => $order->id,
             'type' => 'customer',
         ]);
-        $message = $this->buildWhatsAppBonMessage($order, $bonUrl);
+        $message = $this->buildWhatsAppMessage($order, $validated['message_template'], $bonUrl);
 
         try {
             $response = Http::timeout(20)->get($whatsAppSetting->send_endpoint, [
@@ -497,21 +510,35 @@ class OrderController extends Controller
             return back()->with('error', 'Tidak dapat terhubung ke layanan WhatsApp. Silakan coba lagi.');
         }
 
-        return back()->with('success', 'Link bon berhasil dikirim ke WhatsApp pelanggan.');
+        return back()->with('success', 'Pesan WhatsApp berhasil dikirim ke pelanggan.');
     }
 
-    private function buildWhatsAppBonMessage(Order $order, $bonUrl)
+    private function buildWhatsAppMessage(Order $order, string $templateType, string $bonUrl)
     {
-        $order->loadMissing(['customer', 'creator']);
-        $template = config('whatsapp.order_message_template');
+        $order->loadMissing('customer');
+        $template = $templateType === 'pickup_reminder'
+            ? config('whatsapp.pickup_reminder_template')
+            : config('whatsapp.order_message_template');
+
+        $estimate = '-';
+        if ($order->estimate_take_item) {
+            try {
+                $estimateDate = Carbon::parse($order->estimate_take_item)->timezone('Asia/Jakarta');
+                $estimate = $estimateDate->format(
+                    preg_match('/\d{2}:\d{2}/', (string) $order->estimate_take_item) ? 'd-m-Y H:i' : 'd-m-Y'
+                );
+                if (preg_match('/\d{2}:\d{2}/', (string) $order->estimate_take_item)) {
+                    $estimate .= ' WIB';
+                }
+            } catch (\Throwable $exception) {
+                $estimate = (string) $order->estimate_take_item;
+            }
+        }
 
         return strtr($template, [
             '{nama_pelanggan}' => optional($order->customer)->name ?: 'Pelanggan',
-            '{nama_kasir}' => optional($order->creator)->name ?: 'Kasir',
             '{no_bon}' => $order->number_ticket ?: '-',
-            '{tanggal_transaksi}' => $order->created_at
-                ? $order->created_at->timezone('Asia/Jakarta')->format('d-m-Y H:i') . ' WIB'
-                : '-',
+            '{estimasi_selesai}' => $estimate,
             '{link_bon}' => $bonUrl,
         ]);
     }

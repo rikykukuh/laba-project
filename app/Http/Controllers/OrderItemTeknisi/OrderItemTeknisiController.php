@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderItemTeknisiExport;
 use App\Exports\SummaryTeknisiExport;
 use App\Exports\TechnicianImportTemplateExport;
+use App\Exports\OrderItemQcExport;
+use App\Exports\SummaryQcExport;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
@@ -68,12 +70,60 @@ class OrderItemTeknisiController extends Controller
                     ->groupBy('order_item_teknisi.user_id')
                     ->get();
 
+        $qcQuery = OrderItem::with(['qc:id,name', 'order.orderItems:id,order_id'])
+            ->whereNotNull('qc_id');
+
+        if ($request->search) {
+            $search = $request->search;
+            $qcQuery->where(function ($query) use ($search) {
+                $query->where('id', 'like', '%' . $search . '%')
+                    ->orWhereHas('qc', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('order', function ($query) use ($search) {
+                        $query->where('number_ticket', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        if ($request->start_date && $request->end_date) {
+            $qcQuery->whereBetween('updated_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $qcData = $qcQuery->latest('updated_at')->paginate(10, ['*'], 'qc_page');
+
+        $qcSummaryQuery = OrderItem::select(
+                'qc_id',
+                DB::raw('COUNT(*) as total'),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'masuk' THEN 1 ELSE 0 END) as masuk"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'proses' THEN 1 ELSE 0 END) as proses"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'selesai' THEN 1 ELSE 0 END) as selesai"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang a' THEN 1 ELSE 0 END) as gudang_a"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang b' THEN 1 ELSE 0 END) as gudang_b"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang c' THEN 1 ELSE 0 END) as gudang_c"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'cancel' THEN 1 ELSE 0 END) as cancel"),
+                DB::raw("SUM(CASE WHEN state IS NULL OR TRIM(state) = '' THEN 1 ELSE 0 END) as belum_ada_state")
+            )
+            ->whereNotNull('qc_id');
+
+        if ($request->start_date && $request->end_date) {
+            $qcSummaryQuery->whereBetween('updated_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $qcSummary = $qcSummaryQuery->with('qc')->groupBy('qc_id')->get();
+
 
         $technicians = $this->eligibleTechnicians()
             ->orderBy('name')
             ->get(['users.id', 'users.name']);
 
-        return view('OrderItemTeknisi.index', compact('data', 'summary', 'technicians'));
+        return view('OrderItemTeknisi.index', compact('data', 'summary', 'qcData', 'qcSummary', 'technicians'));
 
     }
 
@@ -137,6 +187,7 @@ class OrderItemTeknisiController extends Controller
                 'technician_ids' => $technicianIds->values(),
                 'technician_count' => $technicianIds->count(),
                 'is_full' => $technicianIds->count() >= 3,
+                'qc_id' => $item->qc_id ? (int) $item->qc_id : null,
             ];
         })->values();
 
@@ -156,6 +207,7 @@ class OrderItemTeknisiController extends Controller
             'order_id' => 'required|integer|exists:orders,id',
             'order_item_id' => 'required|integer|exists:order_items,id',
             'state' => 'required|in:masuk,proses,selesai,gudang A,gudang B,gudang C,cancel',
+            'is_qc' => 'nullable|boolean',
         ]);
 
         if (!$this->eligibleTechnicians()->whereKey($validated['user_id'])->exists()) {
@@ -175,8 +227,24 @@ class OrderItemTeknisiController extends Controller
                     return ['error' => 'Bon yang dipilih bukan transaksi reparasi.'];
                 }
 
-                $technicianIds = $this->assignedTechnicianIds($item);
                 $userId = (int) $validated['user_id'];
+                $isQc = (bool) ($validated['is_qc'] ?? false);
+                $isPickedUp = strtoupper((string) optional($item->order)->status) === 'DIAMBIL';
+
+                if ($isQc) {
+                    if ($item->qc_id && (int) $item->qc_id !== $userId) {
+                        return ['error' => 'QC pada item service ini sudah terisi.'];
+                    }
+
+                    $item->update([
+                        'qc_id' => $userId,
+                        'state' => $isPickedUp ? 'selesai' : ($validated['state'] ?: null),
+                    ]);
+
+                    return ['item' => $item, 'is_qc' => true];
+                }
+
+                $technicianIds = $this->assignedTechnicianIds($item);
                 $alreadyInPivot = $item->teknisis->pluck('id')->map(function ($id) {
                     return (int) $id;
                 })->contains($userId);
@@ -196,8 +264,6 @@ class OrderItemTeknisiController extends Controller
                 );
 
                 $technicianIds = $technicianIds->push($userId)->unique()->values();
-                $isPickedUp = strtoupper((string) optional($item->order)->status) === 'DIAMBIL';
-
                 $item->update([
                     'teknisi1_id' => $technicianIds->get(0),
                     'teknisi2_id' => $technicianIds->get(1),
@@ -205,7 +271,7 @@ class OrderItemTeknisiController extends Controller
                     'state' => $isPickedUp ? 'selesai' : ($validated['state'] ?: null),
                 ]);
 
-                return ['item' => $item, 'is_picked_up' => $isPickedUp];
+                return ['item' => $item, 'is_qc' => false];
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {
             return response()->json([
@@ -218,13 +284,34 @@ class OrderItemTeknisiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Teknisi berhasil ditugaskan pada item service.',
+            'message' => $result['is_qc']
+                ? 'QC berhasil ditugaskan pada item service.'
+                : 'Teknisi berhasil ditugaskan pada item service.',
             'state' => $result['item']->state,
         ]);
     }
 
     public function export(Request $request)
     {
+        if ($request->input('type') === 'qc') {
+            $query = OrderItem::with(['qc:id,name', 'order.orderItems:id,order_id'])->whereNotNull('qc_id');
+            if ($request->search) {
+                $search = $request->search;
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('qc', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    })->orWhereHas('order', function ($query) use ($search) {
+                        $query->where('number_ticket', 'like', '%' . $search . '%');
+                    });
+                });
+            }
+            if ($request->start_date && $request->end_date) {
+                $query->whereBetween('updated_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            }
+
+            return Excel::download(new OrderItemQcExport($query->get()), 'list_qc.xlsx');
+        }
+
         $query = OrderItemTeknisi::with(['user', 'orderItem.order.orderItems:id,order_id']);
 
         if ($request->search) {
@@ -248,6 +335,29 @@ class OrderItemTeknisiController extends Controller
 
     public function exportSummary(Request $request)
     {
+        if ($request->input('type') === 'qc') {
+            $query = OrderItem::select(
+                    'qc_id',
+                    DB::raw('COUNT(*) as total'),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'masuk' THEN 1 ELSE 0 END) as masuk"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'proses' THEN 1 ELSE 0 END) as proses"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'selesai' THEN 1 ELSE 0 END) as selesai"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang a' THEN 1 ELSE 0 END) as gudang_a"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang b' THEN 1 ELSE 0 END) as gudang_b"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'gudang c' THEN 1 ELSE 0 END) as gudang_c"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(state)) = 'cancel' THEN 1 ELSE 0 END) as cancel"),
+                    DB::raw("SUM(CASE WHEN state IS NULL OR TRIM(state) = '' THEN 1 ELSE 0 END) as belum_ada_state")
+                )->whereNotNull('qc_id');
+            if ($request->start_date && $request->end_date) {
+                $query->whereBetween('updated_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            }
+
+            return Excel::download(
+                new SummaryQcExport($query->with('qc')->groupBy('qc_id')->get()),
+                'summary_qc.xlsx'
+            );
+        }
+
         $query = OrderItemTeknisi::select(
                 'order_item_teknisi.user_id',
                 DB::raw('COUNT(*) as total'),
@@ -302,8 +412,8 @@ class OrderItemTeknisiController extends Controller
             return back()->withErrors(['file' => 'File Excel tidak memiliki data.']);
         }
 
-        $expectedHeaders = ['kode-bon-item', 'nama-teknisi', 'tanggal-dikerjakan', 'tanggal-selesai'];
-        $actualHeaders = collect($rows->first())->take(4)->map(function ($header) {
+        $expectedHeaders = ['kode-bon-item', 'nama-teknisi', 'tanggal-dikerjakan', 'tanggal-selesai', 'qc'];
+        $actualHeaders = collect($rows->first())->take(5)->map(function ($header) {
             return Str::slug(trim((string) $header));
         })->values()->all();
 
@@ -324,13 +434,15 @@ class OrderItemTeknisiController extends Controller
 
         foreach ($rows->slice(1)->values() as $index => $row) {
             $excelRow = $index + 2;
-            $values = collect($row)->pad(4, null)->take(4)->values();
+            $values = collect($row)->pad(5, null)->take(5)->values();
             $itemCode = $this->normalizeItemImportCode($values[0]);
             $technicianName = trim((string) $values[1]);
             $startedAt = $this->parseExcelDate($values[2]);
             $finishedAt = $values[3] === null || (is_string($values[3]) && trim($values[3]) === '')
                 ? now()->startOfDay()
                 : $this->parseExcelDate($values[3]);
+            $qcFlag = mb_strtolower(trim((string) $values[4]), 'UTF-8');
+            $isQc = $qcFlag === 'ya';
 
             if ($technicianName === '' && $itemCode === '' && !$startedAt) {
                 continue;
@@ -359,6 +471,10 @@ class OrderItemTeknisiController extends Controller
                 $errors[] = "Baris {$excelRow}: Tanggal Selesai tidak valid.";
             }
 
+            if ($qcFlag !== '' && !$isQc) {
+                $errors[] = "Baris {$excelRow}: Flag QC harus dikosongkan atau dipilih Ya.";
+            }
+
             if ($technicianMatches->count() === 1 && $codeParts && $startedAt && $finishedAt) {
                 if ($finishedAt->lt($startedAt)) {
                     $errors[] = "Baris {$excelRow}: Tanggal Selesai tidak boleh sebelum Tanggal Dikerjakan.";
@@ -373,6 +489,7 @@ class OrderItemTeknisiController extends Controller
                     'item_position' => $codeParts['item_position'],
                     'started_at' => $startedAt,
                     'finished_at' => $finishedAt,
+                    'is_qc' => $isQc,
                 ];
             }
         }
@@ -432,15 +549,22 @@ class OrderItemTeknisiController extends Controller
                 continue;
             }
 
+            $technicianRows = $itemRows->where('is_qc', false);
             $technicianIds = collect([$item->teknisi1_id, $item->teknisi2_id, $item->teknisi3_id])
                 ->merge($item->teknisis->pluck('id'))
-                ->merge($itemRows->pluck('user_id'))
+                ->merge($technicianRows->pluck('user_id'))
                 ->filter()
                 ->unique();
 
             if ($technicianIds->count() > 3) {
                 $itemCode = $itemRows->first()['item_code'];
                 $errors[] = "Kode Bon Item {$itemCode} sudah memiliki 3 teknisi yang menangani.";
+            }
+
+            $qcIds = $itemRows->where('is_qc', true)->pluck('user_id')
+                ->push($item->qc_id)->filter()->unique();
+            if ($qcIds->count() > 1) {
+                $errors[] = "Kode Bon Item {$itemRows->first()['item_code']} sudah memiliki QC yang berbeda.";
             }
         }
 
@@ -452,6 +576,10 @@ class OrderItemTeknisiController extends Controller
 
         DB::transaction(function () use ($parsedRows, $items) {
             foreach ($parsedRows as $parsedRow) {
+                if ($parsedRow['is_qc']) {
+                    continue;
+                }
+
                 DB::table('order_item_teknisi')->updateOrInsert(
                     [
                         'order_item_id' => $parsedRow['order_item_id'],
@@ -466,9 +594,11 @@ class OrderItemTeknisiController extends Controller
 
             foreach (collect($parsedRows)->groupBy('order_item_id') as $itemId => $itemRows) {
                 $item = $items->get($itemId);
+                $qcId = $itemRows->where('is_qc', true)->pluck('user_id')->first();
+                $technicianRows = $itemRows->where('is_qc', false);
                 $technicianIds = collect([$item->teknisi1_id, $item->teknisi2_id, $item->teknisi3_id])
                     ->merge($item->teknisis->pluck('id'))
-                    ->merge($itemRows->pluck('user_id'))
+                    ->merge($technicianRows->pluck('user_id'))
                     ->filter()
                     ->unique()
                     ->values();
@@ -477,6 +607,7 @@ class OrderItemTeknisiController extends Controller
                     'teknisi1_id' => $technicianIds->get(0),
                     'teknisi2_id' => $technicianIds->get(1),
                     'teknisi3_id' => $technicianIds->get(2),
+                    'qc_id' => $qcId ?: $item->qc_id,
                 ]);
             }
         });

@@ -87,11 +87,27 @@
   <!-- content dashboard -->
   @if ($canViewProductivityCharts)
   <div class="row">
+    <div class="col-md-12">
+      <form method="GET" action="{{ route('home') }}" class="form-inline" style="margin-bottom: 15px;">
+        <div class="form-group">
+          <label for="productivity-months">Periode&nbsp;</label>
+          <select id="productivity-months" name="productivity_months" class="form-control input-sm"
+                  onchange="this.form.submit()">
+            <option value="1" {{ $productivityMonths === 1 ? 'selected' : '' }}>1 Bulan</option>
+            <option value="3" {{ $productivityMonths === 3 ? 'selected' : '' }}>3 Bulan</option>
+            <option value="6" {{ $productivityMonths === 6 ? 'selected' : '' }}>6 Bulan</option>
+            <option value="12" {{ $productivityMonths === 12 ? 'selected' : '' }}>12 Bulan</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-md-6">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title">Produktivitas Kasir</h3>
-          <p class="text-muted no-margin">Jumlah bon yang dibuat (bon cancel tidak dihitung)</p>
+          <p class="text-muted no-margin">Jumlah bon yang dibuat dalam {{ $productivityMonths }} bulan terakhir (bon cancel tidak dihitung)</p>
         </div>
         <div class="box-body">
           @if ($cashierProductivity->isEmpty())
@@ -108,7 +124,7 @@
       <div class="box box-success">
         <div class="box-header with-border">
           <h3 class="box-title">Produktivitas Teknisi</h3>
-          <p class="text-muted no-margin">Jumlah barang yang di-assign kepada teknisi</p>
+          <p class="text-muted no-margin">Jumlah barang yang di-assign kepada teknisi dalam {{ $productivityMonths }} bulan terakhir</p>
         </div>
         <div class="box-body">
           @if ($technicianProductivity->isEmpty())

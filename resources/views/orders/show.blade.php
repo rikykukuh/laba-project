@@ -1137,10 +1137,33 @@
                                 readonly>
                         </div>
                         <div class="form-group">
-                            <label>Template Pesan</label>
-                            <textarea class="form-control" rows="9" readonly>{{ $whatsappMessage }}</textarea>
-                            <p class="help-block">Link bon hanya dapat digunakan jika tidak diubah.</p>
+                            <label for="whatsapp-message-template">Template Pesan</label>
+                            <select id="whatsapp-message-template" name="message_template" class="form-control">
+                                <option value="bon">Bon Reparasi Pelanggan</option>
+                                <option value="pickup_reminder">Reminder Pengambilan</option>
+                            </select>
                         </div>
+                        <div class="form-group">
+                            <label>Preview Pesan</label>
+                            <textarea id="whatsapp-message-preview" class="form-control" rows="12" readonly>{{ $whatsappMessages['bon'] }}</textarea>
+                            <p id="whatsapp-link-help" class="help-block">Link bon hanya dapat digunakan jika tidak diubah.</p>
+                        </div>
+                        @if ($whatsappSentCount > 0)
+                            <div class="alert alert-success">
+                                <i class="fa fa-check-circle"></i>
+                                Pesan WhatsApp untuk bon ini sudah pernah dikirim
+                                <strong>{{ $whatsappSentCount }} kali</strong>.
+                                @if ($lastWhatsAppSentAt)
+                                    Pengiriman terakhir:
+                                    <strong>{{ \Carbon\Carbon::parse($lastWhatsAppSentAt)->timezone('Asia/Jakarta')->format('d-m-Y H:i') }} WIB</strong>.
+                                @endif
+                            </div>
+                        @else
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle"></i>
+                                Pesan WhatsApp untuk bon ini belum pernah dikirim.
+                            </div>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
@@ -1153,6 +1176,23 @@
             </div>
         </div>
     </div>
+    <script>
+        (function () {
+            var messages = @json($whatsappMessages);
+            var select = document.getElementById('whatsapp-message-template');
+            var preview = document.getElementById('whatsapp-message-preview');
+            var linkHelp = document.getElementById('whatsapp-link-help');
+            if (!select || !preview) {
+                return;
+            }
+            select.addEventListener('change', function () {
+                preview.value = messages[this.value] || '';
+                if (linkHelp) {
+                    linkHelp.style.display = this.value === 'bon' ? '' : 'none';
+                }
+            });
+        })();
+    </script>
 
     <div id="modal-lunas-item" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-sm">

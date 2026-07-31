@@ -71,6 +71,18 @@
     </div>
 </div>
 
+@php($activeTab = request('tab') === 'qc' ? 'qc' : 'teknisi')
+<ul class="nav nav-tabs" style="margin-bottom: 15px;">
+    <li class="{{ $activeTab === 'teknisi' ? 'active' : '' }}">
+        <a href="#tab-teknisi" data-toggle="tab">Teknisi</a>
+    </li>
+    <li class="{{ $activeTab === 'qc' ? 'active' : '' }}">
+        <a href="#tab-qc" data-toggle="tab">QC</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+<div class="tab-pane {{ $activeTab === 'teknisi' ? 'active' : '' }}" id="tab-teknisi">
 <div class="box">
     <div class="box-header">
         <h3 class="box-title">Summary Teknisi</h3>
@@ -194,6 +206,112 @@
         </div>
     </div>
 </div>
+</div>
+
+<div class="tab-pane {{ $activeTab === 'qc' ? 'active' : '' }}" id="tab-qc">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Summary QC</h3>
+            <a href="{{ route('order-item-teknisi.export-summary', array_merge(request()->all(), ['type' => 'qc'])) }}" class="btn btn-info btn-sm">
+                Export Summary
+            </a>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>QC</th>
+                        <th>Banyak Item</th>
+                        <th>Masuk</th>
+                        <th>Proses</th>
+                        <th>Selesai</th>
+                        <th>Gudang A</th>
+                        <th>Gudang B</th>
+                        <th>Gudang C</th>
+                        <th>Cancel</th>
+                        <th>Belum Ada State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($qcSummary as $s)
+                        <tr>
+                            <td>{{ $s->qc->name ?? '-' }}</td>
+                            <td>{{ $s->total }}</td>
+                            <td><span class="label label-info">{{ $s->masuk }}</span></td>
+                            <td><span class="label label-warning">{{ $s->proses }}</span></td>
+                            <td><span class="label label-success">{{ $s->selesai }}</span></td>
+                            <td><span class="label label-primary">{{ $s->gudang_a }}</span></td>
+                            <td><span class="label label-primary">{{ $s->gudang_b }}</span></td>
+                            <td><span class="label label-primary">{{ $s->gudang_c }}</span></td>
+                            <td><span class="label label-danger">{{ $s->cancel }}</span></td>
+                            <td><span class="label label-default">{{ $s->belum_ada_state }}</span></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="10" class="text-center">Tidak ada data QC</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">List QC</h3>
+            <a href="{{ route('order-item-teknisi.export', array_merge(request()->all(), ['type' => 'qc'])) }}" class="btn btn-success btn-sm">
+                Export List
+            </a>
+            <div class="box-tools pull-right">
+                <form method="GET" action="{{ route('laporan.order-item-teknisi') }}" style="display:flex; gap:5px; align-items:center;">
+                    <input type="hidden" name="tab" value="qc">
+                    <h5 class="input-sm">Tanggal Assign</h5>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control input-sm">
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control input-sm">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control input-sm"
+                        placeholder="Search" style="width:150px;">
+                    <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>QC</th>
+                        <th>Kode Bon Item</th>
+                        <th>Nomer BON</th>
+                        <th>Tanggal Bon</th>
+                        <th>Tanggal Assign</th>
+                        <th>Lihat Bon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($qcData as $item)
+                        <tr>
+                            <td>{{ $item->qc->name ?? '-' }}</td>
+                            <td><strong>{{ $item->importCode() ?? '-' }}</strong></td>
+                            <td>{{ optional($item->order)->number_ticket ?? '-' }}</td>
+                            <td>{{ optional(optional($item->order)->created_at)->format('d-m-Y') ?? '-' }}</td>
+                            <td>{{ optional($item->updated_at)->format('d-m-Y') ?? '-' }}</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" style="margin:5px auto;" href="{{ route('orders.show', $item->order_id) }}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="text-center">Data QC tidak ada</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="box-footer clearfix">
+            <div class="pull-right">
+                {{ $qcData->appends(request()->except('qc_page'))->links() }}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 
 <div class="modal fade" id="modal-assign-technician" tabindex="-1" role="dialog" aria-labelledby="assign-technician-title">
     <div class="modal-dialog" role="document">
@@ -205,19 +323,27 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="assign-technician-title">
-                        <i class="fa fa-user-plus"></i> Penugasan Teknisi
+                        <i class="fa fa-user-plus"></i> Penugasan Teknisi / QC
                     </h4>
                 </div>
                 <div class="modal-body">
                     <p class="text-muted">
-                        Pilih teknisi, cari nomor bon, lalu pilih item service yang akan ditangani.
+                        Pilih jenis penugasan dan petugas, cari nomor bon, lalu pilih item service yang akan ditangani.
                         Maksimal tiga teknisi dapat ditugaskan pada satu item service.
                     </p>
 
                     <div id="assignment-message" class="alert" style="display: none;"></div>
 
                     <div class="form-group">
-                        <label for="assignment-user">Teknisi <span class="text-danger">*</span></label>
+                        <label for="assignment-type">Jenis Penugasan <span class="text-danger">*</span></label>
+                        <select id="assignment-type" name="is_qc" class="form-control" required>
+                            <option value="0">Teknisi</option>
+                            <option value="1">QC</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment-user"><span id="assignment-user-label">Teknisi</span> <span class="text-danger">*</span></label>
                         <select id="assignment-user" name="user_id" class="form-control" required>
                             <option value="">-- Pilih Teknisi --</option>
                             @foreach ($technicians as $technician)
@@ -277,6 +403,7 @@
         var orderPickedUp = false;
         var allSlotsFull = false;
         var $modal = $('#modal-assign-technician');
+        var $assignmentType = $('#assignment-type');
         var $technician = $('#assignment-user');
         var $order = $('#assignment-order');
         var $item = $('#assignment-item');
@@ -299,18 +426,22 @@
         function updateFormAvailability() {
             var selectedItem = orderItems[$item.val()];
             var technicianId = parseInt($technician.val(), 10);
+            var isQc = $assignmentType.val() === '1';
             var blocked = false;
 
             clearAssignmentMessage();
 
-            if (allSlotsFull) {
+            if (!isQc && allSlotsFull) {
                 showAssignmentMessage('warning', 'Semua slot teknisi pada seluruh item service di bon ini sudah terpenuhi.');
                 blocked = true;
-            } else if (selectedItem && selectedItem.is_full) {
+            } else if (!isQc && selectedItem && selectedItem.is_full) {
                 showAssignmentMessage('warning', 'Slot teknisi pada item service ini sudah terpenuhi (3/3).');
                 blocked = true;
-            } else if (selectedItem && technicianId && selectedItem.technician_ids.indexOf(technicianId) !== -1) {
+            } else if (!isQc && selectedItem && technicianId && selectedItem.technician_ids.indexOf(technicianId) !== -1) {
                 showAssignmentMessage('warning', 'Teknisi tersebut sudah ditugaskan pada item service ini.');
+                blocked = true;
+            } else if (isQc && selectedItem && selectedItem.qc_id && selectedItem.qc_id !== technicianId) {
+                showAssignmentMessage('warning', 'QC pada item service ini sudah terisi.');
                 blocked = true;
             }
 
@@ -373,13 +504,14 @@
                     response.items.forEach(function (itemData) {
                         itemData.technician_ids = itemData.technician_ids.map(Number);
                         orderItems[String(itemData.id)] = itemData;
-                        var label = itemData.text + (itemData.is_full ? ' - SLOT PENUH' : '');
+                        var isQc = $assignmentType.val() === '1';
+                        var label = itemData.text + (!isQc && itemData.is_full ? ' - SLOT PENUH' : '');
                         var option = new Option(label, itemData.id, false, false);
-                        option.disabled = itemData.is_full;
+                        option.disabled = !isQc && itemData.is_full;
                         $item.append(option);
                     });
 
-                    $item.prop('disabled', response.items.length === 0 || allSlotsFull).trigger('change');
+                    $item.prop('disabled', response.items.length === 0 || ($assignmentType.val() !== '1' && allSlotsFull)).trigger('change');
 
                     if (orderPickedUp) {
                         $state.val('selesai').prop('disabled', true);
@@ -412,6 +544,14 @@
         });
 
         $technician.on('change', updateFormAvailability);
+        $assignmentType.on('change', function () {
+            $('#assignment-user-label').text($(this).val() === '1' ? 'QC' : 'Teknisi');
+            if ($order.val()) {
+                $order.trigger('change');
+            } else {
+                updateFormAvailability();
+            }
+        });
         $state.on('change', updateFormAvailability);
 
         $('#assign-technician-form').on('submit', function (event) {
@@ -436,7 +576,8 @@
                     user_id: $technician.val(),
                     order_id: $order.val(),
                     order_item_id: $item.val(),
-                    state: $state.val()
+                    state: $state.val(),
+                    is_qc: $assignmentType.val()
                 }
             }).done(function (response) {
                 showAssignmentMessage('success', response.message);
@@ -460,6 +601,7 @@
 
         $modal.on('hidden.bs.modal', function () {
             $('#assign-technician-form')[0].reset();
+            $('#assignment-user-label').text('Teknisi');
             orderItems = {};
             orderPickedUp = false;
             allSlotsFull = false;

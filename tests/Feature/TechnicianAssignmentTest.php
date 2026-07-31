@@ -234,6 +234,65 @@ class TechnicianAssignmentTest extends TestCase
         ]);
     }
 
+    public function test_excel_import_qc_flag_saves_user_to_qc_field(): void
+    {
+        $qc = $this->createTechnician('QC Import');
+        $order = $this->createOrder('B-67890');
+        $item = $this->createItem($order);
+        $filePath = $this->createTechnicianImportFile([
+            ['B67890A', $qc->name, '25-07-2026', '25-07-2026', 'Ya'],
+        ]);
+
+        try {
+            $response = $this->actingAs($qc)->post(
+                route('order-item-teknisi.import'),
+                ['file' => new UploadedFile($filePath, 'import-qc.xlsx', null, null, true)]
+            );
+        } finally {
+            @unlink($filePath);
+        }
+
+        $response->assertRedirect()
+            ->assertSessionHas('success', '1 penugasan teknisi berhasil diimport.');
+        $this->assertDatabaseHas('order_items', [
+            'id' => $item->id,
+            'qc_id' => $qc->id,
+            'teknisi1_id' => null,
+        ]);
+        $this->assertDatabaseMissing('order_item_teknisi', [
+            'order_item_id' => $item->id,
+            'user_id' => $qc->id,
+        ]);
+    }
+
+
+    public function test_manual_qc_assignment_uses_qc_field(): void
+    {
+        $qc = $this->createTechnician('QC Manual');
+        $order = $this->createOrder('D-000007');
+        $item = $this->createItem($order);
+
+        $this->actingAs($qc)->postJson(route('order-item-teknisi.assign'), [
+            'user_id' => $qc->id,
+            'order_id' => $order->id,
+            'order_item_id' => $item->id,
+            'state' => 'proses',
+            'is_qc' => true,
+        ])->assertOk()->assertJson([
+            'message' => 'QC berhasil ditugaskan pada item service.',
+        ]);
+
+        $this->assertDatabaseHas('order_items', [
+            'id' => $item->id,
+            'qc_id' => $qc->id,
+            'teknisi1_id' => null,
+        ]);
+        $this->assertDatabaseMissing('order_item_teknisi', [
+            'order_item_id' => $item->id,
+            'user_id' => $qc->id,
+        ]);
+    }
+
     private function createTechnician($name): User
     {
         $user = User::create([
@@ -274,7 +333,7 @@ class TechnicianAssignmentTest extends TestCase
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->fromArray([
-            ['Kode Bon Item', 'Nama Teknisi', 'Tanggal Dikerjakan', 'Tanggal Selesai'],
+            ['Kode Bon Item', 'Nama Teknisi', 'Tanggal Dikerjakan', 'Tanggal Selesai', 'QC'],
         ]);
         $sheet->fromArray($rows, null, 'A2');
 
@@ -342,6 +401,7 @@ class TechnicianAssignmentTest extends TestCase
             $table->unsignedBigInteger('teknisi1_id')->nullable();
             $table->unsignedBigInteger('teknisi2_id')->nullable();
             $table->unsignedBigInteger('teknisi3_id')->nullable();
+            $table->unsignedBigInteger('qc_id')->nullable();
             $table->string('state')->nullable();
             $table->timestamps();
             $table->softDeletes();
