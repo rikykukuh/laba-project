@@ -20,6 +20,7 @@ use App\Models\Site;
 use App\Models\User;
 use App\Models\WhatsAppMessageLog;
 use App\Models\WhatsAppSetting;
+use App\Services\WhatsApp\ApiWaClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -437,16 +438,21 @@ class OrderController extends Controller
             ->where('status', 'queued')
             ->latest('created_at')
             ->value('created_at');
+        [$whatsappSenders, $whatsappSenderErrors] = $this->availableWhatsAppSenders();
 
         return view('orders.show', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'users_driver',
         'products', 'sites', 'config', 'first_payment', 'second_payment', 'payment1', 'payment2', 'users', 'users_teknisi', 'users_qc',
-        'bonWhatsappUrl', 'whatsappMessages', 'whatsappSentCount', 'lastWhatsAppSentAt'));
+        'bonWhatsappUrl', 'whatsappMessages', 'whatsappSentCount', 'lastWhatsAppSentAt', 'whatsappSenders', 'whatsappSenderErrors'));
     }
 
     public function sendWhatsAppBon(Request $request, Order $order)
     {
         $validated = $request->validate([
             'message_template' => 'required|in:bon,pickup_reminder',
+            'whatsapp_sender' => ['required', 'string', 'max:150', 'regex:/^(fonnte|apiwa)\|.+$/'],
+        ], [
+            'whatsapp_sender.required' => 'Pilih device WhatsApp yang akan digunakan.',
+            'whatsapp_sender.regex' => 'Device WhatsApp yang dipilih tidak valid.',
         ]);
         $order->loadMissing('customer');
         $phoneNumber = preg_replace('/\D+/', '', (string) optional($order->customer)->phone_number);
@@ -459,37 +465,61 @@ class OrderController extends Controller
             return back()->with('error', 'Nomor WhatsApp pelanggan tidak valid.');
         }
 
-        $whatsAppSetting = WhatsAppSetting::current();
-        $token = $whatsAppSetting->device_token;
-        if (!$token) {
-            return back()->with('error', 'Token device Fonnte belum dikonfigurasi pada menu WhatsApp.');
-        }
-
         $bonUrl = URL::signedRoute('orders.print.shared', [
             'id' => $order->id,
             'type' => 'customer',
         ]);
         $message = $this->buildWhatsAppMessage($order, $validated['message_template'], $bonUrl);
+        [$provider, $senderId] = explode('|', $validated['whatsapp_sender'], 2);
+        $senderName = $senderId;
 
         try {
-            $response = Http::timeout(20)->get($whatsAppSetting->send_endpoint, [
-                'token' => $token,
-                'target' => $phoneNumber,
-                'message' => $message,
-                'countryCode' => (string) $whatsAppSetting->country_code,
-                'typing' => 'true',
-                'preview' => 'false',
-            ]);
+            if ($provider === 'fonnte') {
+                $setting = WhatsAppSetting::current();
+                $device = $this->findFonnteDevice($senderId, $setting);
+                $senderName = (string) ($device['name'] ?? $senderId);
+                $response = Http::asForm()
+                    ->timeout(20)
+                    ->withHeaders(['Authorization' => $device['token']])
+                    ->post($setting->send_endpoint, [
+                        'target' => $phoneNumber,
+                        'message' => $message,
+                        'countryCode' => (string) $setting->country_code,
+                        'typing' => 'true',
+                        'preview' => 'false',
+                    ]);
+                $payload = is_array($response->json()) ? $response->json() : [];
+                $isSuccess = $response->successful()
+                    && (bool) ($payload['status'] ?? $payload['Status'] ?? false);
+                $reason = $payload['reason'] ?? $payload['detail'] ?? 'Fonnte menolak pengiriman pesan.';
+            } else {
+                $client = new ApiWaClient();
+                $device = collect($client->devices())->first(function ($item) use ($senderId) {
+                    return (string) ($item['id'] ?? '') === $senderId
+                        && strtolower((string) ($item['status'] ?? '')) === 'connected';
+                });
 
-            $payload = $response->json();
-            $isSuccess = $response->successful()
-                && (bool) ($payload['status'] ?? $payload['Status'] ?? false);
+                if (!$device) {
+                    throw new \RuntimeException('Device APIWA tidak ditemukan atau sedang tidak terhubung.');
+                }
+
+                $senderName = (string) ($device['name'] ?? $senderId);
+                $response = $client->sendMessage(
+                    $senderId,
+                    $this->normalizeApiWaRecipient($phoneNumber),
+                    $message
+                );
+                $payload = is_array($response->json()) ? $response->json() : [];
+                $messageStatus = strtolower((string) ($payload['data']['status'] ?? ''));
+                $isSuccess = $response->successful() && in_array($messageStatus, ['pending', 'sent'], true);
+                $reason = $payload['message'] ?? $payload['data']['error'] ?? 'APIWA menolak pengiriman pesan.';
+            }
 
             if (!$isSuccess) {
-                $reason = $payload['reason'] ?? $payload['detail'] ?? 'Fonnte menolak pengiriman pesan.';
-                $this->logWhatsAppMessage($order, $phoneNumber, $message, 'failed', $payload);
+                $this->logWhatsAppMessage($order, $phoneNumber, $provider, $senderName, $message, 'failed', $payload);
                 Log::warning('Pengiriman bon WhatsApp gagal.', [
                     'order_id' => $order->id,
+                    'provider' => $provider,
                     'status_code' => $response->status(),
                     'reason' => $reason,
                 ]);
@@ -497,20 +527,24 @@ class OrderController extends Controller
                 return back()->with('error', 'Pesan WhatsApp gagal dikirim: ' . $reason);
             }
 
-            $this->logWhatsAppMessage($order, $phoneNumber, $message, 'queued', $payload);
+            $this->logWhatsAppMessage($order, $phoneNumber, $provider, $senderName, $message, 'queued', $payload);
         } catch (\Throwable $exception) {
-            $this->logWhatsAppMessage($order, $phoneNumber, $message, 'failed', [
-                'reason' => 'connection_error',
+            $this->logWhatsAppMessage($order, $phoneNumber, $provider, $senderName, $message, 'failed', [
+                'reason' => $exception->getMessage(),
             ]);
-            Log::error('Koneksi ke Fonnte gagal.', [
+            Log::error('Koneksi provider WhatsApp gagal.', [
                 'order_id' => $order->id,
+                'provider' => $provider,
                 'message' => $exception->getMessage(),
             ]);
 
-            return back()->with('error', 'Tidak dapat terhubung ke layanan WhatsApp. Silakan coba lagi.');
+            return back()->with('error', 'Pesan WhatsApp gagal dikirim: ' . $exception->getMessage());
         }
 
-        return back()->with('success', 'Pesan WhatsApp berhasil dikirim ke pelanggan.');
+        return back()->with(
+            'success',
+            'Pesan WhatsApp berhasil dikirim melalui ' . $senderName . ' (' . strtoupper($provider) . ').'
+        );
     }
 
     private function buildWhatsAppMessage(Order $order, string $templateType, string $bonUrl)
@@ -543,15 +577,102 @@ class OrderController extends Controller
         ]);
     }
 
-    private function logWhatsAppMessage(Order $order, $target, $message, $status, array $payload)
+    private function availableWhatsAppSenders(): array
+    {
+        $senders = collect();
+        $errors = [];
+
+        try {
+            $setting = WhatsAppSetting::current();
+            if (!$setting->account_token) {
+                throw new \RuntimeException('Account token Fonnte belum dikonfigurasi.');
+            }
+            $response = Http::timeout(20)
+                ->withHeaders(['Authorization' => $setting->account_token])
+                ->post($setting->get_devices_endpoint);
+            $payload = $response->json();
+            if (!$response->successful() || !($payload['status'] ?? false)) {
+                throw new \RuntimeException($payload['reason'] ?? 'Daftar device Fonnte tidak dapat diambil.');
+            }
+
+            collect($payload['data'] ?? [])->each(function ($device) use ($senders) {
+                if (strtolower((string) ($device['status'] ?? '')) === 'connect' && !empty($device['token'])) {
+                    $senders->push([
+                        'value' => 'fonnte|' . (string) $device['device'],
+                        'label' => (string) ($device['name'] ?? $device['device']) . ' (Fonnte)',
+                    ]);
+                }
+            });
+        } catch (\Throwable $exception) {
+            $errors[] = 'Fonnte: ' . $exception->getMessage();
+        }
+
+        try {
+            collect((new ApiWaClient())->devices())->each(function ($device) use ($senders) {
+                if (strtolower((string) ($device['status'] ?? '')) === 'connected') {
+                    $senders->push([
+                        'value' => 'apiwa|' . (string) $device['id'],
+                        'label' => (string) ($device['name'] ?? $device['id']) . ' (APIWA)',
+                    ]);
+                }
+            });
+        } catch (\Throwable $exception) {
+            $errors[] = 'APIWA: ' . $exception->getMessage();
+        }
+
+        return [$senders, $errors];
+    }
+
+    private function findFonnteDevice(string $deviceId, WhatsAppSetting $setting): array
+    {
+        if (!$setting->account_token) {
+            throw new \RuntimeException('Account token Fonnte belum dikonfigurasi.');
+        }
+
+        $response = Http::timeout(20)
+            ->withHeaders(['Authorization' => $setting->account_token])
+            ->post($setting->get_devices_endpoint);
+        $payload = $response->json();
+        if (!$response->successful() || !($payload['status'] ?? false)) {
+            throw new \RuntimeException($payload['reason'] ?? 'Device Fonnte tidak dapat diverifikasi.');
+        }
+
+        $device = collect($payload['data'] ?? [])->first(function ($item) use ($deviceId) {
+            return (string) ($item['device'] ?? '') === $deviceId
+                && strtolower((string) ($item['status'] ?? '')) === 'connect'
+                && !empty($item['token']);
+        });
+
+        if (!$device) {
+            throw new \RuntimeException('Device Fonnte tidak ditemukan atau sedang tidak terhubung.');
+        }
+
+        return $device;
+    }
+
+    private function normalizeApiWaRecipient(string $phoneNumber): string
+    {
+        $phoneNumber = preg_replace('/\D+/', '', $phoneNumber);
+        if (substr($phoneNumber, 0, 1) === '0') {
+            return (string) WhatsAppSetting::current()->country_code . substr($phoneNumber, 1);
+        }
+
+        return $phoneNumber;
+    }
+
+    private function logWhatsAppMessage(Order $order, $target, $provider, $senderDevice, $message, $status, array $payload)
     {
         try {
-            $providerIds = $payload['id'] ?? null;
+            $providerIds = $provider === 'apiwa'
+                ? ($payload['data']['id'] ?? null)
+                : ($payload['id'] ?? null);
 
             WhatsAppMessageLog::create([
                 'order_id' => $order->id,
                 'sent_by' => auth()->id(),
                 'target' => $target,
+                'provider' => $provider,
+                'sender_device' => mb_substr((string) $senderDevice, 0, 30),
                 'message' => $message,
                 'status' => $status,
                 'provider_message_id' => is_array($providerIds) ? implode(',', $providerIds) : $providerIds,

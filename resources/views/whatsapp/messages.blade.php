@@ -21,7 +21,7 @@
                     </div>
                     <div class="col-md-7">
                         <input type="text" class="form-control" name="search" value="{{ $search }}"
-                            placeholder="Cari target, No Bon, isi pesan, atau request ID">
+                            placeholder="Cari target, provider, device, No Bon, isi pesan, atau request ID">
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-search"></i> Cari</button>
@@ -39,12 +39,18 @@
         <div class="box-body table-responsive no-padding">
             <table class="table table-bordered table-hover">
                 <thead>
-                    <tr><th>Waktu</th><th>Target</th><th>No Bon</th><th>Pesan</th><th>Status</th><th>Pengirim</th><th>Request ID</th></tr>
+                    <tr><th>Waktu</th><th>Provider / Device</th><th>Target</th><th>No Bon</th><th>Pesan</th><th>Status</th><th>Pengirim</th><th>Request ID</th></tr>
                 </thead>
                 <tbody>
                     @forelse ($messages as $message)
                         <tr>
                             <td style="white-space: nowrap;">{{ $message->created_at->timezone('Asia/Jakarta')->format('d-m-Y H:i:s') }}</td>
+                            <td>
+                                <span class="label {{ $message->provider === 'apiwa' ? 'label-primary' : 'label-success' }}">
+                                    {{ strtoupper($message->provider ?: 'Fonnte') }}
+                                </span><br>
+                                <small>{{ $message->sender_device ?: '-' }}</small>
+                            </td>
                             <td>{{ $message->target }}</td>
                             <td>
                                 @if ($message->order)
@@ -59,7 +65,7 @@
                             <td>{{ $message->request_id ?: '-' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">Belum ada riwayat pesan.</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted" style="padding: 30px;">Belum ada riwayat pesan.</td></tr>
                     @endforelse
                 </tbody>
             </table>

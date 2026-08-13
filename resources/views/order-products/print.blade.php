@@ -154,7 +154,7 @@
             <div class="col-sm-4 invoice-col">
                 <b>Detail Order</b><br>
                 Cabang: {{ $order->site->name }}<br>
-                Tanggal Transaksi: {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$order->created_at)->format('d-m-Y H:i:s') }}<br>
+                Tanggal Transaksi: {{ $order->created_at->copy()->timezone('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB<br>
                 @if(!is_null($order->creator))
                 Diterima Oleh: {{ $order->creator->name }}<br>
                 @endif

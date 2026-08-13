@@ -169,7 +169,7 @@
             <div class="col-sm-4 invoice-col">
                 <b>Detail Order</b><br>
                 Cabang: {{ $order->site->name }}<br>
-                Tanggal Transaksi: {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$order->created_at)->format('d-m-Y H:i:s') }}<br>
+                Tanggal Transaksi: {{ $order->created_at->copy()->timezone('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB<br>
                 @if(!is_null($order->creator))
                 Diterima Oleh: {{ $order->creator->name }}<br>
                 @endif
@@ -182,7 +182,7 @@
                 @if($order->estimate_take_item)
                 Estimasi: {{ \Carbon\Carbon::createFromFormat('Y-m-d', $order->estimate_take_item)->format('d-m-Y') }}
                 @else
-                Estimasi: {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->created_at)->addDays(3)->format('d-m-Y') }}
+                Estimasi: {{ $order->created_at->copy()->timezone('Asia/Jakarta')->addDays(3)->format('d-m-Y') }}
                 @endif
                 <br><div style="text-align: center"><b>SELESAI SORE</b></div>
             </div>

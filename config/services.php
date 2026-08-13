@@ -30,4 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'apiwa' => [
+        'api_key' => env('APIWA_API_KEY'),
+    ],
+
 ];

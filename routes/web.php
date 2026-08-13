@@ -109,6 +109,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/whatsapp/devices/{device}/status', 'App\Http\Controllers\WhatsApp\WhatsAppController@status')->name('whatsapp.devices.status');
     Route::post('/whatsapp/devices/{device}/disconnect', 'App\Http\Controllers\WhatsApp\WhatsAppController@disconnect')->name('whatsapp.devices.disconnect');
     Route::get('/whatsapp/messages', 'App\Http\Controllers\WhatsApp\WhatsAppController@messages')->name('whatsapp.messages');
+    Route::get('/whatsapp-v2/devices', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@index')->name('whatsapp-v2.devices');
+    Route::put('/whatsapp-v2/settings', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@updateSettings')->name('whatsapp-v2.settings.update');
+    Route::post('/whatsapp-v2/devices', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@store')->name('whatsapp-v2.devices.store');
+    Route::post('/whatsapp-v2/devices/{device}/connect', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@connect')->name('whatsapp-v2.devices.connect');
+    Route::get('/whatsapp-v2/devices/{device}/status', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@status')->name('whatsapp-v2.devices.status');
+    Route::post('/whatsapp-v2/devices/{device}/disconnect', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@disconnect')->name('whatsapp-v2.devices.disconnect');
+    Route::delete('/whatsapp-v2/devices/{device}', 'App\Http\Controllers\WhatsApp\WhatsAppV2Controller@destroy')->name('whatsapp-v2.devices.destroy');
     Route::resource('order-products', \App\Http\Controllers\OrderProduct\OrderProductController::class);
     Route::get('/order-products/print/{id}', 'App\Http\Controllers\OrderProduct\OrderProductController@orderPrint')->name('order-products.print');
     Route::get('/orders/item-positions', 'App\Http\Controllers\Order\OrderController@itemPositions')->name('orders.item-positions');
