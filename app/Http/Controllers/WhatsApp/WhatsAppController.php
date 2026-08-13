@@ -381,6 +381,8 @@ class WhatsAppController extends Controller
         if ($search !== '') {
             $query->where(function ($query) use ($search) {
                 $query->where('target', 'like', '%' . $search . '%')
+                    ->orWhere('provider', 'like', '%' . $search . '%')
+                    ->orWhere('sender_device', 'like', '%' . $search . '%')
                     ->orWhere('message', 'like', '%' . $search . '%')
                     ->orWhere('request_id', 'like', '%' . $search . '%')
                     ->orWhereHas('order', function ($orderQuery) use ($search) {

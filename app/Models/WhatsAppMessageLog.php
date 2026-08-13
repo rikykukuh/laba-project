@@ -12,6 +12,8 @@ class WhatsAppMessageLog extends Model
         'order_id',
         'sent_by',
         'target',
+        'provider',
+        'sender_device',
         'message',
         'status',
         'provider_message_id',

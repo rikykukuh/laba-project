@@ -1141,6 +1141,27 @@
                                 value="{{ optional($order->customer)->name ?: '-' }} ({{ optional($order->customer)->phone_number ?: 'Nomor belum tersedia' }})"
                                 readonly>
                         </div>
+                        <div class="form-group {{ $errors->has('whatsapp_sender') ? 'has-error' : '' }}">
+                            <label for="whatsapp-sender">Kirim Menggunakan Device</label>
+                            <select id="whatsapp-sender" name="whatsapp_sender" class="form-control" required>
+                                <option value="">-- Pilih Device WhatsApp --</option>
+                                @foreach ($whatsappSenders as $sender)
+                                    <option value="{{ $sender['value'] }}" {{ old('whatsapp_sender') === $sender['value'] ? 'selected' : '' }}>
+                                        {{ $sender['label'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('whatsapp_sender'))
+                                <span class="help-block">{{ $errors->first('whatsapp_sender') }}</span>
+                            @elseif ($whatsappSenders->isEmpty())
+                                <span class="help-block text-red">Belum ada device Fonnte atau APIWA yang terhubung.</span>
+                            @else
+                                <span class="help-block">Device ditampilkan sebagai Nama Device (Fonnte) atau Nama Device (APIWA).</span>
+                            @endif
+                            @foreach ($whatsappSenderErrors as $senderError)
+                                <span class="help-block text-yellow"><i class="fa fa-warning"></i> {{ $senderError }}</span>
+                            @endforeach
+                        </div>
                         <div class="form-group">
                             <label for="whatsapp-message-template">Template Pesan</label>
                             <select id="whatsapp-message-template" name="message_template" class="form-control">
@@ -1173,7 +1194,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-success"
-                            {{ optional($order->customer)->phone_number ? '' : 'disabled' }}>
+                            {{ optional($order->customer)->phone_number && $whatsappSenders->isNotEmpty() ? '' : 'disabled' }}>
                             <i class="fa fa-whatsapp"></i> Kirim Pesan
                         </button>
                     </div>
@@ -1196,6 +1217,10 @@
                     linkHelp.style.display = this.value === 'bon' ? '' : 'none';
                 }
             });
+
+            @if ($errors->has('whatsapp_sender'))
+                $('#modal-send-whatsapp-bon').modal('show');
+            @endif
         })();
     </script>
 

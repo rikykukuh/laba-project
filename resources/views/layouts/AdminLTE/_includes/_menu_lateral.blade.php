@@ -134,14 +134,17 @@
 			@endif
 
 			@if (Auth::user()->hasAnyRoles('Administrators'))
-			<li class="treeview {{ Request::segment(1) === 'whatsapp' ? 'active menu-open' : null }}">
+			<li class="treeview {{ in_array(Request::segment(1), ['whatsapp', 'whatsapp-v2'], true) ? 'active menu-open' : null }}">
 				<a href="#" title="WhatsApp">
 					<i class="fa fa-whatsapp"></i> <span>WhatsApp</span>
 					<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
 				</a>
 				<ul class="treeview-menu">
 					<li class="{{ request()->routeIs('whatsapp.devices') ? 'active' : null }}">
-						<a href="{{ route('whatsapp.devices') }}"><i class="fa fa-mobile"></i> <span>Device</span></a>
+						<a href="{{ route('whatsapp.devices') }}"><i class="fa fa-mobile"></i> <span>Device Fonnte</span></a>
+					</li>
+					<li class="{{ request()->routeIs('whatsapp-v2.*') ? 'active' : null }}">
+						<a href="{{ route('whatsapp-v2.devices') }}"><i class="fa fa-mobile"></i> <span>WhatsApp V2</span></a>
 					</li>
 					<li class="{{ request()->routeIs('whatsapp.messages') ? 'active' : null }}">
 						<a href="{{ route('whatsapp.messages') }}"><i class="fa fa-comments"></i> <span>Riwayat Pesan</span></a>
