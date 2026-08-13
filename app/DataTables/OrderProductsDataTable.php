@@ -18,8 +18,24 @@ class OrderProductsDataTable extends DataTable
     {
         $this->model = Order::query(); // Inisialisasi model tanpa kondisi query
 
-        // Hitung total untuk footer
-        $totals = Order::where('transaction_type', '=', 1)->selectRaw('
+        // Hitung total footer dari data yang sedang difilter.
+        $totalsQuery = Order::where('transaction_type', 1)
+            ->whereNull('deleted_at')
+            ->whereNotIn('status', ['CANCEL', 'GAGAL']);
+
+        if (request()->filled('site_id') && request('site_id') !== 'ALL') {
+            $totalsQuery->where('site_id', request('site_id'));
+        }
+
+        if (request()->filled('date_start')) {
+            $totalsQuery->where('created_at', '>=', Carbon::parse(request('date_start'))->startOfDay());
+        }
+
+        if (request()->filled('date_end')) {
+            $totalsQuery->where('created_at', '<=', Carbon::parse(request('date_end'))->endOfDay());
+        }
+
+        $totals = $totalsQuery->selectRaw('
             SUM(bruto) as total_bruto,
             SUM(discount) as total_discount,
             SUM(netto) as total_netto,
@@ -28,12 +44,12 @@ class OrderProductsDataTable extends DataTable
             SUM(uang_muka) as total_dp
         ')->first();
 
-        $this->total_bruto = $totals->total_bruto;
-        $this->total_discount = $totals->total_discount;
-        $this->total_netto = $totals->total_netto;
-        $this->total_vat = $totals->total_vat;
-        $this->total_total = $totals->total_total;
-        $this->total_dp = $totals->total_dp;
+        $this->total_bruto = $totals->total_bruto ?? 0;
+        $this->total_discount = $totals->total_discount ?? 0;
+        $this->total_netto = $totals->total_netto ?? 0;
+        $this->total_vat = $totals->total_vat ?? 0;
+        $this->total_total = $totals->total_total ?? 0;
+        $this->total_dp = $totals->total_dp ?? 0;
     }
 
     /**
@@ -71,16 +87,16 @@ class OrderProductsDataTable extends DataTable
                     $query->where('name', 'like', "%" . request('name') . "%");
                 }
 
-                if (request()->has('site_id')) {
-                    if(request()->get('site_id') != 'ALL') {
-                        $query->where('site_id', 'like', "%" . request('site_id') . "%");
-                    }
+                if (request()->filled('site_id') && request('site_id') !== 'ALL') {
+                    $query->where('site_id', request('site_id'));
                 }
 
-                if (request()->has('date_start') || request()->has('date_end')) {
-                    // $query->whereBetween('created_at', [Carbon::parse(request('date_start'))->format('Y-m-d'), Carbon::parse(request('date_end'))->format('Y-m-d')]);
-                    $query->where('created_at', '>=', Carbon::parse(request('date_start'))->startOfDay()->format('Y-m-d'))
-                        ->where('created_at', '<', Carbon::parse(request('date_end'))->addDay(1)->format('Y-m-d'));
+                if (request()->filled('date_start')) {
+                    $query->where('created_at', '>=', Carbon::parse(request('date_start'))->startOfDay());
+                }
+
+                if (request()->filled('date_end')) {
+                    $query->where('created_at', '<=', Carbon::parse(request('date_end'))->endOfDay());
                 }
             }, false)
             ->addColumn('created_at', function($row) {

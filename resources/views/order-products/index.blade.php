@@ -23,12 +23,13 @@
         </div>
     @endif
 
-    @if (Request::segment(1) === 'laporan')
         <div class="box box-primary">
             <div class="box-body">
                 <form class="form-inline" id="form-filter">
-                    <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
-                    <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
+                    @if (Request::segment(1) === 'laporan')
+                        <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
+                        <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
+                    @endif
                     <div class="row">
                         {{-- <div class="col-md-6"> --}}
                         {{--     <div class="form-group"> --}}
@@ -41,24 +42,26 @@
                         {{--         </select> --}}
                         {{--     </div> --}}
                         {{-- </div> --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Date range:</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
+                        @if (Request::segment(1) === 'laporan')
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Date range:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" class="form-control pull-right" id="reservation">
                                     </div>
-                                    <input type="text" class="form-control pull-right" id="reservation">
                                 </div>
                             </div>
-                        </div>
+                        @endif
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="site_id">Cabang:</label>
                                 <select class="form-control" id="site_id" name="site_id">
                                     <option value="ALL"
                                         {{ request()->get('site_id') == 'ALL' || request()->get('site_id') == '' ? 'selected' : '' }}>
-                                        All</option>
+                                        Semua Cabang</option>
                                     @foreach ($sites as $site)
                                         <option value="{{ $site->id }}"
                                             {{ request()->get('site_id') == $site->id ? 'selected' : '' }}>
@@ -78,7 +81,6 @@
                 </form>
             </div>
         </div>
-    @endif
 
     <div class="box box-primary">
         <div class="box-body">

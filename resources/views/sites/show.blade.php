@@ -28,6 +28,9 @@
                 <strong><i class="fa fa-map-marker margin-r-5"></i> Nama Cabang</strong>
                 <p>{{ $site->name }}</p>
                 <hr>
+                <strong><i class="fa fa-sort-numeric-asc margin-r-5"></i> Sequence Terakhir</strong>
+                <p>{{ number_format($site->last_sequence) }}</p>
+                <hr>
                 <strong><i class="fa fa-calendar-o margin-r-5"></i> Tanggal Dibuat</strong>
                 <p>{{ $site->created_at }}</p>
             </div>

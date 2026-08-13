@@ -112,6 +112,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('order-products', \App\Http\Controllers\OrderProduct\OrderProductController::class);
     Route::get('/order-products/print/{id}', 'App\Http\Controllers\OrderProduct\OrderProductController@orderPrint')->name('order-products.print');
     Route::get('/orders/item-positions', 'App\Http\Controllers\Order\OrderController@itemPositions')->name('orders.item-positions');
+    Route::get('/orders/items/{item}/print-task', 'App\Http\Controllers\Order\OrderController@printItemTask')->name('orders.items.print-task');
+    Route::get('/orders/{order}/print-tasks', 'App\Http\Controllers\Order\OrderController@printOrderTasks')->name('orders.print-tasks');
     Route::post('/orders/{order}/send-whatsapp', 'App\Http\Controllers\Order\OrderController@sendWhatsAppBon')->name('orders.send-whatsapp');
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');

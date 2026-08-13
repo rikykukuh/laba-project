@@ -21,7 +21,6 @@
         $isReparasi = Request::segment(2) === 'reparasi';
     @endphp
 
-    @if ($isSelesaiBesok || $isReparasi)
         <div class="box box-primary">
             <div class="box-body">
                 <form class="form-inline" id="form-filter">
@@ -62,7 +61,9 @@
                                     <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" {{ request('ready_tomorrow') ? 'checked' : '' }}>
                                 </div>
                             </div>
-                        @else
+                        @endif
+
+                        @if ($isReparasi)
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Date range:</label>
@@ -72,18 +73,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="site_id">Cabang:</label>
-                                    <select class="form-control" id="site_id" name="site_id">
-                                        <option value="ALL" {{ request()->get('site_id') == 'ALL' || !request()->has('site_id') ? 'selected' : '' }}>All</option>
-                                        @foreach ($sites as $site)
-                                            <option value="{{ $site->id }}" {{ request()->get('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
                         @endif
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="site_id">Cabang:</label>
+                                <select class="form-control" id="site_id" name="site_id">
+                                    <option value="ALL" {{ request()->get('site_id') == 'ALL' || !request()->has('site_id') ? 'selected' : '' }}>Semua Cabang</option>
+                                    @foreach ($sites as $site)
+                                        <option value="{{ $site->id }}" {{ request()->get('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="col-md-12" style="margin: 15px auto;">
                             <div class="form-group">
@@ -96,7 +98,6 @@
                 </form>
             </div>
         </div>
-    @endif
     @if (Session::has('success'))
         <div class="alert alert-success alert-dismissible fade in">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

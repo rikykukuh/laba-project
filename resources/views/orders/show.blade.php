@@ -313,6 +313,10 @@
                                                 onclick="toggleItemState({{ $loop->iteration - 1 }})">
                                                 State
                                             </button>
+                                            <a href="{{ route('orders.items.print-task', $orderItem->id) }}"
+                                                target="_blank" class="btn bg-navy btn-xs margin-r-5">
+                                                <i class="fa fa-print"></i> Print Tugas
+                                            </a>
                                             {{-- <button type="button" class="btn btn-danger btn-xs margin-r-5 btn-remove" onclick="removeItem(event, this, {{ $loop->iteration - 1 }})">Remove</button> --}}
                                         </td>
                                     </tr>
@@ -957,24 +961,25 @@
                 </div>
 
                 <!-- Print Button Group with Spacing -->
-                <div class="btn-group" role="group">
-                    <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy"
-                        style="margin-right: 5px;">
-                        <i class="fa fa-fw fa-print"></i> Customer
-                    </a>
-                    <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy"
-                        style="margin-right: 5px;">
-                        <i class="fa fa-fw fa-print"></i> Cashier
-                    </a>
-                    <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank"
-                        class="btn bg-navy">
-                        <i class="fa fa-fw fa-print"></i> Reparation
-                    </a>
-                    <button type="button" class="btn btn-success" style="margin-left: 5px;"
-                        data-toggle="modal" data-target="#modal-send-whatsapp-bon">
-                        <i class="fa fa-whatsapp"></i> Kirim WhatsApp
+                <div class="btn-group dropup" role="group">
+                    <button type="button" class="btn bg-navy dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-print"></i> Print <span class="caret"></span>
                     </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank">Customer</a></li>
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank">Cashier</a></li>
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank">Reparation</a></li>
+                    </ul>
                 </div>
+                <button type="button" class="btn btn-success" style="margin-left: 5px;"
+                    data-toggle="modal" data-target="#modal-send-whatsapp-bon">
+                    <i class="fa fa-whatsapp"></i> Kirim WhatsApp
+                </button>
+                <a href="{{ route('orders.print-tasks', $order->id) }}" target="_blank"
+                    class="btn bg-purple" style="margin-left: 5px;">
+                    <i class="fa fa-tags"></i> Print Tugas Semua
+                </a>
 
                 <!-- Back Button -->
                 <div class="text-right" style="margin-top: 15px;">
@@ -1092,26 +1097,26 @@
                     <i class="glyphicon glyphicon-save-file"></i>
                     <span>Ready</span>
                 </button>
-                <a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank" class="btn bg-navy"
-                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                    <i class="fa fa-fw fa-print"></i>
-                    <span>Customer</span>
-                </a>
-                <a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank" class="btn bg-navy"
-                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                    <i class="fa fa-fw fa-print"></i>
-                    <span>Cashier</span>
-                </a>
-                <a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank" class="btn bg-navy"
-                    style="margin-left:15px;margin-right: 15px;margin-top: -20px;">
-                    <i class="fa fa-fw fa-print"></i>
-                    <span>Reparation</span>
-                </a>
+                <div class="btn-group dropup" style="margin-left:15px;margin-right:15px;margin-top:-20px;">
+                    <button type="button" class="btn bg-navy dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-print"></i> Print <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank">Customer</a></li>
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank">Cashier</a></li>
+                        <li><a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank">Reparation</a></li>
+                    </ul>
+                </div>
                 <button type="button" class="btn btn-success" style="margin-right: 15px;margin-top: -20px;"
                     data-toggle="modal" data-target="#modal-send-whatsapp-bon">
                     <i class="fa fa-whatsapp"></i>
                     <span>Kirim WhatsApp</span>
                 </button>
+                <a href="{{ route('orders.print-tasks', $order->id) }}" target="_blank"
+                    class="btn bg-purple" style="margin-right:15px;margin-top:-20px;">
+                    <i class="fa fa-tags"></i> Print Tugas Semua
+                </a>
                 <a href="{{ route('orders.index') }}" class="btn btn-default pull-right"><i
                         class="fa fa-fw fa-arrow-left"></i> Back to Page Order</a>
             </div>

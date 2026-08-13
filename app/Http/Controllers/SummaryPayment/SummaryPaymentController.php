@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SummaryPayment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
@@ -27,6 +28,7 @@ class SummaryPaymentController extends Controller
             : Carbon::now()->endOfDay();
 
         $amountOrder = $request->get('amount_order', 'highest');
+        $siteId = $request->get('site_id', 'ALL');
 
         $payments = Payment::selectRaw('
                 SUM(value) as total_value,
@@ -41,6 +43,10 @@ class SummaryPaymentController extends Controller
             ->whereNotIn('orders.status', ['CANCEL', 'GAGAL'])
             ->whereNull('payments.deleted_at')
             ->groupBy('payment_methods.name', 'payment_merchants.name');
+
+        if ($siteId !== 'ALL' && $siteId !== '') {
+            $payments->where('orders.site_id', $siteId);
+        }
 
         if ($amountOrder === 'highest') {
             $payments = $payments->orderByDesc('total_value');
@@ -59,6 +65,10 @@ class SummaryPaymentController extends Controller
             ->whereNotIn('orders.status', ['CANCEL', 'GAGAL'])
             ->whereNull('payments.deleted_at')
             ->groupBy('payment_methods.name');
+
+        if ($siteId !== 'ALL' && $siteId !== '') {
+            $payment_details->where('orders.site_id', $siteId);
+        }
 
         if ($amountOrder === 'highest') {
             $payment_details = $payment_details->orderByDesc('total_value');
@@ -80,6 +90,10 @@ class SummaryPaymentController extends Controller
             ->where('payments.value','!=',0)
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->whereNull('payments.deleted_at'); // Tambahkan kondisi jika diperlukan
+
+        if ($siteId !== 'ALL' && $siteId !== '') {
+            $query->where('orders.site_id', $siteId);
+        }
 
         // Hitung total data sebelum filter
         $totalData = $query->count();
@@ -136,6 +150,8 @@ class SummaryPaymentController extends Controller
 
         }
 
-        return view('summary-payment.index', compact('payments', 'list_payments', 'payment_details'));
+        $sites = Site::orderBy('name')->get();
+
+        return view('summary-payment.index', compact('payments', 'list_payments', 'payment_details', 'sites'));
     }
 }
