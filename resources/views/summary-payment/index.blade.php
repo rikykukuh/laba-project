@@ -290,6 +290,14 @@
                         {
                             extend: 'print',
                             text: 'Print Table',
+                            exportOptions: {
+                                format: {
+                                    body: function (data, row, column) {
+                                        // Hilangkan pemisah ribuan hanya pada kolom nominal di hasil print.
+                                        return column === 5 ? data.replace(/\./g, '') : data;
+                                    }
+                                }
+                            },
                             title: function () {
                                     // Set title dengan tanggal
                                     let startDate = $('#start_date').val();
