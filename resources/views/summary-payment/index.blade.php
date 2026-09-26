@@ -310,9 +310,11 @@
                             exportOptions: {
                                 format: {
                                     body: function (data, row, column) {
-                                        // Hilangkan pemisah ribuan hanya pada kolom nominal di hasil print.
+                                        // Hilangkan prefix Rp dan pemisah ribuan pada kolom nominal di hasil print.
                                         if (column === 5) {
-                                            return $('<div>').html(data).text().replace(/\./g, '');
+                                            return $('<div>').html(data).text()
+                                                .replace(/^Rp\.?\s*/i, '')
+                                                .replace(/\./g, '');
                                         }
 
                                         return data;
