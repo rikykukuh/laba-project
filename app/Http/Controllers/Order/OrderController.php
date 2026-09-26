@@ -232,9 +232,7 @@ class OrderController extends Controller
 
         // dd($order);
 
-        $ticket_format = sprintf('%06d', $order->id);
-        $code_site = Site::findOrFail($site_id);
-        $number_ticket = $code_site->code.'-'. $ticket_format;
+        $number_ticket = Site::nextTicketNumber($site_id);
         $order->update(['number_ticket' => $number_ticket]);
 
         for ($i = 0; $i < count($items); $i++) {
@@ -1143,6 +1141,43 @@ class OrderController extends Controller
         return view('orders.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites', 'config'));
     }
 
+    public function printItemTask(OrderItem $item)
+    {
+        $item->load('order.orderItems');
+
+        abort_unless($item->order && (int) $item->order->transaction_type === 0, 404);
+
+        $position = $item->sequencePositionInOrder();
+        abort_if($position === null, 404);
+
+        $sequence = OrderItem::sequenceLabel($position);
+        $itemCode = $item->order->itemImportCode($position);
+        $labels = collect([compact('item', 'sequence', 'itemCode')]);
+
+        return view('orders.print-item-task', compact('labels'));
+    }
+
+    public function printOrderTasks(Order $order)
+    {
+        abort_unless((int) $order->transaction_type === 0, 404);
+
+        $order->load('orderItems');
+
+        $labels = $order->orderItems->values()->map(function (OrderItem $item, int $index) use ($order) {
+            $position = $index + 1;
+
+            return [
+                'item' => $item,
+                'sequence' => OrderItem::sequenceLabel($position),
+                'itemCode' => $order->itemImportCode($position),
+            ];
+        });
+
+        abort_if($labels->isEmpty(), 404);
+
+        return view('orders.print-item-task', compact('labels'));
+    }
+
     /**
      * @param Request $request
      * @return JsonResponse
@@ -1414,10 +1449,7 @@ class OrderController extends Controller
 
     private function updateOrderNumber($order, $siteId)
     {
-        $ticketFormat = sprintf('%06d', $order->id);
-        $site = Site::findOrFail($siteId);
-        $numberTicket = $site->code . '-' . $ticketFormat;
-        $order->update(['number_ticket' => $numberTicket]);
+        $order->update(['number_ticket' => Site::nextTicketNumber($siteId)]);
     }
 
     public function getComplainId($orderId)

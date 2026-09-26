@@ -104,6 +104,10 @@ class OrdersDataTable extends DataTable
                     $query->where('status', 'like', "%" . request('status') . "%");
                 }
 
+                if (request()->filled('site_id') && request('site_id') !== 'ALL') {
+                    $query->where('site_id', request('site_id'));
+                }
+
                 $is_ready_tomorrow = request('is_ready_tomorrow', False);
                 
                 if ($is_ready_tomorrow) {
@@ -198,6 +202,7 @@ class OrdersDataTable extends DataTable
                 $btn .= '<li><a href="' . route('orders.print', $order->id) . '?type=reparation" target="_blank">Reparation</a></li>';
                 $btn .= '</ul></div>';
                 $btn .= '<a class="btn btn-primary btn-sm" style="margin:5px auto;" href="'.route('orders.show', $order->id).'"><i class="fa fa-eye"></i></a>';
+                $btn .= '<a class="btn bg-purple btn-sm" style="margin:5px;" href="'.route('orders.print-tasks', $order->id).'" target="_blank" title="Print Tugas Semua Barang"><i class="fa fa-tags"></i></a>';
                 if (Auth::user()->can('root-dev')) {
                     $btn .= '<button class="btn btn-danger btn-sm btn-delete" data-toggle="modal" data-target="#modal-delete" data-order-id="'.$order->id.'"><i class="fa fa-trash"></i></button>';
                 }

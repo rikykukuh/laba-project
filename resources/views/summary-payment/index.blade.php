@@ -50,6 +50,17 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="site_id">Cabang:</label>
+                            <select class="form-control" id="site_id" name="site_id">
+                                <option value="ALL" {{ request('site_id', 'ALL') === 'ALL' ? 'selected' : '' }}>Semua Cabang</option>
+                                @foreach ($sites as $site)
+                                    <option value="{{ $site->id }}" {{ (string) request('site_id') === (string) $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-md-12" style="margin: 15px auto;">
                         <div class="form-group">
                             <button type="submit" class="btn btn-sm bg-navy">
@@ -221,6 +232,11 @@
                 $('#form-filter').submit();
             });
 
+            $('#site_id').select2();
+            $('#site_id').on('change', function() {
+                $('#form-filter').submit();
+            });
+
             // Handle form submit for filtering
             $('#form-filter').on('submit', function(e) {
                 e.preventDefault();
@@ -243,7 +259,8 @@
                         data: {
                             start_date: $('#start_date').val(),
                             end_date: $('#end_date').val(),
-                            amount_order: $('#amount-order').val()
+                            amount_order: $('#amount-order').val(),
+                            site_id: $('#site_id').val()
                         },
                         dataSrc: function (json) {
                             console.log('Respons JSON:', json); // Melihat seluruh respons JSON
@@ -294,7 +311,11 @@
                                 format: {
                                     body: function (data, row, column) {
                                         // Hilangkan pemisah ribuan hanya pada kolom nominal di hasil print.
-                                        return column === 5 ? data.replace(/\./g, '') : data;
+                                        if (column === 5) {
+                                            return $('<div>').html(data).text().replace(/\./g, '');
+                                        }
+
+                                        return data;
                                     }
                                 }
                             },
@@ -360,8 +381,8 @@
                                     dt.page.len(previousPaging).draw(false);
                                 });
                             },
-                        }                                                            
-                    ]                                   
+                        }
+                    ]
                 });
                 // Show spinner
                 $('#spinner').show();
@@ -372,7 +393,8 @@
                     data: {
                         start_date: $('#start_date').val(),
                         end_date: $('#end_date').val(),
-                        amount_order: $('#amount-order').val()
+                        amount_order: $('#amount-order').val(),
+                        site_id: $('#site_id').val()
                     },
                     success: function(response) {
                         // Get the selected amount order
@@ -435,7 +457,8 @@
                     data: {
                         start_date: $('#start_date').val(),
                         end_date: $('#end_date').val(),
-                        amount_order: $('#amount-order').val()
+                        amount_order: $('#amount-order').val(),
+                        site_id: $('#site_id').val()
                     },
                     success: function(response) {
                         // Get the selected amount order
@@ -502,7 +525,8 @@
                     data: {
                         start_date: $('#start_date').val(),
                         end_date: $('#end_date').val(),
-                        amount_order: $('#amount-order').val()
+                        amount_order: $('#amount-order').val(),
+                        site_id: $('#site_id').val()
                     },
                     success: function(response) {
                         // Get the selected amount order

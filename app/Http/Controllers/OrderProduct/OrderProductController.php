@@ -134,9 +134,7 @@ class OrderProductController extends Controller
             'payment_merchant_id' => (int) $request->payment_merchant,
         ]);
 
-        $ticket_format = sprintf('%06d', $order->id);
-        $code_site = Site::findOrFail($site_id);
-        $number_ticket = $code_site->code.'-'. $ticket_format;
+        $number_ticket = Site::nextTicketNumber($site_id);
         $order->update(['number_ticket' => $number_ticket, 'payment_id' => $payment->id]);
 
         for ($i = 0; $i < count($items); $i++) {
@@ -573,10 +571,7 @@ class OrderProductController extends Controller
 
     private function updateOrderNumber($order, $siteId)
     {
-        $ticketFormat = sprintf('%06d', $order->id);
-        $site = Site::findOrFail($siteId);
-        $numberTicket = $site->code . '-' . $ticketFormat;
-        $order->update(['number_ticket' => $numberTicket]);
+        $order->update(['number_ticket' => Site::nextTicketNumber($siteId)]);
     }
 
     private function calculateAmount($item)
