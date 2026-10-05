@@ -89,7 +89,8 @@
             </li>
             @endif
 
-			@if (Auth::user()->can('root-dev', ''))
+			{{-- Menu Inventory disembunyikan sementara; route dan fiturnya tetap tersedia. --}}
+			@if (false && Auth::user()->can('root-dev', ''))
             <li class="treeview
 				{{ Request::segment(1) === 'stock-move' ? 'active menu-open' : null }}
 				">

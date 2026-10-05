@@ -1143,16 +1143,19 @@ class OrderController extends Controller
 
     public function printItemTask(OrderItem $item)
     {
-        $item->load('order.orderItems');
+        $item->load(['order.orderItems', 'order.creator']);
 
         abort_unless($item->order && (int) $item->order->transaction_type === 0, 404);
 
         $position = $item->sequencePositionInOrder();
         abort_if($position === null, 404);
 
-        $sequence = OrderItem::sequenceLabel($position);
         $itemCode = $item->order->itemImportCode($position);
-        $labels = collect([compact('item', 'sequence', 'itemCode')]);
+        $receiver = $item->order->creator->name ?? '-';
+        $estimatedDone = $item->order->estimate_service_done
+            ? Carbon::parse($item->order->estimate_service_done)->format('d-m-Y')
+            : '-';
+        $labels = collect([compact('item', 'itemCode', 'receiver', 'estimatedDone')]);
 
         return view('orders.print-item-task', compact('labels'));
     }
@@ -1161,15 +1164,18 @@ class OrderController extends Controller
     {
         abort_unless((int) $order->transaction_type === 0, 404);
 
-        $order->load('orderItems');
+        $order->load(['orderItems', 'creator']);
 
         $labels = $order->orderItems->values()->map(function (OrderItem $item, int $index) use ($order) {
             $position = $index + 1;
 
             return [
                 'item' => $item,
-                'sequence' => OrderItem::sequenceLabel($position),
                 'itemCode' => $order->itemImportCode($position),
+                'receiver' => $order->creator->name ?? '-',
+                'estimatedDone' => $order->estimate_service_done
+                    ? Carbon::parse($order->estimate_service_done)->format('d-m-Y')
+                    : '-',
             ];
         });
 

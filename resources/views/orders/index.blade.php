@@ -24,7 +24,7 @@
         <div class="box box-primary">
             <div class="box-body">
                 <form class="form-inline" id="form-filter">
-                    @if ($isReparasi)
+                    @if ($isReparasi || $isSelesaiBesok)
                         <input type="hidden" class="form-control" name="date_start" id="date_start" value="">
                         <input type="hidden" class="form-control" name="date_end" id="date_end" value="">
                     @endif
@@ -52,7 +52,7 @@
                                 <div class="form-group">
                                     <input type="hidden" class="form-control" name="is_ready_tomorrow" id="is_ready_tomorrow" value="True">
                                     <label for="selesai_hari_ini">Selesai hari ini:</label>
-                                    <input type="checkbox" name="ready_today" {{ request('ready_today') ? 'checked' : '' }}>
+                                    <input type="checkbox" name="ready_today" id="ready_today" {{ request('ready_today') ? 'checked' : '' }}>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -61,12 +61,18 @@
                                     <input type="checkbox" name="ready_tomorrow" id="ready_tomorrow" {{ request('ready_tomorrow') ? 'checked' : '' }}>
                                 </div>
                             </div>
-                        @endif
-
-                        @if ($isReparasi)
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Date range:</label>
+                                    <label for="ready_day_after_tomorrow">Selesai lusa:</label>
+                                    <input type="checkbox" name="ready_day_after_tomorrow" id="ready_day_after_tomorrow" {{ request('ready_day_after_tomorrow') ? 'checked' : '' }}>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($isReparasi || $isSelesaiBesok)
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{ $isSelesaiBesok ? 'Tanggal estimasi:' : 'Date range:' }}</label>
                                     <div class="input-group">
                                         <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
                                         <input type="text" class="form-control pull-right" id="reservation">
@@ -333,7 +339,7 @@
             $('#form-complain').attr('action', "{{ url('orders/complain') }}/" + id);
         });
     </script>
-    @if (Request::segment(1) === 'laporan')
+    @if ($isReparasi || $isSelesaiBesok)
         <script type="text/javascript">
             $(function() {
                 const date_start = "{{ request()->get('date_start') }}";
@@ -357,6 +363,9 @@
                 }, function(start, end, label) {
                     $('#date_start').val(start.format('YYYY-MM-DD HH:mm:ss'));
                     $('#date_end').val(end.format('YYYY-MM-DD HH:mm:ss'));
+                    @if ($isSelesaiBesok)
+                        $('#ready_today, #ready_tomorrow, #ready_day_after_tomorrow').prop('checked', false);
+                    @endif
                     $('#form-filter').submit();
                 });
 

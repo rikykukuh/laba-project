@@ -42,10 +42,10 @@ class OrdersDataTable extends DataTable
             $totalsQuery->where('site_id', $site_id);
         }
 
-        $is_ready_tomorrow = request('is_ready_tomorrow', False);
+        $is_ready_tomorrow = $this->isRepairCompletionList();
 
         if ($is_ready_tomorrow) {
-            $totalsQuery->whereDate('estimate_take_item', Carbon::tomorrow());
+            $this->applyEstimateTakeItemFilter($totalsQuery);
         }else{
             // Selalu pakai range tanggal (default atau dari request)
             $totalsQuery->whereBetween('created_at', [$date_start, $date_end]);
@@ -69,6 +69,51 @@ class OrdersDataTable extends DataTable
         $this->total_vat = $totals->total_vat ?? 0;
         $this->total_total = $totals->total_total ?? 0;
         $this->total_dp = $totals->total_dp ?? 0;
+    }
+
+    /**
+     * Tentukan apakah DataTable sedang dipakai oleh menu List Selesai Reparasi.
+     */
+    private function isRepairCompletionList(): bool
+    {
+        return request()->routeIs('orders.selesai-besok')
+            || filter_var(request('is_ready_tomorrow', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Filter tanggal selesai berdasarkan estimate_take_item.
+     * Checkbox berfungsi sebagai pilihan cepat dan mengesampingkan date range.
+     */
+    private function applyEstimateTakeItemFilter($query): void
+    {
+        $selectedDates = collect([
+            'ready_today' => 0,
+            'ready_tomorrow' => 1,
+            'ready_day_after_tomorrow' => 2,
+        ])->filter(function ($days, $field) {
+            return filter_var(request($field, false), FILTER_VALIDATE_BOOLEAN);
+        })->map(function ($days) {
+            return Carbon::today('Asia/Jakarta')->addDays($days)->toDateString();
+        })->values();
+
+        if ($selectedDates->isNotEmpty()) {
+            $query->where(function ($dateQuery) use ($selectedDates) {
+                foreach ($selectedDates as $date) {
+                    $dateQuery->orWhereDate('estimate_take_item', $date);
+                }
+            });
+
+            return;
+        }
+
+        if (request()->filled('date_start') && request()->filled('date_end')) {
+            $query->whereDate('estimate_take_item', '>=', Carbon::parse(request('date_start'))->toDateString())
+                ->whereDate('estimate_take_item', '<=', Carbon::parse(request('date_end'))->toDateString());
+
+            return;
+        }
+
+        $query->whereDate('estimate_take_item', Carbon::today('Asia/Jakarta'));
     }
 
     /**
@@ -108,27 +153,10 @@ class OrdersDataTable extends DataTable
                     $query->where('site_id', request('site_id'));
                 }
 
-                $is_ready_tomorrow = request('is_ready_tomorrow', False);
+                $is_ready_tomorrow = $this->isRepairCompletionList();
                 
                 if ($is_ready_tomorrow) {
-                    $ready_tomorrow = request('ready_tomorrow', False);
-                    $ready_today = request('ready_today', False);
-
-                    $query->where(function ($q) use ($ready_today, $ready_tomorrow) {
-
-                        if ($ready_today) {
-                            $q->orWhereDate('estimate_take_item', Carbon::today());
-                        }
-
-                        if ($ready_tomorrow) {
-                            $q->orWhereDate('estimate_take_item', Carbon::tomorrow());
-                        }
-
-                        if (!$ready_today && !$ready_tomorrow){
-                            $q->orWhereDate('estimate_take_item', Carbon::today());
-                        }
-
-                    });
+                    $this->applyEstimateTakeItemFilter($query);
                     
                 }else{
                     if (request()->has('date_start') && request()->has('date_end') && request('date_start') && request('date_end')) {
@@ -157,9 +185,9 @@ class OrdersDataTable extends DataTable
             // ->addColumn('discount_formatted', fn($row) => 'Rp. ' . number_format($row->discount, 0, ',', '.'))
             // ->addColumn('netto_formatted', fn($row) => 'Rp. ' . number_format($row->netto, 0, ',', '.'))
             // ->addColumn('uang_muka_formatted', fn($row) => 'Rp. ' . number_format($row->uang_muka, 0, ',', '.'))
-            ->editColumn('estimate_take_item', fn($row) =>
-                Carbon::parse($row->estimate_take_item)->format('d-M-Y')
-            )
+            ->editColumn('estimate_take_item', fn($row) => $row->estimate_take_item
+                ? Carbon::parse($row->estimate_take_item)->format('d-M-Y')
+                : '-')
             ->editColumn('bruto', fn($row) =>
                 in_array($row->status, ['CANCEL','GAGAL']) ? 0 : $row->bruto
             )
@@ -293,7 +321,7 @@ class OrdersDataTable extends DataTable
     {
 
           
-        if (request('is_ready_tomorrow', False)) {
+        if ($this->isRepairCompletionList()) {
             $create_or_estimate = Column::make('estimate_take_item')->title('Tanggal Diambil')->addClass('text-center');
         }else{
             $create_or_estimate = Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center');
