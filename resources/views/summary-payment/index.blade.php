@@ -307,18 +307,21 @@
                         {
                             extend: 'print',
                             text: 'Print Table',
-                                    exportOptions: {
-                                        format: {
-                                            body: function(data, row, column) {
-                                                if (column === 5) {
-                                                    return $('<div>').html(data).text().replace(/^Rp\.?\s*/i, '');
-                                                }
-
-                                                return data;
-                                            }
+                            exportOptions: {
+                                format: {
+                                    body: function (data, row, column) {
+                                        // Hilangkan prefix Rp dan pemisah ribuan pada kolom nominal di hasil print.
+                                        if (column === 5) {
+                                            return $('<div>').html(data).text()
+                                                .replace(/^Rp\.?\s*/i, '')
+                                                .replace(/\./g, '');
                                         }
-                                    },
-                                    title: function () {
+
+                                        return data;
+                                    }
+                                }
+                            },
+                            title: function () {
                                     // Set title dengan tanggal
                                     let startDate = $('#start_date').val();
                                     let endDate = $('#end_date').val();
