@@ -13,9 +13,45 @@
             <h3 class="box-title">Filter Posisi Barang</h3>
         </div>
         <div class="box-body">
-            <form method="GET" action="{{ route('orders.item-positions') }}">
+            <form method="GET" action="{{ route('orders.item-positions') }}" id="form-filter">
+                <input type="hidden" name="date_start" id="date_start" value="{{ $date_start }}">
+                <input type="hidden" name="date_end" id="date_end" value="{{ $date_end }}">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="ALL" {{ $status === 'ALL' ? 'selected' : '' }}>All</option>
+                                <option value="DIPROSES" {{ $status === 'DIPROSES' ? 'selected' : '' }}>Diproses</option>
+                                <option value="READY" {{ $status === 'READY' ? 'selected' : '' }}>Ready</option>
+                                <option value="DIAMBIL" {{ $status === 'DIAMBIL' ? 'selected' : '' }}>Diambil</option>
+                                <option value="LUNAS" {{ $status === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="site_id">Cabang</label>
+                            <select class="form-control" id="site_id" name="site_id">
+                                <option value="ALL" {{ $site_id === 'ALL' ? 'selected' : '' }}>Semua Cabang</option>
+                                @foreach ($sites as $site)
+                                    <option value="{{ $site->id }}" {{ $site_id == $site->id ? 'selected' : '' }}>
+                                        {{ $site->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Tanggal Estimasi</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                <input type="text" class="form-control pull-right" id="reservation">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="state">State Barang</label>
                             <select class="form-control" id="state" name="state">
@@ -33,14 +69,14 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-9">
                         <div class="form-group">
                             <label for="search">Pencarian</label>
                             <input type="text" class="form-control" id="search" name="search"
                                 value="{{ $search }}" placeholder="Cari No Bon, ID Barang, atau keterangan">
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>&nbsp;</label>
                             <button type="submit" class="btn btn-primary btn-block">
@@ -56,12 +92,19 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">Daftar Posisi Barang</h3>
+            <div class="pull-right" style="margin-left: 10px;">
+                <a href="{{ route('orders.item-positions.print', array_filter(request()->query())) }}" target="_blank" class="btn btn-sm bg-maroon">
+                    <i class="fa fa-print"></i> Print PDF
+                </a>
+            </div>
             <span class="label label-default pull-right">{{ $items->total() }} barang</span>
         </div>
         <div class="box-body table-responsive no-padding">
             <table class="table table-hover table-bordered">
                 <thead class="bg-navy">
                     <tr>
+                        <th class="text-center">Tanggal Transaksi</th>
+                        <th class="text-center">Tanggal Estimasi</th>
                         <th class="text-center">No Bon</th>
                         <th class="text-center">ID Barang</th>
                         <th>Keterangan</th>
@@ -88,6 +131,12 @@
                             ];
                         @endphp
                         <tr>
+                            <td class="text-center">
+                                {{ optional($item->order)->created_at ? \Carbon\Carbon::parse($item->order->created_at)->timezone('Asia/Jakarta')->format('d-M-Y') : '-' }}
+                            </td>
+                            <td class="text-center">
+                                {{ optional($item->order)->estimate_take_item ? \Carbon\Carbon::parse($item->order->estimate_take_item)->format('d-M-Y') : '-' }}
+                            </td>
                             <td class="text-center">{{ optional($item->order)->number_ticket ?? '-' }}</td>
                             <td class="text-center"><strong>{{ $item->id }}</strong></td>
                             <td>{{ $item->note ?: '-' }}</td>
@@ -121,7 +170,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted" style="padding: 30px;">
+                            <td colspan="8" class="text-center text-muted" style="padding: 30px;">
                                 Data barang tidak ditemukan.
                             </td>
                         </tr>
@@ -175,6 +224,52 @@
 
 @section('layout_js')
     <script>
+        $(function() {
+            function initFilters() {
+                if (typeof $.fn.select2 === 'undefined' || typeof $.fn.daterangepicker === 'undefined') {
+                    setTimeout(initFilters, 100);
+                    return;
+                }
+
+                const date_start = "{{ $date_start }}";
+                const date_end = "{{ $date_end }}";
+
+                $('#status').select2();
+                $('#site_id').select2();
+
+                $('#reservation').daterangepicker({
+                    startDate: date_start !== '' ? moment(date_start).startOf('day') : moment().startOf('day'),
+                    endDate: date_end !== '' ? moment(date_end).endOf('day') : moment().endOf('day'),
+                    timePickerIncrement: 1,
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    autoUpdateInput: false
+                }, function(start, end, label) {
+                    $('#date_start').val(start.format('YYYY-MM-DD'));
+                    $('#date_end').val(end.format('YYYY-MM-DD'));
+                });
+
+                if (date_start !== '' && date_end !== '') {
+                    $('#reservation').val(date_start + ' - ' + date_end);
+                }
+
+                $('#reservation').on('apply.daterangepicker', function(ev, picker) {
+                    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                    $('#date_start').val(picker.startDate.format('YYYY-MM-DD'));
+                    $('#date_end').val(picker.endDate.format('YYYY-MM-DD'));
+                });
+
+                $('#reservation').on('cancel.daterangepicker', function(ev, picker) {
+                    $(this).val('');
+                    $('#date_start').val('');
+                    $('#date_end').val('');
+                });
+            }
+
+            initFilters();
+        });
+
         $(document).on('click', '.view-item-photos', function () {
             const itemId = $(this).data('item-id');
             const photos = $(this).data('photos') || [];

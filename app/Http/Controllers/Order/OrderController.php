@@ -52,6 +52,12 @@ class OrderController extends Controller
     {
         $selectedState = $request->get('state', 'ALL');
         $search = trim((string) $request->get('search', ''));
+        $status = $request->get('status', 'ALL');
+        $site_id = $request->get('site_id', 'ALL');
+        $date_start = $request->get('date_start', '');
+        $date_end = $request->get('date_end', '');
+
+        $sites = Site::all();
 
         $states = OrderItem::whereHas('order', function ($query) {
                 $query->where('transaction_type', 0);
@@ -81,7 +87,7 @@ class OrderController extends Controller
             ->where('orders.transaction_type', 0)
             ->whereNull('orders.deleted_at')
             ->with([
-                'order:id,number_ticket,created_at',
+                'order:id,number_ticket,created_at,estimate_take_item,status,site_id',
                 'orderItemPhotos:id,order_item_id,thumbnail_url,preview_url',
             ]);
 
@@ -91,6 +97,19 @@ class OrderController extends Controller
             });
         } elseif ($selectedState !== 'ALL') {
             $query->where('order_items.state', $selectedState);
+        }
+
+        if ($status !== 'ALL') {
+            $query->where('orders.status', 'like', '%' . $status . '%');
+        }
+
+        if ($site_id !== 'ALL') {
+            $query->where('orders.site_id', $site_id);
+        }
+
+        if ($date_start !== '' && $date_end !== '') {
+            $query->whereDate('orders.estimate_take_item', '>=', Carbon::parse($date_start)->toDateString())
+                ->whereDate('orders.estimate_take_item', '<=', Carbon::parse($date_end)->toDateString());
         }
 
         if ($search !== '') {
@@ -112,7 +131,113 @@ class OrderController extends Controller
             'states',
             'hasItemsWithoutState',
             'selectedState',
-            'search'
+            'search',
+            'status',
+            'site_id',
+            'date_start',
+            'date_end',
+            'sites'
+        ));
+    }
+
+    public function printItemPositions(Request $request)
+    {
+        $selectedState = $request->get('state', 'ALL');
+        $search = trim((string) $request->get('search', ''));
+        $status = $request->get('status', 'ALL');
+        $site_id = $request->get('site_id', 'ALL');
+        $date_start = $request->get('date_start', '');
+        $date_end = $request->get('date_end', '');
+
+        $states = OrderItem::whereHas('order', function ($query) {
+                $query->where('transaction_type', 0);
+            })
+            ->whereNotNull('state')
+            ->where('state', '<>', '')
+            ->distinct()
+            ->orderBy('state')
+            ->pluck('state');
+
+        $allowedStates = $states->concat(['BELUM_ADA_STATE', 'ALL']);
+        if (!$allowedStates->contains($selectedState)) {
+            $selectedState = 'ALL';
+        }
+
+        $query = OrderItem::query()
+            ->select('order_items.*')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.transaction_type', 0)
+            ->whereNull('orders.deleted_at')
+            ->with([
+                'order:id,number_ticket,created_at,estimate_take_item,status,site_id',
+                'orderItemPhotos:id,order_item_id,thumbnail_url,preview_url',
+            ]);
+
+        if ($selectedState === 'BELUM_ADA_STATE') {
+            $query->where(function ($query) {
+                $query->whereNull('order_items.state')->orWhere('order_items.state', '');
+            });
+        } elseif ($selectedState !== 'ALL') {
+            $query->where('order_items.state', $selectedState);
+        }
+
+        if ($status !== 'ALL') {
+            $query->where('orders.status', 'like', '%' . $status . '%');
+        }
+
+        if ($site_id !== 'ALL') {
+            $query->where('orders.site_id', $site_id);
+        }
+
+        if ($date_start !== '' && $date_end !== '') {
+            $query->whereDate('orders.estimate_take_item', '>=', Carbon::parse($date_start)->toDateString())
+                ->whereDate('orders.estimate_take_item', '<=', Carbon::parse($date_end)->toDateString());
+        }
+
+        if ($search !== '') {
+            $query->where(function ($query) use ($search) {
+                $query->where('orders.number_ticket', 'like', '%' . $search . '%')
+                    ->orWhere('order_items.id', 'like', '%' . $search . '%')
+                    ->orWhere('order_items.note', 'like', '%' . $search . '%');
+            });
+        }
+
+        $items = $query
+            ->orderByDesc('orders.created_at')
+            ->orderByDesc('order_items.id')
+            ->get();
+
+        $siteName = 'Semua Cabang';
+        if ($site_id !== 'ALL') {
+            $site = Site::find($site_id);
+            if ($site) {
+                $siteName = $site->name;
+            }
+        }
+
+        $statusLabel = 'Semua Status';
+        if ($status !== 'ALL') {
+            $statusLabel = $status;
+        }
+
+        $stateLabel = 'Semua State';
+        if ($selectedState === 'BELUM_ADA_STATE') {
+            $stateLabel = 'Belum Ada State';
+        } elseif ($selectedState !== 'ALL') {
+            $stateLabel = ucwords($selectedState);
+        }
+
+        return view('orders.print-item-positions', compact(
+            'items',
+            'selectedState',
+            'search',
+            'status',
+            'site_id',
+            'date_start',
+            'date_end',
+            'siteName',
+            'statusLabel',
+            'stateLabel'
         ));
     }
 
