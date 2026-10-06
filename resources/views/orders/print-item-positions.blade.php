@@ -203,7 +203,6 @@
                 <th>Tanggal Transaksi</th>
                 <th>Tanggal Estimasi</th>
                 <th>No Bon</th>
-                <th>ID Barang</th>
                 <th>Keterangan</th>
                 <th>State Barang</th>
                 <th style="width: 80px;">Foto</th>
@@ -230,7 +229,6 @@
                         {{ optional($item->order)->estimate_take_item ? \Carbon\Carbon::parse($item->order->estimate_take_item)->format('d-m-Y') : '-' }}
                     </td>
                     <td class="text-center">{{ optional($item->order)->number_ticket ?? '-' }}</td>
-                    <td class="text-center"><strong>{{ $item->id }}</strong></td>
                     <td>{{ $item->note ?: '-' }}</td>
                     <td class="text-center">
                         <span class="label-state {{ $stateClass }}">
@@ -250,7 +248,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center" style="padding: 30px;">
+                    <td colspan="7" class="text-center" style="padding: 30px;">
                         Data barang tidak ditemukan.
                     </td>
                 </tr>
