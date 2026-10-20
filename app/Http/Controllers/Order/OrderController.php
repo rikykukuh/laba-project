@@ -1266,6 +1266,22 @@ class OrderController extends Controller
         return view('orders.print', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites', 'config'));
     }
 
+    public function orderPrintAll($id)
+    {
+        $config = Config::find(1);
+        $order = Order::with('orderItems.orderItemPhotos', 'creator')->findOrFail($id);
+        $customers = Customer::all();
+        $statuses = $this->statuses;
+
+        $payment_methods = PaymentMethod::all();
+        $payment_merchants = PaymentMerchant::all();
+        $products = Product::all('id', 'name');
+
+        $sites = Site::all();
+
+        return view('orders.print-all', compact('order', 'customers', 'statuses', 'payment_methods', 'payment_merchants', 'products', 'sites', 'config'));
+    }
+
     public function printItemTask(OrderItem $item)
     {
         $item->load(['order.orderItems', 'order.creator']);

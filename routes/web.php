@@ -125,6 +125,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/orders/{order}/send-whatsapp', 'App\Http\Controllers\Order\OrderController@sendWhatsAppBon')->name('orders.send-whatsapp');
     Route::resource('orders', \App\Http\Controllers\Order\OrderController::class);
     Route::get('/orders/print/{id}', 'App\Http\Controllers\Order\OrderController@orderPrint')->name('orders.print');
+    Route::get('/orders/print-all/{id}', 'App\Http\Controllers\Order\OrderController@orderPrintAll')->name('orders.print-all');
     Route::put('/orders/status/{id}', 'App\Http\Controllers\Order\OrderController@setStatus')->name('orders.status');
     Route::put('/orders/lunas/{id}', 'App\Http\Controllers\Order\OrderController@setLunas')->name('orders.lunas');
     Route::put('/orders/complain/{id}','App\Http\Controllers\Order\OrderController@complain')->name('orders.complain');

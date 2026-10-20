@@ -970,6 +970,8 @@
                         <li><a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank">Customer</a></li>
                         <li><a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank">Cashier</a></li>
                         <li><a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank">Reparation</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{ route('orders.print-all', $order->id) }}" target="_blank"><i class="fa fa-fw fa-print"></i> Print Semua (3 Halaman)</a></li>
                     </ul>
                 </div>
                 <button type="button" class="btn btn-success" style="margin-left: 5px;"
@@ -1106,6 +1108,8 @@
                         <li><a href="{{ route('orders.print', $order->id) }}?type=customer" target="_blank">Customer</a></li>
                         <li><a href="{{ route('orders.print', $order->id) }}?type=cashier" target="_blank">Cashier</a></li>
                         <li><a href="{{ route('orders.print', $order->id) }}?type=reparation" target="_blank">Reparation</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{ route('orders.print-all', $order->id) }}" target="_blank"><i class="fa fa-fw fa-print"></i> Print Semua (3 Halaman)</a></li>
                     </ul>
                 </div>
                 <button type="button" class="btn btn-success" style="margin-right: 15px;margin-top: -20px;"

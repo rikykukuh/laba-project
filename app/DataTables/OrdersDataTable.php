@@ -228,6 +228,8 @@ class OrdersDataTable extends DataTable
                 $btn .= '<li><a href="' . route('orders.print', $order->id) . '?type=customer" target="_blank">Customer</a></li>';
                 $btn .= '<li><a href="' . route('orders.print', $order->id) . '?type=cashier" target="_blank">Cashier</a></li>';
                 $btn .= '<li><a href="' . route('orders.print', $order->id) . '?type=reparation" target="_blank">Reparation</a></li>';
+                $btn .= '<li role="separator" class="divider"></li>';
+                $btn .= '<li><a href="' . route('orders.print-all', $order->id) . '" target="_blank"><i class="fa fa-fw fa-print"></i> Print Semua (3 Halaman)</a></li>';
                 $btn .= '</ul></div>';
                 $btn .= '<a class="btn btn-primary btn-sm" style="margin:5px auto;" href="'.route('orders.show', $order->id).'"><i class="fa fa-eye"></i></a>';
                 $btn .= '<a class="btn bg-purple btn-sm" style="margin:5px;" href="'.route('orders.print-tasks', $order->id).'" target="_blank" title="Print Tugas Semua Barang"><i class="fa fa-tags"></i></a>';
